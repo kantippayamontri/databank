@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import networkx as nx
 import matplotlib.pyplot as plt
+from icecream import ic
 
 def create_app():
     app = Flask(
@@ -49,6 +50,8 @@ def create_app():
                 "action": {"data":action, "choose":_action},
                 "service_type": {"data":service_type , "choose":_service_type},
             }
+
+            ic(tree_data)
             
             create_graph(data=tree_data)
 
@@ -76,3 +79,7 @@ def create_app():
         return "Hello, world"
 
     return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
