@@ -6,7 +6,6 @@ def create_app():
     app = Flask(
         __name__,
     )
-
     type_device = ["Security Camera", "Smartmetre", "Light"]
 
     cate_raw_data = ["low", "medium", "high"]
