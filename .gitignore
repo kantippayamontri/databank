@@ -9,6 +9,7 @@ instance/*
 .databank/*
 graph
 *.png
+graph_*
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files

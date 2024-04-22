@@ -2,6 +2,9 @@ from flask import Flask, render_template, request
 import networkx as nx
 import matplotlib.pyplot as plt
 from icecream import ic
+import graphviz
+import random
+import string
 
 def create_app():
     app = Flask(
@@ -52,9 +55,10 @@ def create_app():
 
             ic(tree_data)
             
-            create_graph(data=tree_data)
+            graph_img_filename = create_graph(data=tree_data)
+            print(f"graph_img_filename: {graph_img_filename}")
 
-            print(f"tree_data: ", tree_data)
+            # print(f"tree_data: ", tree_data)
 
             return "".join(
                 [
@@ -67,10 +71,45 @@ def create_app():
             )
     
     def create_graph(data:dict):
-        G = nx.Graph()
-        G.add_node(1)
-         
-        return
+        
+        graph = graphviz.Digraph(comment="databank", format="png")
+
+        for category, category_data in data.items():
+            chosen_value = next((item for item in category_data["data"] if item == category_data["choose"]), None)
+            category_name = category.replace("_", " ").capitalize()  
+            label = f"{category_name} : {chosen_value}" if chosen_value else category_name  
+            graph.node(category, label=label, shape="box")
+
+        keys = list(data.keys())
+        for i in range(len(keys) - 1):
+            graph.edge(keys[i], keys[i + 1])
+
+        filename = generate_random_filename()
+        graph.render(filename=filename, format="png", view=True)
+        return f"{filename}.png"
+
+    def generate_random_filename(length=15):
+        """
+        Generates a random filename with a specified length.
+
+        Args:
+            length (int, optional): The desired length of the filename. Defaults to 15.
+
+        Returns:
+            str: A random filename string.
+        """
+
+        # Allowed characters for filenames (avoid special characters that might cause issues on some systems)
+        allowed_chars = string.ascii_lowercase + string.digits + string.ascii_uppercase
+
+        # Generate a random string of the specified length
+        random_string = ''.join(random.choice(allowed_chars) for i in range(length))
+
+        # Ensure the filename starts with a letter (avoid issues with some OS file systems)
+        if not random_string[0].isalpha():
+            random_string = random.choice(string.ascii_lowercase + string.ascii_uppercase) + random_string[1:]
+
+        return f"graph_{random_string}"
 
     @app.route("/hello")
     def hello():
