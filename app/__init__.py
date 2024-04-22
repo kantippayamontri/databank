@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
-
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def create_app():
     app = Flask(
@@ -41,6 +42,18 @@ def create_app():
             _action = request.form["action"]
             _service_type = request.form["service_type"]
 
+            tree_data = {
+                "type_device":{"data":type_device, "choose":_type_device},
+                "cate_raw_data":{"data":cate_raw_data, "choose": _cate_raw_data},
+                "cate_service": {"data":cate_service, "choose":_cate_service},
+                "action": {"data":action, "choose":_action},
+                "service_type": {"data":service_type , "choose":_service_type},
+            }
+            
+            create_graph(data=tree_data)
+
+            print(f"tree_data: ", tree_data)
+
             return "".join(
                 [
                     f"type of device : {_type_device}<br>",
@@ -52,6 +65,8 @@ def create_app():
             )
     
     def create_graph(data:dict):
+        G = nx.Graph()
+        G.add_node(1)
          
         return
 
