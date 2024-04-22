@@ -12,101 +12,171 @@
   </head>
 
   <body>
+    {% block content %}
     <h1>Databank</h1>
-    {% block content%}
-    <form action="#" method="post">
-      <h1>Type of Device</h1>
-      {% for (index, data) in type_device %}
-      <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="type_device"
-          id="inlineRadio1"
-          value="{{data}}"
-        />
-        <label class="form-check-label" for="inlineRadio1">{{data}}</label>
+    <div class="card text-center w-80 mx-auto" style="width: 80%;"> 
+      <div class="card-header">Databank</div>
+      <div class="card-body">
+        <form action="#" method="post">
+
+          {#type of device #}
+          <div class="card text-center">
+            <div class="card-header"><b>Step 1: </b>Type of Device</div>
+            <div class="card-body">
+              <h5 class="card-title">Choose type of device</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+              {% for (index, data) in type_device %}
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="type_device"
+                  id="inlineRadio1"
+                  value="{{data}}"
+                  required 
+                />
+                <label class="form-check-label" for="inlineRadio1"
+                  >{{data}}</label
+                >
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+
+          <br />
+
+          {# cate_raw #}
+
+          <div class="card text-center">
+            <div class="card-header"><b>Step 2: </b>Cate of Raw Data</div>
+            <div class="card-body">
+              <h5 class="card-title">Choose type of Device</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+
+              {% for (index, data) in cate_raw_data %}
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="cate_raw_data"
+                  id="inlineRadio1"
+                  value="{{data}}"
+                  required
+                />
+                <label class="form-check-label" for="inlineRadio1"
+                  >{{data}}</label
+                >
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+
+          <br />
+
+          {# cate service #}
+          <div class="card text-center">
+            <div class="card-header"><b>Step 3: </b>Cate of Service</div>
+            <div class="card-body">
+              <h5 class="card-title">Choose type of Device</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+              {% for (index, data) in cate_service %}
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="cate_service"
+                  id="inlineRadio1"
+                  value="{{data}}"
+                  required
+                />
+                <label class="form-check-label" for="inlineRadio1"
+                  >{{data}}</label
+                >
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+
+          <br />
+
+          {# action #}
+
+          <div class="card text-center">
+            <div class="card-header"><b>Step 4: </b>Actions</div>
+            <div class="card-body">
+              <h5 class="card-title">Choose type of Device</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+              {% for (index, data) in action %}
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="action"
+                  id="inlineRadio1"
+                  value="{{data}}"
+                  required
+                />
+                <label class="form-check-label" for="inlineRadio1"
+                  >{{data}}</label
+                >
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+
+          <br />
+
+          {# service type#}
+          <div class="card text-center">
+            <div class="card-header"><b>Step 5: </b>Type of Servies</div>
+            <div class="card-body">
+              <h5 class="card-title">Choose type of Device</h5>
+              <p class="card-text">
+                With supporting text below as a natural lead-in to additional
+                content.
+              </p>
+              {% for (index, data) in service_type %}
+              <div class="form-check form-check-inline">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="service_type"
+                  id="inlineRadio1"
+                  value="{{data}}"
+                  required
+                />
+                <label class="form-check-label" for="inlineRadio1"
+                  >{{data}}</label
+                >
+              </div>
+              {%endfor%}
+            </div>
+          </div>
+
+          <br />
+
+          <div class="container text-center">
+            <button type="submit" class="btn btn-primary" value="submit">
+              Submit
+            </button>
+          </div>
+        </form>
       </div>
-      {%endfor%}
+    </div>
 
-      <br />
-
-      {# cate_raw #}
-      <h1>Cate of Raw Data</h1>
-      {% for (index, data) in cate_raw_data %}
-      <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="cate_raw_data"
-          id="inlineRadio1"
-          value="{{data}}"
-        />
-        <label class="form-check-label" for="inlineRadio1">{{data}}</label>
-      </div>
-      {%endfor%}
-
-      <br />
-
-      {# cate service #}
-      <h1>Cate of Service</h1>
-      {% for (index, data) in cate_service %}
-      <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="cate_service"
-          id="inlineRadio1"
-          value="{{data}}"
-        />
-        <label class="form-check-label" for="inlineRadio1">{{data}}</label>
-      </div>
-      {%endfor%}
-
-      <br />
-
-      {# action #}
-      <h1>Actions</h1>
-      {% for (index, data) in action %}
-      <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="action"
-          id="inlineRadio1"
-          value="{{data}}"
-        />
-        <label class="form-check-label" for="inlineRadio1">{{data}}</label>
-      </div>
-      {%endfor%}
-
-      <br />
-
-      {# service type#}
-      <h1>Type of Servies</h1>
-      {% for (index, data) in service_type %}
-      <div class="form-check form-check-inline">
-        <input
-          class="form-check-input"
-          type="radio"
-          name="service_type"
-          id="inlineRadio1"
-          value="{{data}}"
-        />
-        <label class="form-check-label" for="inlineRadio1">{{data}}</label>
-      </div>
-      {%endfor%}
-
-      <br />
-
-      <div>
-        <p><input type="submit" value="submit" /></p>
-      </div>
-    </form>
     {% endblock%}
-
-    {#create graph#}
-    
   </body>
 
   <script
