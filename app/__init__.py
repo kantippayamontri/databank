@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import matplotlib.pyplot as plt
 from icecream import ic
 import graphviz
@@ -75,7 +75,9 @@ def create_app():
             #         f"cate of service type: {_service_type}<br>",
             #     ]
             # )
-            return render_template("show_graph.html", graph_filename=graph_img_filename)
+            # return render_template("show_graph.html", graph_filename=graph_img_filename)
+            response = jsonify(tree_data)
+            return response
 
     def create_graph(data: dict):
         device_data_types = {
