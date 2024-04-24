@@ -33,6 +33,13 @@ def create_app():
         "Tech Company",
     ]
 
+    action_detail = [
+        "daily",
+        "weekly",
+        "yearly",
+        "no fix time",
+    ]
+
     @app.route("/", methods=["POST", "GET"])
     def main_page():
         if request.method == "GET":
@@ -42,16 +49,23 @@ def create_app():
                 cate_raw_data=enumerate(cate_raw_data),
                 cate_service=enumerate(cate_service),
                 action=enumerate(action),
+                action_detail=enumerate(action_detail),
                 service_type=enumerate(service_type),
+                
             )
-        elif request.method == "POST":
+
+    @app.route("/graph", methods=["POST"])
+    def show_graph():
+
+        if request.method == "POST":
+
             _type_device = request.form["type_device"]
             _cate_raw_data = request.form["cate_raw_data"]
             _cate_service = request.form["cate_service"]
-            _action = request.form["action"]
+            _action = request.form["action_choice"]
             _service_type = request.form["service_type"]
 
-            tree_data = {
+            data = {
                 "type_device": {"data": type_device, "choose": _type_device},
                 "cate_raw_data": {"data": cate_raw_data, "choose": _cate_raw_data},
                 "cate_service": {"data": cate_service, "choose": _cate_service},
@@ -59,27 +73,12 @@ def create_app():
                 "service_type": {"data": service_type, "choose": _service_type},
             }
 
-            # ic(tree_data)
+            graph_img_filename = create_graph(data=data)
 
-            graph_img_filename = create_graph(data=tree_data)
-            # print(f"graph_img_filename: {graph_img_filename}")
+            return render_template("show_graph.html", graph_filename=graph_img_filename)
+    
+    def create_graph(data):
 
-            # print(f"tree_data: ", tree_data)
-
-            # return "".join(
-            #     [
-            #         f"type of device : {_type_device}<br>",
-            #         f"cate of raw data : {_cate_raw_data}<br>",
-            #         f"cate of cate service: {_cate_service}<br>",
-            #         f"cate of action: {_action}<br>",
-            #         f"cate of service type: {_service_type}<br>",
-            #     ]
-            # )
-            # return render_template("show_graph.html", graph_filename=graph_img_filename)
-            response = jsonify(tree_data)
-            return response
-
-    def create_graph(data: dict):
         device_data_types = {
             "Security Camera": "footage",
             "Smartmetre": "energy usage",
@@ -153,7 +152,9 @@ def create_app():
         filename = generate_random_filename()
         filename_path = f"./app/static/{filename}"
         graph.render(filename=filename_path, format="png", view=False)
-        return f"{filename}.png"
+        graph_img_filename = f"{filename}.png"
+
+        return graph_img_filename 
 
     def generate_random_filename(length=15):
         """
