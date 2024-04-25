@@ -26,6 +26,8 @@ def create_app():
 
     type_device = ["Security Camera", "Smartmetre", "Light"]
 
+    unprocessed_data = ["footage", "energy usage", "light status", "colour"]
+
     type_device_details = {
         "Security Camera": ["Footage"],
         "Smartmetre": ["Energy Usage"],
@@ -82,7 +84,12 @@ def create_app():
             return render_template(
                 "forms/device_form.html",
                 form=form,
-                form_utils={"device": {"type_device": enumerate(type_device)}},
+                form_utils={
+                    "device": {
+                        "type_device": enumerate(type_device),
+                        "unprocessed_data": enumerate(unprocessed_data),
+                    }
+                },
             )
 
     @app.route("/submit_device", methods=["POST"])

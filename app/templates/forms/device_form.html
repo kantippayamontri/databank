@@ -27,11 +27,12 @@
             {% endfor%}
             <option value="other">Other</option>
           </select>
-          <div class="d-none input-group mb-3" id="otherInput">
+          <div class="d-none input-group mb-3" id="device_otherInput">
             <input
+              id="device_input_device_type"
               type="text"
               class="form-control"
-              placeholder="Enter your option"
+              placeholder="Enter your device type"
             />
             <button
               type="button"
@@ -42,10 +43,80 @@
             </button>
           </div>
         </div>
-        {# unprocesses data #}
+        {# unprocessed data #}
+        <!-- <div class="form-group">
+          <label for="device_type">Unprocessed Data</label>
+          <select class="form-select custom-select" id="device_type">
+            {% for (index , _unprocessed_data) in
+            form_utils["device"]["unprocessed_data"]%}
+            <option value="option1">{{_unprocessed_data}}</option>
+            {% endfor%}
+            <option value="other">Other</option>
+          </select>
+          <div class="d-none input-group mb-3" id="device_otherInput">
+            <input
+              id="device_input_device_type"
+              type="text"
+              class="form-control"
+              placeholder="Enter your device type"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              id="addOptionButton"
+            >
+              Add
+            </button>
+          </div>
+        </div>-->
       </form>
     </div>
   </div>
-  {% endblock%}
 </div>
+{% endblock%} {% block js %}
+<script>
+  const device_type_ele = document.getElementById("device_type");
+  const device_other_option_ele = document.getElementById("device_otherInput");
+  const add_option_button = document.getElementById("addOptionButton");
+  const device_input_device_type = document.getElementById(
+    "device_input_device_type"
+  );
+
+  device_type_ele.addEventListener("change", function () {
+    if (this.value === "other") {
+      console.log("other choose");
+      device_other_option_ele.classList.remove("d-none");
+    } else {
+      device_other_option_ele.classList.add("d-none");
+    }
+  });
+
+  add_option_button.addEventListener("click", function () {
+    const userInput = document.querySelector("#device_otherInput input").value;
+    if (userInput.trim() !== "") {
+      // console.log("You enter: ", userInput)
+
+      // create new option\
+      var option = document.createElement("option");
+      option.text = userInput.trim();
+      device_type.add(option, device_type[0]); //add at index 0
+
+      // chage value of the device type selector
+      device_type_ele.value = userInput.trim();
+    } else {
+      // create new option\
+      var option = document.createElement("option");
+      option.text = "Undefined";
+      device_type.add(option, device_type[0]); //add at index 0
+
+      // chage value of the device type selector
+      device_type_ele.value = "Undefined";
+    }
+
+    // hide enter device type element
+    device_other_option_ele.classList.add("d-none");
+  });
+</script>
+
 <script></script>
+{% endblock %}
