@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block main%}
+<h1>Submit your data</h1>
+<div class="container mt-5">
+  <div class="card shadow rounded border-primary">
+    <h1 class="text-center display-4 mb-4" style="margin-top: 20px">
+      Databank
+    </h1>
+    <div class="card-body">
+      <form action="/submit_device">
+        {# device name #}
+        <div class="form-group">
+          <label for="device_name">Device Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="device_name"
+            placeholder="Enter device name"
+          />
+        </div>
+        {# device type #}
+        <div class="form-group">
+          <label for="device_type">Device Type</label>
+          <select class="form-select custom-select" id="device_type">
+            {% for (index , _type_device) in
+            form_utils["device"]["type_device"]%}
+            <option value="option1">{{_type_device}}</option>
+            {% endfor%}
+            <option value="other">Other</option>
+          </select>
+          <div class="d-none input-group mb-3" id="otherInput">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter your option"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              id="addOptionButton"
+            >
+              Add
+            </button>
+          </div>
+        </div>
+        {# unprocesses data #}
+      </form>
+    </div>
+  </div>
+  {% endblock%}
+</div>
+<script></script>
