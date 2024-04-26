@@ -1,7 +1,4 @@
-import networkx as nx
-import matplotlib.pyplot as plt
 import graphviz
-import random
 
 data = {
     "type_device": {
@@ -36,9 +33,11 @@ data = {
 graph = graphviz.Digraph(comment="databank", format="png")
 
 for category, category_data in data.items():
-    chosen_value = next((item for item in category_data["data"] if item == category_data["choose"]), None)
-    category_name = category.replace("_", " ").capitalize()  
-    label = f"{category_name} : {chosen_value}" if chosen_value else category_name  
+    chosen_value = next(
+        (item for item in category_data["data"] if item == category_data["choose"]), None)
+    category_name = category.replace("_", " ").capitalize()
+    label = f"{category_name} : {
+        chosen_value}" if chosen_value else category_name
     graph.node(category, label=label, shape="box")
 
 keys = list(data.keys())
@@ -46,7 +45,6 @@ for i in range(len(keys) - 1):
     graph.edge(keys[i], keys[i + 1])
 
 graph.render(filename="graph", format="png", view=True)
-
 
 
 """
