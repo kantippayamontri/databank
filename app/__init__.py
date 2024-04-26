@@ -1,16 +1,32 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 import matplotlib.pyplot as plt
 from icecream import ic
 import graphviz
 import random
 import string
+import secrets
+
+from flask_bootstrap import Bootstrap5
+from flask_wtf import FlaskForm, CSRFProtect
+from wtforms.validators import DataRequired, Length
+
+from .forms import DeviceForm
 
 
 def create_app():
     app = Flask(
         __name__,
     )
+    app.secret_key = secrets.token_urlsafe(16)
+
+    # # Bootstrap-Flask requires this line
+    # bootstrap = Bootstrap5(app)
+    # # Flask-WTF requires this line
+    # csrf = CSRFProtect(app)
+
     type_device = ["Security Camera", "Smartmetre", "Light"]
+
+    unprocessed_data = ["footage", "energy usage", "light status", "colour"]
 
     type_device_details = {
         "Security Camera": ["Footage"],
@@ -43,16 +59,56 @@ def create_app():
     @app.route("/", methods=["POST", "GET"])
     def main_page():
         if request.method == "GET":
+
+            # return render_template(
+            #     "index.html",
+            #     type_device=enumerate(type_device),
+            #     cate_raw_data=enumerate(cate_raw_data),
+            #     cate_service=enumerate(cate_service),
+            #     action=enumerate(action),
+            #     action_detail=enumerate(action_detail),
+            #     service_type=enumerate(service_type),
+            # )
+
             return render_template(
-                "main_page.html",
-                type_device=enumerate(type_device),
-                cate_raw_data=enumerate(cate_raw_data),
-                cate_service=enumerate(cate_service),
-                action=enumerate(action),
-                action_detail=enumerate(action_detail),
-                service_type=enumerate(service_type),
-                
+                "index.html",
+                device={},
             )
+
+    @app.route("/device_form", methods=["POST"])
+    def show_device_form():
+        if request.method == "POST":
+            print(f"call device api")
+            form = DeviceForm()
+
+            return render_template(
+                "forms/device_form.html",
+                form=form,
+                form_utils={
+                    "device": {
+                        "type_device": enumerate(type_device),
+                        "unprocessed_data": enumerate(unprocessed_data),
+                    }
+                },
+            )
+
+    @app.route("/submit_device", methods=["POST"])
+    def submit_device():
+
+        return {}
+
+    @app.route("/form_submit", methods=["POST"])
+    def form_submit():
+        if request.method == "POST":
+            response = jsonify(request.form["device_name"])
+            return response
+            # # for device
+            # _device = request.form["device"]
+
+            # return {
+            #     "device": _device,
+            # }
+        return "HAHAHA"
 
     @app.route("/graph", methods=["POST"])
     def show_graph():
@@ -76,7 +132,7 @@ def create_app():
             graph_img_filename = create_graph(data=data)
 
             return render_template("show_graph.html", graph_filename=graph_img_filename)
-    
+
     def create_graph(data):
 
         device_data_types = {
@@ -154,7 +210,7 @@ def create_app():
         graph.render(filename=filename_path, format="png", view=False)
         graph_img_filename = f"{filename}.png"
 
-        return graph_img_filename 
+        return graph_img_filename
 
     def generate_random_filename(length=15):
         """

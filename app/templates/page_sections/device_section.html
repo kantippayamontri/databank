@@ -1,0 +1,22 @@
+<div class="row mb-3">
+  <div class="col-sm-12">
+    <div class="card shadow rounded border-primary text-center">
+      <div class="card-header bg-primary text-white">
+        <b>Step 1:</b> Device
+      </div>
+      <div class="card-body">
+        {% if device == {} %}
+        <h5 class="card-title">Please Add Device</h5>
+        {# button call api make show device form #}
+        <form action="{{url_for('show_device_form')}}" method="post">
+          <button id="device_add" type="submit" class="btn btn-success">
+            Add Device
+          </button>
+        </form>
+        {% else %}
+        <h2 style="color: red">{{device}}</h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

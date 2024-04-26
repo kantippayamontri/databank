@@ -73,7 +73,9 @@
                         value="{{data}}"
                         required
                       />
-                      <label class="form-check-label" for="cate_raw_data_{{index}}"
+                      <label
+                        class="form-check-label"
+                        for="cate_raw_data_{{index}}"
                         >{{data}}</label
                       >
                     </div>
@@ -104,7 +106,9 @@
                         value="{{data}}"
                         required
                       />
-                      <label class="form-check-label" for="cate_service_{{index}}"
+                      <label
+                        class="form-check-label"
+                        for="cate_service_{{index}}"
                         >{{data}}</label
                       >
                     </div>
@@ -219,16 +223,17 @@
   ></script>
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script>
-    $("input[id^='action_']").click(() => { // check all button start with "action_" is clicked
-      console.log("action_button click!!")
+    $("input[id^='action_']").click(() => {
+      // check all button start with "action_" is clicked
+      console.log("action_button click!!");
       var content = $("#action_detail_div");
       if (content.css("display") === "none") {
         content.show();
       }
     });
 
-    $(document).ready(function() {
-      $("#detail_action_3").prop("checked", true) // set default value for action detail.
-    })
+    $(document).ready(function () {
+      $("#detail_action_3").prop("checked", true); // set default value for action detail.
+    });
   </script>
 </html>

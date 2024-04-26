@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block main %}
+<div class="container mt-5">
+  <div class="card shadow rounded border-primary">
+    <h1 class="text-center display-4 mb-4" style="margin-top: 20px">
+      Databank
+    </h1>
+    {# form section #}
+    <div>
+      <!-- Devices-->
+      <div id="device_part">
+        {% include "page_sections/device_section.html" ignore missing%}
+      </div>
+
+      <br />
+      <hr />
+      <br />
+
+      <!-- parameter of category raw data -->
+      <div id="param_cate_raw_data_part">
+        <h1>param_cate_raw_data_part</h1>
+      </div>
+      <!-- parameter of category services -->
+      <div id="param_cate_service_part">
+        <h1>param_cate_service_part</h1>
+      </div>
+      <!-- Action data -->
+      <div id="action_data_part">
+        <h1>action_data_part</h1>
+      </div>
+      <!-- Actions services -->
+      <div id="action_service_part">
+        <h1>action_service_part</h1>
+      </div>
+      <!-- Service-->
+      <div id="service_part">
+        <h1>service_part</h1>
+      </div>
+      <div class="container text-center">
+        <button type="submit" class="btn btn-primary" value="submit">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,1 +1,18 @@
-<!doctype html> <title>Databank</title>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% block head%}
+    <div>{% include "main_sections/header.html"%}</div>
+    {% endblock %}
+  </head>
+  <body class="bg-light">
+    {% block navigation%}
+    <div>{% include "main_sections/navigation.html" %}</div>
+    {% endblock %}
+    <div>{%block main%}{%endblock%}</div>
+    {% block footer%}
+    <footer>{% include "main_sections/footer.html" %}</footer>
+    {% endblock %}
+  </body>
+  <div>{% block js %}{% endblock%}</div>
+</html>
