@@ -129,8 +129,6 @@
       "#device_unprocessed_otherInput input"
     ).value;
     if (userInput.trim() !== "") {
-      console.log(`yout enter: ${userInput}`);
-      add_ul_unprocessed_data_button.classList.remove("d-none"); // show add to ul button
 
       // create new option
       var option = document.createElement("option");
@@ -141,6 +139,7 @@
       select_unprocessed.value = userInput.trim();
       // hide add unprocessed data
       device_unprocessed_otherInput.classList.add("d-none");
+      add_ul_unprocessed_data_button.classList.remove("d-none"); // show add to ul button
     } else {
       const text = "footage";
       const select = document.querySelector("#device_unprocessed_data_select");
@@ -169,7 +168,6 @@
 
   add_unprocessed_button_to_li.addEventListener("click", function () {
     var data_add = document.getElementById("device_unprocessed_data_select").value
-    console.log(`click~~~~~~~${data_add}`);
     
     // check number of li tage in ul tag
     const select_list_uprocessed = document.getElementById("unprocessed_data_list"); // ul tage
@@ -189,14 +187,12 @@
         // Get the value of a specific attribute (replace "data-id" with your actual attribute name)
         const attributeValue = item.getAttribute("data-value");
 
-        //console.log(attributeValue);  // This will log the value of the "data-id" attribute for each LI
         data_value.push(attributeValue)
       }
       if(!data_value.includes(data_add)){
 
         data_value.push(data_add);
 
-        console.log(`data value: ${data_value}`)
 
         select_list_uprocessed.innerHTML = "";
         $.each(data_value, function(i , item){
@@ -213,7 +209,6 @@
 
     //add il
     $.each(data, function(i, item){
-      console.log(`show : ${i} ${item}`);
       ul.append(
         `<li class='list-group-item bg-light d-flex justify-content-center' data-value="${item}"> <div> <div class='d-flex' style='justify-content: center'> <p>${item}</p> </div> </div> <button type='button' class='btn btn-danger' id="menu_${item}" onClick='delete_unprocessed_click(this.id)' style='display: inline-block'>Delete</button>`
       )      
@@ -222,7 +217,6 @@
 
   function delete_unprocessed_click(_value){
     var value = _value.replace("menu_", "")
-    console.log(`value: ${value}`)
 
     // Get the UL element
     const ul = document.getElementById("unprocessed_data_list");
@@ -235,9 +229,7 @@
       
       // Access the content of the LI element (text, attributes, etc.)
       const value_item = item.getAttribute('data-value');
-      //console.log(`value item: ${value_item}`);
       if (value_item === value){
-        console.log(`found : ${value}`);
         item.remove();
       }
     }
@@ -250,15 +242,11 @@ session #}
   <script>
   // get device in session from get /get_device
   $.ajax({
-    url: "/get_device",
+    url: "/device/get",
     type: "get",
     dataType: "json",
     contentType: "application/json",
     success: function (data) {
-      console.log(
-        `found device in session : ${data.device_name}, ${data.device_type}, ${data.device_unprocessed}`
-      );
-
       // set device default value from session
       $(document).ready(function () {
         $("#device_name").val(data.device_name);
@@ -294,7 +282,6 @@ session #}
     // Access data from form
     const device_name_value = device_name.value;
     const device_type_value = device_type.value;
-    console.log(`device_unprocessed_value: ${device_unprocessed_value}`)
 
     // check if device is added when device_type is 'other' and not add
     if (
@@ -319,25 +306,18 @@ session #}
       return
     }
 
-    console.log(
-      `Device Name: ${device_name_value}, Device Type: ${device_type_value}, Unprocessed data: ${device_unprocessed_value}`
-    );
-
     var device = {
       device_name: device_name_value,
       device_type: device_type_value,
       device_unprocessed: device_unprocessed_value,
     };
 
-    console.log(`device before add : ${device}`)
-
     $.ajax({
-      url: "/add_device",
+      url: "/device/add",
       type: "post",
       dataType: "json",
       contentType: "application/json",
       success: function () {
-        console.log("add device success");
         window.location.href = "/";
       },
       data: JSON.stringify(device),
@@ -354,9 +334,46 @@ session #}
     "device_input_device_type"
   );
 
+  // get device type
+  $.ajax({
+    url: "/device/get",
+    type: "get",
+    dataType: "json",
+    contentType: "application/json",
+    success: function(data){
+      const device_type_value = data.device_type;
+      
+      // check value in option
+
+      const optionValues = [];
+      for (let i = 0; i < device_type_ele.options.length; i++) {
+        const option = device_type_ele.options[i];
+        optionValues.push(option.value);
+      }
+
+      function insertChildAtIndex(parent, child, index) {
+        if (!index && index !== 0) return; // Handle invalid index (optional)
+      
+        const referenceNode = parent.children[index] || null;
+        parent.insertBefore(child, referenceNode);
+      }
+
+      if( optionValues.includes(device_type_value) ){
+        device_type_ele.value = device_type_value;
+      }else{
+        var option = document.createElement("option");
+        option.text = device_type_value;
+        //device_type_ele.appendChild(option,)
+        insertChildAtIndex(device_type_ele, option, 0)
+        device_type_ele.selectedIndex=0;
+      }
+
+    }
+
+  })
+
   device_type_ele.addEventListener("change", function () {
     if (this.value === "other") {
-      console.log("other choose");
       device_other_option_ele.classList.remove("d-none");
     } else {
       device_other_option_ele.classList.add("d-none");
@@ -366,12 +383,11 @@ session #}
   add_option_button.addEventListener("click", function () {
     const userInput = document.querySelector("#device_otherInput input").value;
     if (userInput.trim() !== "") {
-      // console.log("You enter: ", userInput)
 
       // create new option\
       var option = document.createElement("option");
       option.text = userInput.trim();
-      device_type.add(option, device_type[0]); //add at index 0
+      device_type_ele.add(option, device_type[0]); //add at index 0
 
       // chage value of the device type selector
       device_type_ele.value = userInput.trim();
