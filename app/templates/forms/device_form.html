@@ -1,80 +1,352 @@
-{% extends "base.html" %} {% block main%}
-<h1>Submit your data</h1>
-<div class="container mt-5">
-  <div class="card shadow rounded border-primary">
-    <h1 class="text-center display-4 mb-4" style="margin-top: 20px">
-      Databank
-    </h1>
-    <div class="card-body">
-      <form action="/submit_device">
-        {# device name #}
-        <div class="form-group">
-          <label for="device_name">Device Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="device_name"
-            placeholder="Enter device name"
-          />
-        </div>
-        {# device type #}
-        <div class="form-group">
-          <label for="device_type">Device Type</label>
-          <select class="form-select custom-select" id="device_type">
-            {% for (index , _type_device) in
-            form_utils["device"]["type_device"]%}
-            <option value="option1">{{_type_device}}</option>
-            {% endfor%}
-            <option value="other">Other</option>
-          </select>
-          <div class="d-none input-group mb-3" id="device_otherInput">
-            <input
-              id="device_input_device_type"
-              type="text"
-              class="form-control"
-              placeholder="Enter your device type"
-            />
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              id="addOptionButton"
-            >
-              Add
-            </button>
+{% extends "base.html" %}
+{% block main %}
+  <h1>Submit your data</h1>
+  <div class="container mt-5">
+    <div class="card shadow rounded border-primary">
+      <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Add Device</h1>
+      <div class="card-body">
+        <form id="device_form">
+          {# device name #}
+          <div class="form-group">
+            <label for="device_name">Device Name</label>
+            <input type="text"
+                   class="form-control"
+                   id="device_name"
+                   placeholder="Enter device name"
+                   required />
           </div>
-        </div>
-        {# unprocessed data #}
-        <!-- <div class="form-group">
-          <label for="device_type">Unprocessed Data</label>
-          <select class="form-select custom-select" id="device_type">
-            {% for (index , _unprocessed_data) in
-            form_utils["device"]["unprocessed_data"]%}
-            <option value="option1">{{_unprocessed_data}}</option>
-            {% endfor%}
-            <option value="other">Other</option>
-          </select>
-          <div class="d-none input-group mb-3" id="device_otherInput">
-            <input
-              id="device_input_device_type"
-              type="text"
-              class="form-control"
-              placeholder="Enter your device type"
-            />
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              id="addOptionButton"
-            >
-              Add
-            </button>
+          {# device type #}
+          <div class="form-group">
+            <label for="device_type">Device Type</label>
+            <select class="form-select custom-select" id="device_type">
+              {% for (index , _type_device) in
+                form_utils["device"]["type_device"]%}
+                <option value="{{ _type_device }}">{{ _type_device }}</option>
+              {% endfor %}
+              <option value="other">Other</option>
+            </select>
+            <div class="d-none input-group mb-3" id="device_otherInput">
+              <input id="device_input_device_type"
+                     type="text"
+                     class="form-control"
+                     placeholder="Enter your device type" />
+              <button type="button" class="btn btn-success" id="addOptionButton">Add</button>
+            </div>
           </div>
-        </div>-->
-      </form>
+          {# unprocessed data #}
+          <div class="form-group">
+            <label for="device_unprocessed_data_select_div">Unprocessed Data</label>
+            <div class="container text-center">
+              <ul class="list-group list-group-horizontal row"
+                  id="unprocessed_data_list">
+              {%if session.get("device")%}
+                {%for data in session.get("device")["device_unprocessed"] %}
+                <li class='list-group-item bg-light d-flex justify-content-center' data-value="{{data}}">
+                  <div>
+                    <div class='d-flex' style='justify-content: center'>
+                      <p>{{data}}</p>
+                    </div>
+                  </div>
+                  <button type='button'
+                          class='btn btn-danger'
+                          id="menu_{{data}}"
+                          onClick='delete_unprocessed_click(this.id)'
+                          style="display: inline-block">Delete</button>
+                </li>
+
+                {%endfor%}
+              {%else%}
+              {%endif %}
+              </ul>
+            </div>
+            <div>
+              <div class="d-flex justify-content-end">
+                <select class="form-select custom-select"
+                        id="device_unprocessed_data_select"
+                        style="display: inline-block">
+                  {% for (index , _unprocessed_data) in
+                    form_utils["device"]["unprocessed_data"]%}
+                    <option value="{{ _unprocessed_data }}">{{ _unprocessed_data }}</option>
+                  {% endfor %}
+                  <option value="other">Other</option>
+                </select>
+                <button type="button"
+                        class="btn btn-success"
+                        id="device_upprocessed_data_add_button_to_li"
+                        style="display: inline-block">Add</button>
+              </div>
+              <div class="d-none input-group mb-3" id="device_unprocessed_otherInput">
+                <input id="device_input_unprocessed"
+                       type="text"
+                       class="form-control"
+                       placeholder="Enter your unprocessed data" />
+                <button type="button"
+                        class="btn btn-success"
+                        id="device_upprocessed_data_add_button"
+                        style="display: inline-block">Add</button>
+              </div>
+            </div>
+          </div>
+          {# Submit button #}
+          <div class="container text-center">
+            <button type="submit" class="btn btn-primary" value="submit">Add Device</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-{% endblock%} {% block js %}
-<script>
+{% endblock main %}
+{% block js %}
+  {# add unprocessed data #}
+  <script>
+
+  const select_unprocessed = document.getElementById(
+    "device_unprocessed_data_select"
+  );
+  const device_unprocessed_otherInput = document.getElementById(
+    "device_unprocessed_otherInput"
+  );
+
+  add_ul_unprocessed_data_button = document.getElementById("device_upprocessed_data_add_button_to_li")
+  select_unprocessed.addEventListener("change", function () {
+    if (this.value === "other") {
+      // show input unprocessed data
+      device_unprocessed_otherInput.classList.remove("d-none");
+      add_ul_unprocessed_data_button.classList.add("d-none"); // remove add to ul button
+      
+    } else {
+      device_unprocessed_otherInput.classList.add("d-none");
+      add_ul_unprocessed_data_button.classList.remove("d-none"); // show add to ul button
+    }
+  });
+
+  const add_unprocessed_button = document.getElementById(
+    "device_upprocessed_data_add_button"
+  );
+
+  add_unprocessed_button.addEventListener("click", function () {
+    const userInput = document.querySelector(
+      "#device_unprocessed_otherInput input"
+    ).value;
+    if (userInput.trim() !== "") {
+      console.log(`yout enter: ${userInput}`);
+      add_ul_unprocessed_data_button.classList.remove("d-none"); // show add to ul button
+
+      // create new option
+      var option = document.createElement("option");
+      option.text = userInput.trim();
+      select_unprocessed.add(option, select_unprocessed[0]); // add option at index 0
+
+      // change value of unprocessed data select
+      select_unprocessed.value = userInput.trim();
+      // hide add unprocessed data
+      device_unprocessed_otherInput.classList.add("d-none");
+    } else {
+      const text = "footage";
+      const select = document.querySelector("#device_unprocessed_data_select");
+      select.selectedIndex = 0;
+
+      // hide add unprocessed data
+      device_unprocessed_otherInput.classList.add("d-none");
+      add_ul_unprocessed_data_button.classList.remove("d-none"); // show add to ul button
+
+      return;
+    }
+  });
+  </script>
+  {# click add unprocessed data #}
+  <script>
+
+  // add unprocessed
+  const add_unprocessed_button_to_li = document.getElementById(
+    "device_upprocessed_data_add_button_to_li"
+  );
+  
+  
+  function createLi(data){
+    return "<li class='list-group-item bg-light d-flex justify-content-center' data-value='" + data + "'> <div> <div class='d-flex' style='justify-content: center'> <p>" + data + "</p> </div> </div> <button type='button' class='btn btn-danger' id='menu_" + data + "' onClick='delete_unprocessed_click(this.id)' style='display: inline-block'>Delete</button></li>";
+  }
+
+  add_unprocessed_button_to_li.addEventListener("click", function () {
+    var data_add = document.getElementById("device_unprocessed_data_select").value
+    console.log(`click~~~~~~~${data_add}`);
+    
+    // check number of li tage in ul tag
+    const select_list_uprocessed = document.getElementById("unprocessed_data_list"); // ul tage
+    var number_of_li_tag = select_list_uprocessed.getElementsByTagName("li").length; // number of li tag in ul tag
+    
+    //select_list_uprocessed.innerHTML = "";
+    if (number_of_li_tag === 0){ // no li tag
+      select_list_uprocessed.innerHTML = createLi(data=data_add);
+    }else{ // have li tag already
+      const li_tag = select_list_uprocessed.getElementsByTagName("li");
+      var data_value = [];
+      
+      // Loop through each LI element
+      for (let i = 0; i < li_tag.length; i++) {
+        const item = li_tag[i];
+
+        // Get the value of a specific attribute (replace "data-id" with your actual attribute name)
+        const attributeValue = item.getAttribute("data-value");
+
+        //console.log(attributeValue);  // This will log the value of the "data-id" attribute for each LI
+        data_value.push(attributeValue)
+      }
+      if(!data_value.includes(data_add)){
+
+        data_value.push(data_add);
+
+        console.log(`data value: ${data_value}`)
+
+        select_list_uprocessed.innerHTML = "";
+        $.each(data_value, function(i , item){
+          $("#unprocessed_data_list").append(createLi(data=item))
+        })
+      } 
+
+    }
+  });
+  function show_unprocessed_li(data){
+    const ul = $("#unprocessed_data_list")
+    // clear older list
+    document.getElementById("unprocessed_data_list").innerHTML = "";
+
+    //add il
+    $.each(data, function(i, item){
+      console.log(`show : ${i} ${item}`);
+      ul.append(
+        `<li class='list-group-item bg-light d-flex justify-content-center' data-value="${item}"> <div> <div class='d-flex' style='justify-content: center'> <p>${item}</p> </div> </div> <button type='button' class='btn btn-danger' id="menu_${item}" onClick='delete_unprocessed_click(this.id)' style='display: inline-block'>Delete</button>`
+      )      
+    })
+  }
+
+  function delete_unprocessed_click(_value){
+    var value = _value.replace("menu_", "")
+    console.log(`value: ${value}`)
+
+    // Get the UL element
+    const ul = document.getElementById("unprocessed_data_list");
+    // Get all LI elements within the UL
+    const listItems = ul.getElementsByTagName("li");
+
+    // Loop through each LI element
+    for (let i = 0; i < listItems.length; i++) {
+      const item = listItems[i];
+      
+      // Access the content of the LI element (text, attributes, etc.)
+      const value_item = item.getAttribute('data-value');
+      //console.log(`value item: ${value_item}`);
+      if (value_item === value){
+        console.log(`found : ${value}`);
+        item.remove();
+      }
+    }
+
+  }
+
+  </script>
+  {# check device in session #} {# if found -> set value in form to device info in
+session #}
+  <script>
+  // get device in session from get /get_device
+  $.ajax({
+    url: "/get_device",
+    type: "get",
+    dataType: "json",
+    contentType: "application/json",
+    success: function (data) {
+      console.log(
+        `found device in session : ${data.device_name}, ${data.device_type}, ${data.device_unprocessed}`
+      );
+
+      // set device default value from session
+      $(document).ready(function () {
+        $("#device_name").val(data.device_name);
+      });
+    },
+  });
+  </script>
+  {# for form submission #}
+  <script>
+  const form = document.getElementById("device_form");
+  
+  form.addEventListener("submit", (event) => {
+    event.preventDefault(); //prevent default form submission
+
+    // get element
+    const device_name = document.getElementById("device_name");
+    const device_type = document.getElementById("device_type");
+    var device_unprocessed_value = [] //data-value attribute from li tag
+    
+    // Get the UL element
+    const ul = document.getElementById("unprocessed_data_list");
+    // Get all LI elements within the UL
+    const listItems = ul.getElementsByTagName("li");
+    // Loop through each LI element
+    for (let i = 0; i < listItems.length; i++) {
+      const item = listItems[i];
+      
+      // Access the content of the LI element (text, attributes, etc.)
+      const value_item = item.getAttribute('data-value');
+      device_unprocessed_value.push(value_item);
+    }
+
+    // Access data from form
+    const device_name_value = device_name.value;
+    const device_type_value = device_type.value;
+    console.log(`device_unprocessed_value: ${device_unprocessed_value}`)
+
+    // check if device is added when device_type is 'other' and not add
+    if (
+      !document.getElementById("device_otherInput").classList.contains("d-none")
+    ) {
+      alert("Please add Device Type before submit...");
+      return;
+    }
+
+    if (
+      !document
+        .getElementById("device_unprocessed_otherInput")
+        .classList.contains("d-none")
+    ) {
+      alert("Please add unprocessed data before submit...");
+      return;
+    }
+
+    // check number of unprocessed data=0
+    if(device_unprocessed_value.length ==0){
+      alert("Please add at least 1 unprocessed data.")
+      return
+    }
+
+    console.log(
+      `Device Name: ${device_name_value}, Device Type: ${device_type_value}, Unprocessed data: ${device_unprocessed_value}`
+    );
+
+    var device = {
+      device_name: device_name_value,
+      device_type: device_type_value,
+      device_unprocessed: device_unprocessed_value,
+    };
+
+    console.log(`device before add : ${device}`)
+
+    $.ajax({
+      url: "/add_device",
+      type: "post",
+      dataType: "json",
+      contentType: "application/json",
+      success: function () {
+        console.log("add device success");
+        window.location.href = "/";
+      },
+      data: JSON.stringify(device),
+    });
+  }
+);
+  </script>
+  {# for device type button press #}
+  <script>
   const device_type_ele = document.getElementById("device_type");
   const device_other_option_ele = document.getElementById("device_otherInput");
   const add_option_button = document.getElementById("addOptionButton");
@@ -104,19 +376,14 @@
       // chage value of the device type selector
       device_type_ele.value = userInput.trim();
     } else {
-      // create new option\
-      var option = document.createElement("option");
-      option.text = "Undefined";
-      device_type.add(option, device_type[0]); //add at index 0
-
-      // chage value of the device type selector
-      device_type_ele.value = "Undefined";
+      //TODO: change select to 0 index like unprocessed
+      const select = document.querySelector("#device_type");
+      select.selectedIndex = 0;
     }
 
     // hide enter device type element
     device_other_option_ele.classList.add("d-none");
   });
-</script>
-
-<script></script>
-{% endblock %}
+  </script>
+  <script></script>
+{% endblock js %}

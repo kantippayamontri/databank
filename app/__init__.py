@@ -1,22 +1,30 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
-import matplotlib.pyplot as plt
-from icecream import ic
-import graphviz
 import random
-import string
 import secrets
+import string
 
+import graphviz
+import matplotlib.pyplot as plt
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_bootstrap import Bootstrap5
-from flask_wtf import FlaskForm, CSRFProtect
+from flask_wtf import CSRFProtect, FlaskForm
+from icecream import ic
 from wtforms.validators import DataRequired, Length
 
 from .forms import DeviceForm
+
+from flask import session
+from flask_session import Session
 
 
 def create_app():
     app = Flask(
         __name__,
     )
+    
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_TYPE"] = "filesystem"
+    Session(app)
+
     app.secret_key = secrets.token_urlsafe(16)
 
     # # Bootstrap-Flask requires this line
@@ -75,40 +83,142 @@ def create_app():
                 device={},
             )
 
-    @app.route("/device_form", methods=["POST"])
-    def show_device_form():
+    @app.route("/device_form", methods=["GET", "POST"])
+    def device_form():
         if request.method == "POST":
-            print(f"call device api")
-            form = DeviceForm()
+            device_name = request.form["device_name"]
+            return f"get data from form \n device name: {device_name} \n"
 
-            return render_template(
-                "forms/device_form.html",
-                form=form,
-                form_utils={
-                    "device": {
-                        "type_device": enumerate(type_device),
-                        "unprocessed_data": enumerate(unprocessed_data),
-                    }
-                },
-            )
+        return render_template(
+            "forms/device_form.html",
+            form_utils={
+                "device": {
+                    "type_device": enumerate(type_device),
+                    "unprocessed_data": enumerate(unprocessed_data),
+                }
+            },
+        )
+    
+    @app.route("/add_device", methods=["POST"])
+    def add_device():
+        _device = request.get_json()
+        print(f"_device: {_device}")
+        device_name = _device["device_name"]
+        device_type = _device["device_type"]
+        device_unprocessed = _device["device_unprocessed"]
+        
+        # record the device data
+        session["device"] = _device
+        
+        
+        #  {'device_name': 'a', 'device_type': 'Security Camera', 'device_unprocessed': 'footage'} 
+        # device = request.args.get("data")
+        # return "device add"
+        # return render_template("index.html", device={})
+        return jsonify(success=True)
+    
+    @app.route("/clear_device", methods=["GET"])
+    def clear_device():
+        session["device"] = None
+        return "remove data session success"
+    
+    @app.route("/get_device", methods=["GET"])
+    def get_device():
+        if ("device" not in session.keys()) or (session["device"] is None) :
+            resp = jsonify()
+            resp.status_code = 404
+            return resp 
+        resp = jsonify(session["device"])
+        resp.status_code = 200
+        return resp
 
-    @app.route("/submit_device", methods=["POST"])
-    def submit_device():
+    @app.route("/get_session", methods=["GET"])
+    def get_session():
+        resp = {}
+        # if ("device" not in session.keys()) or (session["device"] is None) :
+        #     resp["device"] = {}
+        # else:
+        #     resp['device'] = session["device"]
 
-        return {}
+        
+        # if ("device_unprocessed_data" not in session.keys()) or (session["device_unprocessed_data"] is None) :
+        #     resp["device_unprocessed_data"] = {}
+        # else:
+        #     resp['device_unprocessed_data'] = session["device_unprocessed_data"]
 
-    @app.route("/form_submit", methods=["POST"])
-    def form_submit():
-        if request.method == "POST":
-            response = jsonify(request.form["device_name"])
-            return response
-            # # for device
-            # _device = request.form["device"]
+        for key in session.keys():
+            resp[key] = session[key]
+        
+        resp = jsonify(resp)
+        resp.status_code = 200
+            
+        return resp
+    
+    @app.route("/clear_session", methods=["GET"])
+    def clear_session():
+        # for key in session.keys():
+        #     session.psession.clear() # clear sessions
 
-            # return {
-            #     "device": _device,
-            # }
-        return "HAHAHA"
+        session.clear()
+
+        resp = jsonify()
+        # sp.status_.join(session.keys())
+        return "clear session sucess"
+        # return " ".join(session.keys())
+    
+    # @app.route("/set_unprocessed", methods=["POST"])
+    # def set_unprocessed():
+    #     # set session device_unprocessed_data = session device -> device_unprocessed
+    #     if "device" in session.keys():
+    #         if "device_unprocessed" in session["device"].keys():
+    #             session["device_unprocessed_data"] =session["device"]["device_unprocessed"] 
+    #         else:
+    #             session["device_unprocessed_data"] = []
+    #     else:
+    #         session["device_unprocessed_data"] = []
+    #     resp = {"data" : session["device_unprocessed_data"]  }
+        
+    #     resp = jsonify(resp)
+    #     resp.status_code = 200
+    #     return resp
+    
+    # @app.route("/add_unprocessed", methods=["POST"])
+    # def add_unprocessed():
+    #     _unprocessed = request.get_json()
+    #     unprocessed_data = _unprocessed["unprocessed_data"]
+    #     print(f"unprocessed is {unprocessed_data}")
+
+    #     # record the unprocessed data
+    #     if "device_unprocessed_data" not in session.keys(): #session don't have unprocessed data
+    #         session["device_unprocessed_data"] = [unprocessed_data]
+    #     else:
+    #         if unprocessed_data not in session["device_unprocessed_data"]:
+    #             session["device_unprocessed_data"].append(unprocessed_data)
+        
+    #     resp = jsonify(session["device_unprocessed_data"])
+    #     resp.status_code = 200
+    #     return resp
+    
+    # @app.route("/get_unprocessed", methods=["GET"])
+    # def get_unprocessed():
+    #     resp = {"data":[], }
+    #     if "device_unprocessed_data" in session.keys():
+    #         resp = {"data" :session["device_unprocessed_data"] }
+    #     resp = jsonify(resp)
+    #     resp.status_code = 200
+    #     return resp 
+    
+    # @app.route("/delete_unprocessed", methods=["POST"])
+    # def delete_unprocessed():
+    #     value= request.get_json()["data"]
+    #     print(f"delete unprocessed value: {value} from {session['device_unprocessed_data']}")
+    #     if "device_unprocessed_data" in session.keys():
+    #         if value in session["device_unprocessed_data"]:
+    #             session["device_unprocessed_data"].remove(value)
+                
+    #     resp = jsonify()
+    #     resp.status_code = 200
+    #     return resp
 
     @app.route("/graph", methods=["POST"])
     def show_graph():

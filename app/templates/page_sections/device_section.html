@@ -5,16 +5,26 @@
         <b>Step 1:</b> Device
       </div>
       <div class="card-body">
-        {% if device == {} %}
+        {% if not session.get("device") %}
         <h5 class="card-title">Please Add Device</h5>
         {# button call api make show device form #}
-        <form action="{{url_for('show_device_form')}}" method="post">
+        {# <form action="{{url_for('device_form')}}" method="post">
           <button id="device_add" type="submit" class="btn btn-success">
             Add Device
           </button>
-        </form>
+        </form> #}
+        <a href="{{url_for('device_form')}}">
+          <button id="device_add" type="submit" class="btn btn-success">
+            Add Device
+          </button>
+        </a>
         {% else %}
-        <h2 style="color: red">{{device}}</h2>
+        <h2 style="color: red">{{session.get("device")}}</h2>
+        <a href="{{url_for('device_form')}}">
+          <button id="device_edit" type="submit" class="btn btn-success">
+            Edit Device
+          </button>
+        </a>
         {% endif %}
       </div>
     </div>

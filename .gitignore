@@ -10,6 +10,7 @@ instance/*
 graph
 *.png
 graph_*
+flask_session/
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
