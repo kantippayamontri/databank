@@ -15,9 +15,6 @@ bp = Blueprint("device", __name__, url_prefix="/device")
 
 @bp.route("/form", methods=["GET"])
 def form():
-    # if request.method == "POST":
-    #     device_name = request.form["device_name"]
-    #     return f"get data from form \n device name: {device_name} \n"
 
     return render_template(
         "forms/device_form.html",
@@ -63,6 +60,4 @@ def delete():
     if "device" in session.keys():
             del session["device"]
 
-    return render_template(
-        "index.html",
-    )
+    return redirect(url_for("main_page")) # back to homepage

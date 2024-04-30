@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block main %}
+    <h1>Submit your data</h1>
+    <div class="container mt-5">
+        <div class="card shadow rounded border-primary">
+            <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Add Raw Data</h1>
+            <div class="card-body">
+                <form id="raw_data_form" method="POST" action="/raw_data/form">
+                    {#add action#}
+                    <div class="form-group">
+                        <label for="raw_data_action">Action</label>
+                        <select class="form-select custom-select"
+                                id="raw_data_action"
+                                name="raw_data_action">
+                            {% for _action in action %}
+                                <option value="{{ _action }}"
+                                        {% if choose_action == _action %}selected{% endif %}>{{ _action }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {#add frequency#}
+                    <div class="form-group">
+                        <label for="raw_data_action">Frequency</label>
+                        <select class="form-select custom-select"
+                                id="raw_data_action"
+                                name="raw_data_frequency">
+                            {% for _frequency in frequency %}
+                                <option value="{{ _frequency }}"
+                                        {% if choose_frequency == _frequency %}selected{% endif %}>
+                                    {{ _frequency }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {#add submit button#}
+                    <div>
+                        <div class="container text-center">
+                            <button type="submit" class="btn btn-primary" value="submit">
+                                {% if not session.get("raw_data") %}
+                                    Add Raw Data {% else %} Update Raw Data {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endblock main %}
+    {% block js %}
+    {% endblock js %}
