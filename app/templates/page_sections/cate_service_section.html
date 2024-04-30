@@ -1,1 +1,26 @@
-<h1>Cate Service Section Page</h1>
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <div class="card shadow rounded border-primary text-center">
+            <div class="card-header bg-primary text-white">
+                <b>Step 3:</b> Category and Action of Service
+            </div>
+            <div class="card-body">
+                {% if not session.get("cate_service") %}
+                    <h5 class="card-title">Please Add Category and Action of Service.</h5>
+                    {# button call api make show cate service form #}
+                    <a href="{{ url_for("cate_service.form") }}">
+                        <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
+                    </a>
+                {% else %}
+                    <h2>{{ session.get("cate_service") }}</h2>
+                    <a href="{{ url_for("cate_service.form") }}">
+                        <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit Service</button>
+                    </a>
+                    <a href="{{ url_for("cate_service.delete") }}">
+                        <button id="cate_service_delete" type="button" class="btn btn-danger">Delete Service</button>
+                    </a> 
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
