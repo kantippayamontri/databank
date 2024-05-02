@@ -38,6 +38,11 @@ def add():
     # record the device data
     session["device"] = _device
 
+    # add raw data
+    # if "raw_data" in session.keys():
+    #     ...
+    # un_data_session = 
+
     return jsonify(success=True)
 
 @bp.route("/clear", methods=["GET"])
@@ -58,6 +63,10 @@ def get():
 @bp.route("/delete", methods=["GET"])
 def delete():
     if "device" in session.keys():
-            del session["device"]
+        del session["device"]
+    
+    # also raw data
+    if "raw_data" in session.keys():
+        del session["raw_data"]
 
     return redirect(url_for("main_page")) # back to homepage

@@ -1,8 +1,8 @@
 <div class="row mb-3">
   <div class="col-sm-12">
-    <div class="card shadow rounded border-primary text-center">
-      <div class="card-header bg-primary text-white">
-        <b>Step 1:</b> Device
+    <div class="card shadow rounded text-center" style="border-color: #5aa17f">
+      <div class="card-header text-white" style="background-color: #5aa17f;">
+        <b>Device</b>
       </div>
       <div class="card-body">
         {% if not session.get("device") %}
@@ -12,7 +12,12 @@
             <button id="device_add" type="submit" class="btn btn-success">Add Device</button>
           </a>
         {% else %}
-          <h2>{{ session.get("device") }}</h2>
+          {# loop device key show in table#}
+          {% if session.get("device") %}
+            <h2><span style="color:blue;">Device Name:</span> {{ session.get("device")["device_name"] }}</h2>
+            <h2><span style="color:blue;">Device Type:</span> {{ session.get("device")["device_type"] }}</h2>
+            <h2><span style="color:blue;">Unprocessed Data:</span> {{ session.get("device")["device_unprocessed"] }}</h2>
+          {% endif %}
           <a href="{{ url_for("device.form") }}">
             <button id="device_edit" type="submit" class="btn btn-primary">Edit Device</button>
           </a>

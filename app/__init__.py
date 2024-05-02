@@ -35,6 +35,12 @@ def create_app():
 
     from . import cate_service_bp
     app.register_blueprint(cate_service_bp.bp) # register cate and action service blueprint
+    
+    from . import service_bp
+    app.register_blueprint(service_bp.bp) # register service blueprint
+
+    from . import graph_bp
+    app.register_blueprint(graph_bp.bp) # register graph blueprint
 
     # # Bootstrap-Flask requires this line
     # bootstrap = Bootstrap5(app)

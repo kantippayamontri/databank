@@ -1,8 +1,8 @@
 <div class="row mb-3">
     <div class="col-sm-12">
-        <div class="card shadow rounded border-primary text-center">
-            <div class="card-header bg-primary text-white">
-                <b>Step 2:</b> Raw Data
+        <div class="card shadow rounded text-center" style="border-color:#5aa17f;">
+            <div class="card-header text-white" style="background-color: #5aa17f;">
+                <b>Unprocessed Data</b>
             </div>
             <div class="card-body">
                 {% if not session.get("raw_data") %}
@@ -12,13 +12,28 @@
                         <button id="raw_add" type="submit" class="btn btn-success">Add Raw Data</button>
                     </a>
                 {% else %}
-                    <h2>{{ session.get("raw_data") }}</h2>
+                    {% if session.get("raw_data") %}
+                        {% for un_data in session.get("raw_data").keys() %}
+                            <h2 style="color:blue;">{{ un_data }}</h2>
+                            <h3>
+                                <span style="color:green;">Action:</span> {{ session.get("raw_data")[un_data] ["action"] }}
+                            </h3>
+                            <h3>
+                                <span style="color:green;">Frequency:</span> {{ session.get("raw_data")[un_data] ["frequency"] }}
+                            </h3>
+                            <h3>
+                                <span style="color:green;">Sensitivity:</span> {{ session.get("raw_data")[un_data] ["sensitivity"] }}
+                            </h3>
+                            <br>
+                        {% endfor %}
+                    {% endif %}
                     <a href="{{ url_for("raw_data.form") }}">
                         <button id="raw_data_edit" type="submit" class="btn btn-primary">Edit Raw Data</button>
                     </a>
+                    <!--
                     <a href="{{ url_for("raw_data.delete") }}">
                         <button id="raw_data_delete" type="button" class="btn btn-danger">Delete Raw Data</button>
-                    </a>
+                    </a>-->
                 {% endif %}
             </div>
         </div>

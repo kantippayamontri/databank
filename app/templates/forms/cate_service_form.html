@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block main %}
-    <h1>Submit your data</h1>
     <div class="container mt-5">
         <div class="card shadow rounded border-primary">
             <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Add Category of Service</h1>
@@ -8,6 +7,19 @@
                 <form id="cate_service_form"
                       method="POST"
                       action="{{ url_for("cate_service.form") }}">
+                    {#add unprocessed data#}
+                    <div class="form-group">
+                        <label for="cate_service_unprocessed">Unprocessed Data</label>
+                        <select class="form-select custom-select"
+                                id="cate_service_unprocessed"
+                                name="cate_service_unprocessed">
+                            {% if not choose_data %}
+                                {% for _un_data in unprocessed_data %}<option value="{{ _un_data }}">{{ _un_data }}</option>{% endfor %}
+                            {% else %}
+                                <option value="{{ choose_data["data"]["unprocessed_data"] }}">{{ choose_data["data"]["unprocessed_data"] }}</option>
+                            {% endif %}
+                        </select>
+                    </div>
                     {#add action#}
                     <div class="form-group">
                         <label for="cate_service_action">Action</label>
@@ -34,14 +46,23 @@
                             {% endfor %}
                         </select>
                     </div>
+                    {#add service category#}
+                    <div class="form-group">
+                        <label for="cate_service_cate">Category</label>
+                        <select class="form-select custom-select"
+                                id="cate_service_cate"
+                                name="cate_service_cate">
+                            {% for _cate_service in cate_service %}<option value="{{ _cate_service }}">{{ _cate_service }}</option>{% endfor %}
+                        </select>
+                    </div>
                     {#add submit button#}
                     <div>
                         <div class="container text-center">
                             <button type="submit" class="btn btn-primary" value="submit">
                                 {% if not session.get("cate_service") %}
-                                    Add Service
+                                    Add
                                 {% else %}
-                                    Update Service
+                                    Update
                                 {% endif %}
                             </button>
                         </div>

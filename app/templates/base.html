@@ -3,22 +3,24 @@
   <head>
     {% block head %}
       <div>{% include "main_sections/header.html" %}</div>
-    {% endblock %}
+      {% block css %}
+      {% endblock css %}
+    {% endblock head %}
   </head>
   <body class="bg-light">
     {% block navigation %}
       <div>{% include "main_sections/navigation.html" %}</div>
-    {% endblock %}
+    {% endblock navigation %}
     <div>
-      {% block main %}{% endblock %}
+      {% block main %}
+      {% endblock main %}
     </div>
     {% block footer %}
       <footer>
         {% include "main_sections/footer.html" %}
       </footer>
-    {% endblock %}
+    {% endblock footer %}
   </body>
-  <div>
-    {% block js %}{% endblock %}
-  </div>
+  {% block js %}
+  {% endblock js %}
 </html>

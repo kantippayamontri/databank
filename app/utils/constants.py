@@ -8,13 +8,13 @@ type_device_details = {
     "Light": ["Light Status", "Color"],
 }
 
-cate_raw_data = ["low", "medium", "high"]
+cate_raw_data = ["Low", "Medium", "High"]
 
-cate_service = ["low", "medium", "high"]
+cate_service = ["Low", "Medium", "High"]
 
-raw_data_action = ["average", "anonymise", "transfer"]
+raw_data_action = ["Average", "Anonymise", "Transfer"]
 
-service_action = ["view"]
+service_action = ["View"]
 
 
 service_type = [
@@ -27,8 +27,8 @@ service_type = [
 ]
 
 frequency = [
-    "daily",
-    "weekly",
-    "yearly",
-    "no fix time",
+    "Daily",
+    "Weekly",
+    "Yearly",
+    "No fix time",
 ]

@@ -1,0 +1,32 @@
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <div class="card shadow rounded text-center"
+             style="border-color: #ffd966">
+            <div class="card-header text-white" style="background-color:#ffd966;">
+                <b>Service</b>
+            </div>
+            <div class="card-body">
+                {% if not session.get("service") %}
+                    <h5 class="card-title">Please Add Name and Type of Service.</h5>
+                    {# button call api make show device form #}
+                    <a href="{{ url_for("service.form") }}">
+                        <button id="service_add" type="submit" class="btn btn-success">Add Service</button>
+                    </a>
+                {% else %}
+                    <h2>
+                        <span style="color:green;">Service Name:</span>{{ session.get("service")["service_name"] }}
+                    </h2>
+                    <h2>
+                        <span style="color:green;">Service Type:</span>{{ session.get("service")["service_type"] }}
+                    </h2>
+                    <a href="{{ url_for("service.form") }}">
+                        <button id="service_edit" type="submit" class="btn btn-primary">Edit Service</button>
+                    </a>
+                    <a href="{{ url_for("service.delete") }}">
+                        <button id="service_delete" type="button" class="btn btn-danger">Delete Service</button>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
