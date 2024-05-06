@@ -26,7 +26,6 @@ def form():
     if request.method == "GET":
 
         if "device" not in session.keys():
-            flash("Number of device is 0. Please add device before add service.")
             return render_template("index.html")
 
         if "service" in session.keys():

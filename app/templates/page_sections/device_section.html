@@ -14,9 +14,33 @@
         {% else %}
           {# loop device key show in table#}
           {% if session.get("device") %}
-            <h2><span style="color:blue;">Device Name:</span> {{ session.get("device")["device_name"] }}</h2>
-            <h2><span style="color:blue;">Device Type:</span> {{ session.get("device")["device_type"] }}</h2>
-            <h2><span style="color:blue;">Unprocessed Data:</span> {{ session.get("device")["device_unprocessed"] }}</h2>
+            <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+              <tr>
+                <th style="text-align: center; padding: 8px; background-color: lightblue;">Label</th>
+                <th style="text-align: center; padding: 8px; background-color: lightblue;">Value</th>
+              </tr>
+              <tr>
+                <td style="padding: 8px;">Device Name</td>
+                <td style="padding: 8px;">{{ session.get("device")["device_name"] }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px;">Device Type</td>
+                <td style="padding: 8px;">{{ session.get("device")["device_type"] }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px;">Unprocessed Data</td>
+                <td style="padding: 8px;">{{ session.get("device")["device_unprocessed"] }}</td>
+              </tr>
+            </table>
+            <!-- <h2>
+              <span style="color:blue;">Device Name:</span> {{ session.get("device")["device_name"] }}
+            </h2>
+            <h2>
+              <span style="color:blue;">Device Type:</span> {{ session.get("device")["device_type"] }}
+            </h2>
+            <h2>
+              <span style="color:blue;">Unprocessed Data:</span> {{ session.get("device")["device_unprocessed"] }}
+            </h2> -->
           {% endif %}
           <a href="{{ url_for("device.form") }}">
             <button id="device_edit" type="submit" class="btn btn-primary">Edit Device</button>

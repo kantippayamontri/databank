@@ -15,6 +15,29 @@
                     {% if session.get("raw_data") %}
                         {% for un_data in session.get("raw_data").keys() %}
                             <h2 style="color:blue;">{{ un_data }}</h2>
+                            <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+                                <tr>
+                                    <th style="text-align: center;
+                                               padding: 8px;
+                                               background-color: lightblue">Label</th>
+                                    <th style="text-align: center;
+                                               padding: 8px;
+                                               background-color: lightblue">Value</th>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Action</td>
+                                    <td style="padding: 8px;">{{ session.get("raw_data")[un_data] ["action"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Frequency</td>
+                                    <td style="padding: 8px;">{{ session.get("raw_data")[un_data] ["frequency"] }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px;">Sensitivity</td>
+                                    <td style="padding: 8px;">{{ session.get("raw_data")[un_data] ["sensitivity"] }}</td>
+                                </tr>
+                            </table>
+                            <!-- <h2 style="color:blue;">{{ un_data }}</h2>
                             <h3>
                                 <span style="color:green;">Action:</span> {{ session.get("raw_data")[un_data] ["action"] }}
                             </h3>
@@ -23,12 +46,12 @@
                             </h3>
                             <h3>
                                 <span style="color:green;">Sensitivity:</span> {{ session.get("raw_data")[un_data] ["sensitivity"] }}
-                            </h3>
+</h3> -->
                             <br>
                         {% endfor %}
                     {% endif %}
                     <a href="{{ url_for("raw_data.form") }}">
-                        <button id="raw_data_edit" type="submit" class="btn btn-primary">Edit Raw Data</button>
+                        <button id="raw_data_edit" type="submit" class="btn btn-primary">Update Raw Data</button>
                     </a>
                     <!--
                     <a href="{{ url_for("raw_data.delete") }}">

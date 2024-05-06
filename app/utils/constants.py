@@ -14,7 +14,7 @@ cate_service = ["Low", "Medium", "High"]
 
 raw_data_action = ["Average", "Anonymise", "Transfer"]
 
-service_action = ["View"]
+service_action = ["View Data","Read Data", "Report Data"]
 
 
 service_type = [

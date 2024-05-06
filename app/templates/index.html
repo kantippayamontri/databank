@@ -47,27 +47,23 @@
   {# for submit button #}
   {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %}
     <div class="container text-center">
-      <a href="{{ url_for("graph.create") }}">
+      <a href="{{ url_for("graph.show_graph") }}">
         <button type="button"
                 id="submit_button"
                 class="btn btn-success"
-                value="submit">Submit</button>
+                value="submit">Generate Graph</button>
       </a>
     </div>
   {% endif %}
-  {# for show graph #}
-  {% if graph_filename is defined %}
-    <div>
-      <div class="container d-none">
-        <div class="image-container">
-          <h1>Must show image.</h1>
-          <h1>{{ graph_filename }}</h1>
-        </div>
-      </div>
+  <!-- {# for show graph #}
+    {% if graph_filename is defined %}
+      <div class="text-center">
+        <img src="{{url_for('static', filename=graph_filename)}}"
+             class="img-fluid"
+             alt="Centered image">
     </div>
-  {% else %}
-    <h1>No image.</h1>
   {% endif %}
+  -->
 </div>
 {% endblock main %}
 {% block js %}

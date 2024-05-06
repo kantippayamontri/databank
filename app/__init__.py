@@ -51,6 +51,9 @@ def create_app():
     def main_page():
         if request.method == "GET":
 
+            if "graph_filename" in request.args.keys():
+                return render_template("index.html", graph_filename=request.args.get("graph_filename"))
+
             return render_template(
                 "index.html",
             )

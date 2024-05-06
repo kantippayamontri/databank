@@ -2,7 +2,7 @@
 {% block main %}
   <div class="container mt-5">
     <div class="card shadow rounded border-primary">
-      <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Add Device</h1>
+      <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Device</h1>
       <div class="card-body">
         <form id="device_form">
           {# device name #}
@@ -38,24 +38,24 @@
             <div class="container text-center">
               <ul class="list-group list-group-horizontal row"
                   id="unprocessed_data_list">
-              {%if session.get("device")%}
-                {%for data in session.get("device")["device_unprocessed"] %}
-                <li class='list-group-item bg-light d-flex justify-content-center' data-value="{{data}}">
-                  <div>
-                    <div class='d-flex' style='justify-content: center'>
-                      <p>{{data}}</p>
-                    </div>
-                  </div>
-                  <button type='button'
-                          class='btn btn-danger'
-                          id="menu_{{data}}"
-                          onClick='delete_unprocessed_click(this.id)'
-                          style="display: inline-block">Delete</button>
-                </li>
-
-                {%endfor%}
-              {%else%}
-              {%endif %}
+                {% if session.get("device") %}
+                  {% for data in session.get("device")["device_unprocessed"] %}
+                    <li class='list-group-item bg-light d-flex justify-content-center'
+                        data-value="{{ data }}">
+                      <div>
+                        <div class='d-flex' style='justify-content: center'>
+                          <p>{{ data }}</p>
+                        </div>
+                      </div>
+                      <button type='button'
+                              class='btn btn-danger'
+                              id="menu_{{ data }}"
+                              onClick='delete_unprocessed_click(this.id)'
+                              style="display: inline-block">Delete</button>
+                    </li>
+                  {% endfor %}
+                {% else %}
+                {% endif %}
               </ul>
             </div>
             <div>
@@ -88,7 +88,13 @@
           </div>
           {# Submit button #}
           <div class="container text-center">
-            <button type="submit" class="btn btn-primary" value="submit">Add Device</button>
+            <button type="submit" class="btn btn-primary" value="submit">
+              {% if "device" in session.keys() %}
+                Update Device
+              {% else %}
+                Add Device
+              {% endif %}
+            </button>
           </div>
         </form>
       </div>
@@ -98,7 +104,6 @@
 {% block js %}
   {# add unprocessed data #}
   <script>
-
   const select_unprocessed = document.getElementById(
     "device_unprocessed_data_select"
   );
@@ -154,7 +159,6 @@
   </script>
   {# click add unprocessed data #}
   <script>
-
   // add unprocessed
   const add_unprocessed_button_to_li = document.getElementById(
     "device_upprocessed_data_add_button_to_li"
