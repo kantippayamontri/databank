@@ -9,7 +9,6 @@ instance/*
 .databank/*
 graph
 *.png
-graph_*
 flask_session/
 data_plot.json
 test*
