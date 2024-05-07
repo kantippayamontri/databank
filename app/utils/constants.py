@@ -1,20 +1,20 @@
 type_device = ["Security Camera", "Smartmetre", "Light"]
 
-unprocessed_data = ["footage", "energy usage", "light status", "colour"]
+unprocessed_data = ["Footage", "Energy usage", "Light status", "Colour", "Notification", "Temperature", "Activity period"]
 
 type_device_details = {
     "Security Camera": ["Footage","Energy Usage" ],
-    "Smartmetre": ["Energy Usage"],
-    "Light": ["Light Status", "Color"],
+    "Smartmetre": ["Energy Usage", "Notification", "Temperature",],
+    "Light": ["Light Status", "Color", "Activity period"],
 }
 
 cate_raw_data = ["Low", "Medium", "High"]
 
 cate_service = ["Low", "Medium", "High"]
 
-raw_data_action = ["Average", "Anonymise", "Transfer"]
+raw_data_action = ["Average", "Anonymise", "Transfer", "Upload", "Download"]
 
-service_action = ["View Data","Read Data", "Report Data"]
+service_action = ["View Data","Read Data", "Report Data", "Send Notification",]
 
 
 service_type = [
