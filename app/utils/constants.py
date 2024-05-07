@@ -3,7 +3,7 @@ type_device = ["Security Camera", "Smartmetre", "Light"]
 unprocessed_data = ["footage", "energy usage", "light status", "colour"]
 
 type_device_details = {
-    "Security Camera": ["Footage"],
+    "Security Camera": ["Footage","Energy Usage" ],
     "Smartmetre": ["Energy Usage"],
     "Light": ["Light Status", "Color"],
 }

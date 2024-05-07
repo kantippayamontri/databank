@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
                 {% if not session.get("cate_service") %}
-                    <h5 class="card-title">Please Add Category and Action of Service.</h5>
+                    <h5 class="card-title">Add details of services.</h5>
                     {# button call api make show cate service form #}
                     <a href="{{ url_for("cate_service.form") }}">
                         <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>

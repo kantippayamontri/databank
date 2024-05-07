@@ -375,7 +375,69 @@ session #}
 
   })
 
+  function craeteOption(data){
+    return "<option value='" + data + "''>"+ data +"</option>"
+  }
+
+  //check value of device type at first time and change unprocessed data
+  //console.log(`first time device type: ${device_type_ele.value}`)
+  //$.ajax({
+  //  url: "/device/get_details",
+  //  type: "post",
+  //  dataType: "json",
+  //  contentType: "application/json",
+  //  data: JSON.stringify({"data":this.value,}),
+  //  success: function(data){
+  //    const unprocess_data_list = data.unprocessed_data;
+
+  //    #FIXME:
+  //    //clear element in unprocessed list
+  //    const unprocess_data_list_item = document.getElementById("unprocessed_data_list");
+  //    unprocess_data_list_item.innerHTML = "";
+
+  //    //add unprocessed data in list
+  //    const device_unprocessed_data_select = document.getElementById("device_unprocessed_data_select")
+  //    device_unprocessed_data_select.innerHTML = "";
+  //    $.each(unprocess_data_list, function(i , item){
+  //      $("#device_unprocessed_data_select").append(craeteOption(data=item))
+  //    })
+  //    $("#device_unprocessed_data_select").append(craeteOption(data="other"))
+
+
+  //  },
+  //})
+
+
+
   device_type_ele.addEventListener("change", function () {
+
+    // need to change unprocessed data when change device type
+    console.log(`device type choose: ${this.value}`)
+    $.ajax({
+      url: "/device/get_details",
+      type: "post",
+      dataType: "json",
+      contentType: "application/json",
+      data: JSON.stringify({"data":this.value,}),
+      success: function(data){
+        const unprocess_data_list = data.unprocessed_data;
+
+        //clear element in unprocessed list
+        const unprocess_data_list_item = document.getElementById("unprocessed_data_list");
+        unprocess_data_list_item.innerHTML = "";
+
+        //add unprocessed data in list
+        const device_unprocessed_data_select = document.getElementById("device_unprocessed_data_select")
+        device_unprocessed_data_select.innerHTML = "";
+        $.each(unprocess_data_list, function(i , item){
+          $("#device_unprocessed_data_select").append(craeteOption(data=item))
+        })
+        $("#device_unprocessed_data_select").append(craeteOption(data="other"))
+
+
+      },
+    })
+
     if (this.value === "other") {
       device_other_option_ele.classList.remove("d-none");
     } else {

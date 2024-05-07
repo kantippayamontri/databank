@@ -2,11 +2,11 @@
   <div class="col-sm-12">
     <div class="card shadow rounded text-center" style="border-color: #5aa17f">
       <div class="card-header text-white" style="background-color: #5aa17f;">
-        <b>Device</b>
+        <b>Your Device</b>
       </div>
       <div class="card-body">
         {% if not session.get("device") %}
-          <h5 class="card-title">Please Add Device</h5>
+          <h5 class="card-title">You have 0 device.</h5>
           {# button call api make show device form #}
           <a href="{{ url_for("device.form") }}">
             <button id="device_add" type="submit" class="btn btn-success">Add Device</button>
@@ -16,8 +16,8 @@
           {% if session.get("device") %}
             <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
               <tr>
-                <th style="text-align: center; padding: 8px; background-color: lightblue;">Label</th>
-                <th style="text-align: center; padding: 8px; background-color: lightblue;">Value</th>
+                <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
               </tr>
               <tr>
                 <td style="padding: 8px;">Device Name</td>
@@ -29,7 +29,14 @@
               </tr>
               <tr>
                 <td style="padding: 8px;">Unprocessed Data</td>
-                <td style="padding: 8px;">{{ session.get("device")["device_unprocessed"] }}</td>
+                {% if  session.get("device")["device_unprocessed"] | length > 1 %}
+                  <td style="padding: 8px;">
+                    {% for un_data in  session.get("device")["device_unprocessed"][:-1] %}{{ un_data }},{% endfor %}
+                    {{ session.get("device")["device_unprocessed"] [-1] }}
+                  </td>
+                {% else %}
+                  <td style="padding: 8px;">{{ session.get("device")["device_unprocessed"] [0] }}</td>
+                {% endif %}
               </tr>
             </table>
             <!-- <h2>

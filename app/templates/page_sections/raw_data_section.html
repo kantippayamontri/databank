@@ -6,7 +6,7 @@
             </div>
             <div class="card-body">
                 {% if not session.get("raw_data") %}
-                    <h5 class="card-title">Please Add Category and Action of Raw Data.</h5>
+                    <h5 class="card-title">Add Details of Unprocessed Data</h5>
                     {# button call api make show device form #}
                     <a href="{{ url_for("raw_data.form") }}">
                         <button id="raw_add" type="submit" class="btn btn-success">Add Raw Data</button>
