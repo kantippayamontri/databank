@@ -1,0 +1,77 @@
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <div class="card shadow rounded text-center" style="border-color:#ffd966;">
+            <div class="card-header text-white" style="background-color:#ffd966;">
+                <b>Service (Category and Action)</b>
+            </div>
+            <div class="card-body">
+                {% if not session.get("cate_service") %}
+                    <h5 class="card-title">Add details of services.</h5>
+                    {# button call api make show cate service form #}
+                    <a href="{{ url_for("cate_service.form") }}">
+                        <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
+                    </a>
+                {% else %}
+                    <!-- <ul class="list-group list-group-flush"> -->
+                    {% for _data in session.get('cate_service').keys() %}
+                        <h2>{{ _data }}</h2>
+                        <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+                            <tr>
+                                <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                                <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px;">Action</td>
+                                <td style="padding: 8px;">{{ session.get("cate_service")[_data] ['action'] }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px;">Frequency</td>
+                                <td style="padding: 8px;">{{ session.get("cate_service")[_data] ['frequency'] }}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px;">Category</td>
+                                <td style="padding: 8px;">{{ session.get("cate_service")[_data] ['category'] }}</td>
+                            </tr>
+                        </table>
+                        <a href="{{ url_for('cate_service.form_edit', unprocessed=_data) }}">
+                            <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
+                        </a>
+                        <a href="{{ url_for("cate_service.delete_unprocessed", unprocessed=_data) }}">
+                            <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
+                        </a>
+                        <!-- <li class="list-group-item">
+                                <h2>
+                                    <span style="color:blue;">Data:</span> {{ _data }}
+                                </h2>
+                                <h2>
+                                    <span style="color:green;">Action:</span> {{ session.get("cate_service")[_data] ['action'] }}
+                                </h2>
+                                <h2>
+                                    <span style="color:green;">Frequency:</span> {{ session.get("cate_service")[_data] ['frequency'] }}
+                                </h2>
+                                <h2>
+                                    <span style="color:green;">Category:</span> {{ session.get("cate_service")[_data] ['category'] }}
+                                </h2>
+                                <a href="{{ url_for('cate_service.form_edit', unprocessed=_data) }}">
+                                    <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
+                                </a>
+                                <a href="{{ url_for("cate_service.delete_unprocessed", unprocessed=_data) }}">
+                                    <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
+                                </a>
+                            </li> -->
+                    {% endfor %}
+                    <!-- </ul> -->
+                    {# show add button until #}
+                    {% if ('raw_data' in session.keys()) and ('cate_service' in session.keys()) %}
+                        {% if session.get('raw_data').keys()|length > session.get('cate_service').keys()|length %}
+                            <hr>
+                            <a href="{{ url_for("cate_service.form") }}">
+                                <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

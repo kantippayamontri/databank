@@ -9,8 +9,10 @@ instance/*
 .databank/*
 graph
 *.png
-graph_*
 flask_session/
+data_plot.json
+test*
+app/static/graph*
 
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files

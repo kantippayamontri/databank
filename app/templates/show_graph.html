@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block css %}
+  <style>
+  .container {
+    max-width: 100%; /* Ensure the container doesn't exceed the screen width */
+    overflow-x: auto;  /* Enable horizontal scroll if needed */
+    overflow-y: hidden; /* Prevent vertical scroll */
+    white-space: nowrap; /* Prevent image from wrapping */
+}
+  </style>
+{% endblock %}
+{% block main %}
+  {% if graph_filename is defined %}
+    <!-- <div class="container d-flex align-items-center justify-content-center overflow-x"> -->
+    <div class="container">
+      <img src="{{ url_for('static', filename=graph_filename) }}" />
+    </div>
+  {% endif %}
+{% endblock main %}
+{% block js %}
+{% endblock js %}

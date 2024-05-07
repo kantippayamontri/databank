@@ -1,121 +1,63 @@
-from flask import Flask, render_template, request
-import networkx as nx
+import secrets
+
 import matplotlib.pyplot as plt
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for
+from flask_bootstrap import Bootstrap5
+from flask_wtf import CSRFProtect, FlaskForm
 from icecream import ic
-import graphviz
-import random
-import string
+from wtforms.validators import DataRequired, Length
+
+from flask_session import Session
+
+from .forms import DeviceForm
+
+from .utils import *
 
 def create_app():
     app = Flask(
         __name__,
     )
-    type_device = ["Security Camera", "Smartmetre", "Light"]
 
-    cate_raw_data = ["low", "medium", "high"]
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_TYPE"] = "filesystem"
+    Session(app)
 
-    cate_service = ["low", "medium", "high"]
+    app.secret_key = secrets.token_urlsafe(16)
 
-    action = ["average", "anonymise", "transfer"]
+    from . import device
+    app.register_blueprint(device.bp) # register device blueprint
 
-    service_type= [
-        "Advertising Company",
-        "Health Tracking Service",
-        "Medical Service",
-        "Insurance",
-        "Social Network Platform",
-        "Tech Company",
-    ]
+    from . import session_bp
+    app.register_blueprint(session_bp.bp) # register session blueprint
+
+    from . import cate_raw_data_bp 
+    app.register_blueprint(cate_raw_data_bp.bp) # register cate and action raw data blueprint
+
+    from . import cate_service_bp
+    app.register_blueprint(cate_service_bp.bp) # register cate and action service blueprint
+    
+    from . import service_bp
+    app.register_blueprint(service_bp.bp) # register service blueprint
+
+    from . import graph_bp
+    app.register_blueprint(graph_bp.bp) # register graph blueprint
+
+    # # Bootstrap-Flask requires this line
+    # bootstrap = Bootstrap5(app)
+    # # Flask-WTF requires this line
+    # csrf = CSRFProtect(app)
 
     @app.route("/", methods=["POST", "GET"])
     def main_page():
         if request.method == "GET":
+
+            if "graph_filename" in request.args.keys():
+                return render_template("index.html", graph_filename=request.args.get("graph_filename"))
+
             return render_template(
-                "main_page.html",
-                type_device=enumerate(type_device),
-                cate_raw_data=enumerate(cate_raw_data),
-                cate_service=enumerate(cate_service),
-                action=enumerate(action),
-                service_type=enumerate(service_type),
-            )
-        elif request.method == "POST":
-            _type_device = request.form["type_device"]
-            _cate_raw_data = request.form["cate_raw_data"]
-            _cate_service = request.form["cate_service"]
-            _action = request.form["action"]
-            _service_type = request.form["service_type"]
-
-            tree_data = {
-                "type_device":{"data":type_device, "choose":_type_device},
-                "cate_raw_data":{"data":cate_raw_data, "choose": _cate_raw_data},
-                "cate_service": {"data":cate_service, "choose":_cate_service},
-                "action": {"data":action, "choose":_action},
-                "service_type": {"data":service_type , "choose":_service_type},
-            }
-
-            ic(tree_data)
-            
-            graph_img_filename = create_graph(data=tree_data)
-            print(f"graph_img_filename: {graph_img_filename}")
-
-            # print(f"tree_data: ", tree_data)
-
-            return "".join(
-                [
-                    f"type of device : {_type_device}<br>",
-                    f"cate of raw data : {_cate_raw_data}<br>",
-                    f"cate of cate service: {_cate_service}<br>",
-                    f"cate of action: {_action}<br>",
-                    f"cate of service type: {_service_type}<br>",
-                ]
+                "index.html",
             )
     
-    def create_graph(data:dict):
-        
-        graph = graphviz.Digraph(comment="databank", format="png")
-
-        for category, category_data in data.items():
-            chosen_value = next((item for item in category_data["data"] if item == category_data["choose"]), None)
-            category_name = category.replace("_", " ").capitalize()  
-            label = f"{category_name} : {chosen_value}" if chosen_value else category_name  
-            graph.node(category, label=label, shape="box")
-
-        keys = list(data.keys())
-        for i in range(len(keys) - 1):
-            graph.edge(keys[i], keys[i + 1])
-
-        filename = generate_random_filename()
-        graph.render(filename=filename, format="png", view=True)
-        return f"{filename}.png"
-
-    def generate_random_filename(length=15):
-        """
-        Generates a random filename with a specified length.
-
-        Args:
-            length (int, optional): The desired length of the filename. Defaults to 15.
-
-        Returns:
-            str: A random filename string.
-        """
-
-        # Allowed characters for filenames (avoid special characters that might cause issues on some systems)
-        allowed_chars = string.ascii_lowercase + string.digits + string.ascii_uppercase
-
-        # Generate a random string of the specified length
-        random_string = ''.join(random.choice(allowed_chars) for i in range(length))
-
-        # Ensure the filename starts with a letter (avoid issues with some OS file systems)
-        if not random_string[0].isalpha():
-            random_string = random.choice(string.ascii_lowercase + string.ascii_uppercase) + random_string[1:]
-
-        return f"graph_{random_string}"
-
-    @app.route("/hello")
-    def hello():
-
-        return "Hello, world"
-
     return app
 
 if __name__ == "__main__":

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block main %}
+    <div class="container mt-5">
+        <div class="card shadow rounded border-primary">
+            <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Unprocessed Data</h1>
+            <div class="card-body">
+                <form id="raw_data_form" method="POST" action="/raw_data/form">
+                    {% for _raw_data in session.get("device")["device_unprocessed"] %}
+                        <h1>{{ _raw_data }}</h1>
+                        {#add sensitivity#}
+                        <div class="form-group">
+                            <label for="">Sensitivity</label>
+                            <select class="form-select custom-select"
+                                    id="raw_data_sensitivity"
+                                    name="sensitivity_{{ _raw_data }}">
+                                {% for _sen in sensitivity %}
+                                    <option value="{{ _sen }}"
+                                            {% if session.get("raw_data") %} {% if _raw_data in session.get('raw_data').keys() %} {% if session.get('raw_data')[_raw_data]["sensitivity"] == _sen %}selected{% endif %}
+                                            {% endif %}
+                                            {% endif %}>{{ _sen }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {#add action#}
+                        <div class="form-group">
+                            <label for="action_{{ _raw_data }}">Action</label>
+                            <select class="form-select custom-select"
+                                    id="raw_data_action"
+                                    name="action_{{ _raw_data }}">
+                                {% for _action in action %}
+                                    <option value="{{ _action }}"
+                                            {% if session.get("raw_data") %}{% if _raw_data in session.get("raw_data").keys() %}{% if session.get("raw_data")[_raw_data]["action"] == _action %}selected{% endif %}
+                                            {% endif %}
+                                            {% endif %}>{{ _action }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {#add frequency#}
+                        <div class="form-group">
+                            <label for="frequency_{{ _raw_data }}">Frequency</label>
+                            <select class="form-select custom-select"
+                                    id="raw_data_action"
+                                    name="frequency_{{ _raw_data }}">
+                                {% for _frequency in frequency %}
+                                    <option value="{{ _frequency }}"
+                                            {% if session.get("raw_data") %} {% if _raw_data in session.get("raw_data").keys() %} {% if session.get("raw_data")[_raw_data]["frequency"] == _frequency %}selected{% endif %}
+                                            {% endif %}
+                                            {% endif %}>{{ _frequency }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                    {% endfor %}
+                    {#add submit button#}
+                    <br>
+                    <div>
+                        <div class="container text-center">
+                            <button type="submit" class="btn btn-primary" value="submit">
+                                {% if not session.get("raw_data") %}
+                                    Add Unprocessed Data
+                                {% else %}
+                                    Update Unprocessed Data
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock main %}
+{% block js %}
+{% endblock js %}
