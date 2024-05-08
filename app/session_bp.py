@@ -1,7 +1,9 @@
 from flask import (
     Blueprint,
     session,
-    jsonify
+    jsonify,
+    redirect,
+    url_for,
 )
 
 
@@ -44,3 +46,12 @@ def clear_device():
         del session["raw_data"]
     
     return "clear service session success"
+
+@bp.route("/clear_session", methods=["GET"])
+def clear_session():
+    _session_key = list(session.keys())
+    for k in _session_key:
+        del session[k]
+    
+    return redirect(url_for("main_page"))
+    

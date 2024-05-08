@@ -8,9 +8,15 @@
                 {% if not session.get("cate_service") %}
                     <h5 class="card-title">Add details of services.</h5>
                     {# button call api make show cate service form #}
-                    <a href="{{ url_for("cate_service.form") }}">
-                        <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
-                    </a>
+                    {% if "device" not in session.keys() %}
+                        <h3 style="color:#793420;">Plase add device before making services.</h3>
+                    {% elif "raw_data" not in session.keys() %}
+                        <h3 style="color:#793420;">Plase add detail of unprocessed data before making services.</h3>
+                    {% else %}
+                        <a href="{{ url_for("cate_service.form") }}">
+                            <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
+                        </a>
+                    {% endif %}
                 {% else %}
                     <!-- <ul class="list-group list-group-flush"> -->
                     {% for _data in session.get('cate_service').keys() %}

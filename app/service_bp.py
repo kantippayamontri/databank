@@ -25,8 +25,8 @@ def form():
 
     if request.method == "GET":
 
-        if "device" not in session.keys():
-            return render_template("index.html")
+        # if "device" not in session.keys():
+        #     return render_template("index.html")
 
         if "service" in session.keys():
             choose_service_type = session["service"]["service_type"]

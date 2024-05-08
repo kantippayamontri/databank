@@ -54,13 +54,14 @@
                 value="submit">Generate Graph</button>
       </a>
     </div>
+    <br>
   {% endif %}
   <!-- {# for show graph #}
-    {% if graph_filename is defined %}
-      <div class="text-center">
-        <img src="{{url_for('static', filename=graph_filename)}}"
-             class="img-fluid"
-             alt="Centered image">
+      {% if graph_filename is defined %}
+        <div class="text-center">
+          <img src="{{url_for('static', filename=graph_filename)}}"
+               class="img-fluid"
+               alt="Centered image">
     </div>
   {% endif %}
   -->

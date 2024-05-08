@@ -1,4 +1,11 @@
 <!-- As a heading -->
+<style>
+  .right-button {
+  position: absolute;
+  right: 20px; /* Adjust spacing as needed */
+  top: 10px;   /* Adjust spacing as needed */
+}
+</style>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark"
      style="padding-left: 50px">
   <a href="{{ url_for("main_page") }} " style='text-decoration: none;'>
@@ -24,4 +31,7 @@
       <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Service</button>
     </a>
   {% endif %}
+  <a href="{{url_for("session.clear_session")}}">
+    <button type="button" class="btn btn-outline-danger right-button">Clear Session</button>
+  </a>
 </nav>

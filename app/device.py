@@ -54,8 +54,45 @@ def add():
     device_type = _device["device_type"]
     device_unprocessed = _device["device_unprocessed"]
 
+    # session["device"] = _device
     # record the device data
-    session["device"] = _device
+    if "device" not in session.keys():
+        session["device"] = _device
+    else:
+        # check device type
+        session["device"]["device_name"] = device_name
+        if device_type == session["device"]["device_type"]:
+            # assign new unprocessed
+            session["device"]["device_unprocessed"] = device_unprocessed
+
+            # check unprocessed in device and raw data
+            if "raw_data" in session.keys():
+                _del_p = []
+                for _un_p_raw in session["raw_data"].keys():
+                    if _un_p_raw not in session["device"]["device_unprocessed"]:
+                        _del_p.append(_un_p_raw) 
+                
+                for _d in _del_p:
+                    del session["raw_data"][_d]
+                
+                # check in cate_service
+                if "cate_service" in session.keys():
+                    for _d in _del_p:
+                        if _d in session["cate_service"].keys():
+                            del session["cate_service"][_d]
+                        
+        else:
+            # new device type and device unprocessed
+            session["device"]["device_name"] = device_name
+            session["device"]["device_type"] = device_type
+            session["device"]["device_unprocessed"] = device_unprocessed
+
+            if "raw_data" in session.keys():
+                del session["raw_data"]
+            
+            if "cate_service" in session.keys():
+                del session["cate_service"]
+
 
     # add raw data
     # if "raw_data" in session.keys():
@@ -90,6 +127,10 @@ def delete():
     # also raw data
     if "raw_data" in session.keys():
         del session["raw_data"]
+        
+    # also cate service
+    if "cate_service" in session.keys():
+        del session["cate_service"]
 
     return redirect(url_for("main_page"))  # back to homepage
 
