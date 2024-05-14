@@ -2,14 +2,14 @@
     <div class="col-sm-12">
         <div class="card shadow rounded text-center" style="border-color:#5aa17f;">
             <div class="card-header text-white" style="background-color: #5aa17f;">
-                <b>Unprocessed Data</b>
+                <b>Data</b>
             </div>
             <div class="card-body">
                 {% if not session.get("raw_data") %}
-                    <h5 class="card-title">Add Details of Unprocessed Data</h5>
+                    <h5 class="card-title">Add Details of Data</h5>
                     {# button call api make show device form #}
                     <a href="{{ url_for("raw_data.form") }}">
-                        <button id="raw_add" type="submit" class="btn btn-success">Add Raw Data</button>
+                        <button id="raw_add" type="submit" class="btn btn-success">Add Data</button>
                     </a>
                 {% else %}
                     {% if session.get("raw_data") %}
@@ -51,7 +51,7 @@
                         {% endfor %}
                     {% endif %}
                     <a href="{{ url_for("raw_data.form") }}">
-                        <button id="raw_data_edit" type="submit" class="btn btn-primary">Update Raw Data</button>
+                        <button id="raw_data_edit" type="submit" class="btn btn-primary">Update Data</button>
                     </a>
                     <!--
                     <a href="{{ url_for("raw_data.delete") }}">

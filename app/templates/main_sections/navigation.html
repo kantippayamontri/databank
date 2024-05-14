@@ -31,6 +31,11 @@
       <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Service</button>
     </a>
   {% endif %}
+  {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %}
+    <a href="{{ url_for("graph.show_graph") }}">
+      <button type="button" class="btn btn-outline-success" style="margin-left: 20px">Analysis</button>
+    </a>
+  {%endif%}
   <a href="{{url_for("session.clear_session")}}">
     <button type="button" class="btn btn-outline-danger right-button">Clear Session</button>
   </a>

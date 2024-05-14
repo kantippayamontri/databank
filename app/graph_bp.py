@@ -254,7 +254,7 @@ class DataGraph:
             ("Transfer", "Yearly", "High"): "Restricted",
             ("Anonymise", "Yearly", "High"): "Restricted",
         }
-        return category_mapping.get((action, frequency, sensitivity), "Unknown")
+        return category_mapping.get((action, frequency, sensitivity), "Private")
 
 
     # Add action nodes (4th nodes)
@@ -322,7 +322,7 @@ class DataGraph:
         }
 
         category_node_name = f"{device_name}_{data_item}_{action}_Category"
-        category_label = f"{category_mapping.get((action, frequency, category), 'Unknown')}"
+        category_label = f"{category_mapping.get((action, frequency, category), 'Low trust')}"
         self.graph.node(category_node_name, label=category_label, style='filled', fillcolor='lightblue', fontsize='24', fontcolor='black', fontname="bold", shape="circle")
         return category_node_name
 

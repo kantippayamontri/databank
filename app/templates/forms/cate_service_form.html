@@ -9,7 +9,7 @@
                       action="{{ url_for("cate_service.form") }}">
                     {#add unprocessed data#}
                     <div class="form-group">
-                        <label for="cate_service_unprocessed">Unprocessed Data</label>
+                        <label for="cate_service_unprocessed">Store Data</label>
                         <select class="form-select custom-select"
                                 id="cate_service_unprocessed"
                                 name="cate_service_unprocessed">
@@ -28,7 +28,7 @@
                                 name="cate_service_action">
                             {% for _action in action %}
                                 <option value="{{ _action }}"
-                                        {% if choose_action == _action %}selected{% endif %}>{{ _action }}</option>
+                                        {% if choose_data['data']['action'] == _action %}selected{% endif %}>{{ _action }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -40,7 +40,7 @@
                                 name="cate_service_frequency">
                             {% for _frequency in frequency %}
                                 <option value="{{ _frequency }}"
-                                        {% if choose_frequency == _frequency %}selected{% endif %}>
+                                        {% if choose_data["data"]["frequency"] == _frequency %}selected{% endif %}>
                                     {{ _frequency }}
                                 </option>
                             {% endfor %}
@@ -48,11 +48,17 @@
                     </div>
                     {#add service category#}
                     <div class="form-group">
-                        <label for="cate_service_cate">Category of Trust</label>
+                        <label for="cate_service_cate">Trust Level</label>
                         <select class="form-select custom-select"
                                 id="cate_service_cate"
                                 name="cate_service_cate">
-                            {% for _cate_service in cate_service %}<option value="{{ _cate_service }}">{{ _cate_service }}</option>{% endfor %}
+                            {% for _cate_service in cate_service %}
+                            
+                            <option value="{{ _cate_service }}"
+                            {%if choose_data["data"]['category'] == _cate_service %} selected {%endif%}
+                            >{{ _cate_service }}</option>
+                            
+                            {% endfor %}
                         </select>
                     </div>
                     {#add submit button#}

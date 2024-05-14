@@ -2,7 +2,7 @@
 {% block main %}
     <div class="container mt-5">
         <div class="card shadow rounded border-primary">
-            <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Unprocessed Data</h1>
+            <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Data</h1>
             <div class="card-body">
                 <form id="raw_data_form" method="POST" action="/raw_data/form">
                     {% for _raw_data in session.get("device")["device_unprocessed"] %}
@@ -57,9 +57,9 @@
                         <div class="container text-center">
                             <button type="submit" class="btn btn-primary" value="submit">
                                 {% if not session.get("raw_data") %}
-                                    Add Unprocessed Data
+                                    Add Data
                                 {% else %}
-                                    Update Unprocessed Data
+                                    Update Data
                                 {% endif %}
                             </button>
                         </div>
