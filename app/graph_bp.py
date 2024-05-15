@@ -28,7 +28,7 @@ def show_graph():
 
 def resize_image(image_path, new_width=None, new_height=None):
     image_path = "app/" + image_path
-    print(f"image path: {image_path}")
+    # print(f"image path: {image_path}")
     image = Image.open(str(image_path))
     original_width, original_height = image.size
 

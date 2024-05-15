@@ -50,7 +50,7 @@ def form():
             elif "sensitivity_" in d:
                 data[raw_data]["sensitivity"] = request.form[d]
 
-        print(f"data: {data}")
+        # print(f"data: {data}")
 
         session["raw_data"] = data
 

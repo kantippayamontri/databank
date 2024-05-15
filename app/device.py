@@ -49,7 +49,7 @@ def form():
 @bp.route("/add", methods=["POST"])
 def add():
     _device = request.get_json()
-    print(f"_device: {_device}")
+    # print(f"_device: {_device}")
     device_name = _device["device_name"]
     device_type = _device["device_type"]
     device_unprocessed = _device["device_unprocessed"]
@@ -138,7 +138,7 @@ def delete():
 @bp.route("/get_details", methods=["POST"])
 def get_details():
     _data = request.get_json()
-    print(f"data is {_data}")
+    # print(f"data is {_data}")
     
     resp = {"unprocessed_data": []}
     if _data["data"] in type_device_details.keys():

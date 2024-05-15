@@ -26,10 +26,16 @@
                         <select class="form-select custom-select"
                                 id="cate_service_action"
                                 name="cate_service_action">
-                            {% for _action in action %}
-                                <option value="{{ _action }}"
-                                        {% if choose_data['data']['action'] == _action %}selected{% endif %}>{{ _action }}</option>
-                            {% endfor %}
+                            {% if not choose_data %}
+                                {% for _action in action %}<option value="{{ _action }}">{{ _action }}</option>{% endfor %}
+                            {% else %}
+                                {% for _action in action %}
+                                    <option value="{{ _action }}"
+                                            {% if choose_data['data']['action'] == _action %}selected{% endif %}>
+                                        {{ _action }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
                     {#add frequency#}
@@ -38,12 +44,19 @@
                         <select class="form-select custom-select"
                                 id="cate_service_frequency"
                                 name="cate_service_frequency">
-                            {% for _frequency in frequency %}
-                                <option value="{{ _frequency }}"
-                                        {% if choose_data["data"]["frequency"] == _frequency %}selected{% endif %}>
-                                    {{ _frequency }}
-                                </option>
-                            {% endfor %}
+                            {% if not choose_data %}
+                                {% for _frequency in frequency %}
+                                    <option value="{{ _frequency }}" >{{ _frequency }}
+                                    </option>
+                                {% endfor %}
+                            {% else %}
+                                {% for _frequency in frequency %}
+                                    <option value="{{ _frequency }}"
+                                            {% if choose_data["data"]["frequency"] == _frequency %}selected{% endif %}>
+                                        {{ _frequency }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
                     {#add service category#}
@@ -52,13 +65,16 @@
                         <select class="form-select custom-select"
                                 id="cate_service_cate"
                                 name="cate_service_cate">
-                            {% for _cate_service in cate_service %}
-                            
-                            <option value="{{ _cate_service }}"
-                            {%if choose_data["data"]['category'] == _cate_service %} selected {%endif%}
-                            >{{ _cate_service }}</option>
-                            
-                            {% endfor %}
+                            {% if not choose_data %}
+                                {% for _cate_service in cate_service %}<option value="{{ _cate_service }}">{{ _cate_service }}</option>{% endfor %}
+                            {% else %}
+                                {% for _cate_service in cate_service %}
+                                    <option value="{{ _cate_service }}"
+                                            {% if choose_data["data"]['category'] == _cate_service %}selected{% endif %}>
+                                        {{ _cate_service }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
                     {#add submit button#}

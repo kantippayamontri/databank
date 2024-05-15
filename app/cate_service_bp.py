@@ -23,7 +23,7 @@ def form():
         _action = request.form["cate_service_action"]
         _cate = request.form["cate_service_cate"]
 
-        print(f"cate from form : {_cate}")
+        # print(f"cate from form : {_cate}")
 
         # record the cate_service data
         if "cate_service" not in session.keys():
@@ -67,7 +67,7 @@ def form():
 
 @bp.route("/forms/<unprocessed>", methods=["GET", "POST"])
 def form_edit(unprocessed):
-    print(f"form_edit")
+    # print(f"form_edit")
 
     unprocessed_data = []
 
@@ -82,7 +82,7 @@ def form_edit(unprocessed):
         "category" : session["cate_service"][unprocessed]['category'],
     }}
 
-    print(f"choose_data : {choose_data}")
+    # print(f"choose_data : {choose_data}")
     
     return render_template(
         "forms/cate_service_form.html",
