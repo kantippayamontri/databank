@@ -46,4 +46,6 @@ def form():
 def delete():
     if "service" in session.keys():
         del session["service"]
+        if "cate_service" in session.keys():
+            del session["cate_service"]
     return redirect(url_for("main_page"))
