@@ -75,6 +75,11 @@ def create():
     #             "category": "High",
     #             "frequency": "Daily",
     #         },
+    #         "Light status": {
+    #             "action": "View Data",
+    #             "category": "High",
+    #             "frequency": "Daily",
+    #         },
     #     },
     #     "device": {
     #         "device_name": "Gauge",
