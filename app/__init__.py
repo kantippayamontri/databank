@@ -42,6 +42,8 @@ def create_app():
     from . import graph_bp
     app.register_blueprint(graph_bp.bp) # register graph blueprint
 
+    from . import filter_data_bp
+    app.register_blueprint(filter_data_bp.bp) # register filter blueprint
     # # Bootstrap-Flask requires this line
     # bootstrap = Bootstrap5(app)
     # # Flask-WTF requires this line
