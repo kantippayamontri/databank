@@ -21,8 +21,10 @@
   </div>
   <div class="container mt-5">
     <!-- category and action raw data -->
-    {% if session.get("device") %}
-      <div id="param_cate_raw_data_part">{% include "page_sections/raw_data_section.html" ignore missing %}</div>
+    {% if session.get("devices") %}
+      <div id="param_cate_raw_data_part">
+        {% include "page_sections/raw_data_section.html" ignore missing %}
+      </div>
     {% endif %}
   </div>
   {# Service Part #}
@@ -41,27 +43,26 @@
   {% if session.get("service") %}
     <div class="container mt-5">
       <!-- category and action services -->
-      <div id="param_cate_service_part">{% include "page_sections/cate_service_section.html" ignore missing %}</div>
+      <div id="param_cate_service_part">
+        {% include "page_sections/cate_service_section.html" ignore missing %}
+      </div>
     </div>
   {% endif %}
   {# for submit button #}
   {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %}
     <div class="container text-center">
       <a href="{{ url_for("graph.show_graph") }}">
-        <button type="button"
-                id="submit_button"
-                class="btn btn-success"
-                value="submit">Generate Graph</button>
+        <button type="button" id="submit_button" class="btn btn-success" value="submit">
+          Generate Graph
+        </button>
       </a>
     </div>
-    <br>
+    <br />
   {% endif %}
   <!-- {# for show graph #}
-      {% if graph_filename is defined %}
-        <div class="text-center">
-          <img src="{{url_for('static', filename=graph_filename)}}"
-               class="img-fluid"
-               alt="Centered image">
+                            {% if graph_filename is defined %}
+                              <div class="text-center">
+                                <img src="{{url_for('static', filename=graph_filename)}}" class="img-fluid" alt="Centered image" />
     </div>
   {% endif %}
   -->
@@ -71,15 +72,18 @@
 {% endblock js %}
 {% block css %}
   <style>
-.image-container {
-  max-width: fit-content; /* Adjust the maximum width as needed */
-  max-height: fit-content; /* Adjust the maximum width as needed */
-  overflow-x: auto; /* Enable horizontal scroll when the image exceeds */
-}
+      .image-container {
+          max-width: fit-content;
+          /* Adjust the maximum width as needed */
+          max-height: fit-content;
+          /* Adjust the maximum width as needed */
+          overflow-x: auto;
+          /* Enable horizontal scroll when the image exceeds */
+      }
 
-.img-fluid {
-  max-width: 100%; /* Make the image responsive within the container */
-}
-
+      .img-fluid {
+          max-width: 100%;
+          /* Make the image responsive within the container */
+      }
   </style>
 {% endblock css %}
