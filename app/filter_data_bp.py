@@ -161,10 +161,27 @@ def filter():
     type = request.args.get('type')
     match type:
         case 'devices':
-            return data["devices"]
+            if "devices" in data:
+                if data["devices"]:
+                    return data["devices"]
+            return []
         case 'services':
-            return data["services"]
+            if "services" in data:
+                if data["services"]:
+                    return data["services"]
+            return []
         case 'data_by_device':
-            return data["devices"]
+            if "devices" in data:
+                if data["devices"]:
+                    return data["devices"]
+            return []
         case 'data_by_service':
-            return [data["devices"],data["services"]]
+            devices = []
+            if "devices" in data:
+                if data["devices"]:
+                    devices = data["devices"]
+            services = []
+            if "services" in data:
+                if data["services"]:
+                    services = data["services"]
+            return [devices,services]
