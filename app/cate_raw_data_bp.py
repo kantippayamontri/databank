@@ -18,8 +18,8 @@ def get():
     return "get raw_data"
 
 
-@bp.route("/form", methods=["GET", "POST"])
-def form():
+@bp.route("/form/<int:device_id>", methods=["GET", "POST"])
+def form(device_id):
     if request.method == "POST":
 
         # print(f"data from form : {request.form}")
@@ -52,7 +52,7 @@ def form():
 
         # print(f"data: {data}")
 
-        session["raw_data"] = data
+        session["devices"][str(device_id)]["raw_data"] = data
 
         return redirect(url_for("main_page"))
 
@@ -60,6 +60,7 @@ def form():
 
         return render_template(
             "forms/raw_data_form.html",
+            device_id=str(device_id),   
             frequency=frequency,
             action=raw_data_action,
             sensitivity=cate_raw_data,

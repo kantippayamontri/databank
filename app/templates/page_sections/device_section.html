@@ -1,20 +1,33 @@
-<div class="row mb-3">
-  <div class="col-sm-12">
-    <div class="card shadow rounded text-center" style="border-color: #5aa17f">
-      <div class="card-header text-white" style="background-color: #5aa17f;">
-        <b>Your Device</b>
-      </div>
+{% if not session.get("devices") %}
+  <div class="row mb-3">
+    <div class="col-sm-12">
       <div class="card-body">
-        {% if not session.get("devices") %}
+        <div class="card shadow rounded text-center" style="border-color: #5aa17f">
+          <div class="card-header text-white" style="background-color: #5aa17f;">
+            <b>Your Device</b>
+          </div>
           <h5 class="card-title">You have 0 device.</h5>
-          {# button call api make show device form #}
+          <br />
           <a href="{{ url_for("device.form") }}">
             <button id="device_add" type="submit" class="btn btn-success">Add Device</button>
           </a>
-        {% else %}
-          {# loop device key show in table#}
-          {% if session.get("devices") %}
-            {% for device_id in session.get("devices").keys() %}
+          <br />
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% else %}
+  {# loop device key show in table#}
+  {% if session.get("devices") %}
+    {% for device_id in session.get("devices").keys() %}
+      <div class="row mb-3">
+        <div class="col-sm-12">
+          <div class="card-body">
+            <div class="card shadow rounded text-center" style="border-color: #5aa17f">
+              <div class="card-header text-white" style="background-color: #5aa17f;">
+                <b>{{ session["devices"][device_id]["device_name"] }}</b>
+              </div>
               <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
                 <tr>
                   <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
@@ -48,15 +61,23 @@
               <a href="{{ url_for("device.delete", device_id=device_id) }}">
                 <button id="device_delete" type="button" class="btn btn-danger">Delete Device</button>
               </a>
-            {% endfor %}
-            <br />
-            <br />
-            <a href="{{ url_for("device.form_new") }}">
-              <button id="device_add" type="submit" class="btn btn-success">Add Device</button>
-            </a>
-          {% endif %}
-        {% endif %}
+              {# raw data section #}
+              <br />
+              <br />
+              <div id="param_cate_raw_data_part">
+                {% include "page_sections/raw_data_section.html" with context %}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    {% endfor %}
+  {% endif %}
+  <br />
+  <div style="max-width: fit-content;margin-left:auto;margin-right:auto;">
+    <a href="{{ url_for("device.form_new") }}">
+      <button id="device_add" type="submit" class="btn btn-success">Add Device</button>
+    </a>
   </div>
-</div>
+  <br />
+{% endif %}

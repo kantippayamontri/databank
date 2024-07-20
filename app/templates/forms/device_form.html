@@ -30,23 +30,23 @@
             <label for="device_unprocessed_data_select_div">Unprocessed Data</label>
             <div class="container text-center">
               <ul class="list-group list-group-horizontal row" id="unprocessed_data_list">
-                {% if session["devices"][form_utils['device_id'] | string] %}
-                  {% for data in session["devices"][form_utils['device_id'] | string]["device_unprocessed"] %}
-                    <li class='list-group-item bg-light d-flex justify-content-center' data-value="{{ data }}">
-                      <div>
-                        <div class='d-flex' style='justify-content: center'>
-                          <p>{{ data }}</p>
+                {% if "devices" in session.keys() %}
+                  {% if session["devices"][form_utils['device_id'] | string] %}
+                    {% for data in session["devices"][form_utils['device_id'] | string]["device_unprocessed"] %}
+                      <li class='list-group-item bg-light d-flex justify-content-center' data-value="{{ data }}">
+                        <div>
+                          <div class='d-flex' style='justify-content: center'>
+                            <p>{{ data }}</p>
+                          </div>
                         </div>
-                      </div>
-                      <button type='button'
-                              class='btn btn-danger'
-                              id="menu_{{ data }}"
-                              onClick='delete_unprocessed_click(this.id)'
-                              style="display: inline-block">Delete</button>
-                    </li>
-
-                  {% endfor %}
-                {% else %}
+                        <button type='button'
+                                class='btn btn-danger'
+                                id="menu_{{ data }}"
+                                onClick='delete_unprocessed_click(this.id)'
+                                style="display: inline-block">Delete</button>
+                      </li>
+                    {% endfor %}
+                  {% endif %}
                 {% endif %}
               </ul>
             </div>
@@ -80,7 +80,7 @@
           {# Submit button #}
           <div class="container text-center">
             <button type="submit" class="btn btn-primary" value="submit" id="submit_button_device">
-              {% if ("devices" in session.keys()) and  (not form_utils["new_device"])%}
+              {% if ("devices" in session.keys()) and  (not form_utils["new_device"]) %}
                 Update Device
               {% else %}
                 Add Device
@@ -233,7 +233,7 @@
   </script>
   {# check device in session #} {# if found -> set value in form to device info in
 session #}
-<script>
+  <script>
       // get device in session from get /get_device
       $.ajax({
           url: "/device/get/{{form_utils['device_id']}}",
@@ -309,73 +309,70 @@ session #}
 
           // check for add new device or not
           const submit_button_device = document.getElementById("submit_button_device");
-          
-          if (submit_button_device.innerText === "Update Device"){
-            // Update device
-            device.new_device = false;
-            $.ajax({
-                url: "/session/get",
-                type: "get",
-                dataType: "json",
-                contentType: "application/json",
-                success: function(session_all) {
-                  var device_name = []
-                  for (_device_id in session_all["devices"]) {
-                    device_name.push(session_all["devices"][_device_id]["device_name"]);
-                  }
-                  if (device_name.includes(device["device_name"])){
-                    alert("You already added this device.");
-                  }else{
 
-                    $.ajax({
-                      url: "/device/update/{{form_utils['device_id']}}",
-                      type: "post",
-                      dataType: "json",
-                      contentType: "application/json",
-                      success: function() {
-                          window.location.href = "/";
-                      },
-                      data: JSON.stringify(device),
-                    }); 
+          if (submit_button_device.innerText === "Update Device") {
+              // Update device
+              device.new_device = false;
+              $.ajax({
+                  url: "/session/get",
+                  type: "get",
+                  dataType: "json",
+                  contentType: "application/json",
+                  success: function(session_all) {
+                      var device_name = []
+                      for (_device_id in session_all["devices"]) {
+                          device_name.push(session_all["devices"][_device_id]["device_name"]);
+                      }
+                      if (device_name.includes(device["device_name"])) {
+                          // alert("You already added this device.");
+                          $.ajax({
+                              url: "/device/update/{{form_utils['device_id']}}",
+                              type: "post",
+                              dataType: "json",
+                              contentType: "application/json",
+                              success: function() {
+                                  window.location.href = "/";
+                              },
+                              data: JSON.stringify(device),
+                          });
+                      }
+                  },
+              });
 
-                  }
-                },
-            });
-            
 
-          } else if (submit_button_device.innerText === "Add Device"){
-            device.new_device = true;
-            // check is device name redundant
-            // get the session
+          } else if (submit_button_device.innerText === "Add Device") {
+              device.new_device = true;
+              // check is device name redundant
+              // get the session
 
-            $.ajax({
-                url: "/session/get",
-                type: "get",
-                dataType: "json",
-                contentType: "application/json",
-                success: function(session_all) {
-                  var device_name = []
-                  for (_device_id in session_all["devices"]) {
-                    device_name.push(session_all["devices"][_device_id]["device_name"]);
-                  }
-                  if (device_name.includes(device["device_name"])){
-                    alert("You already added this device.");
-                  }else{
+              $.ajax({
+                  url: "/session/get",
+                  type: "get",
+                  dataType: "json",
+                  contentType: "application/json",
+                  success: function(session_all) {
+                      var device_name = []
+                      for (_device_id in session_all["devices"]) {
+                          device_name.push(session_all["devices"][_device_id]["device_name"]);
+                      }
+                      if (device_name.includes(device["device_name"])) {
+                          alert("You already added this device.");
+                      } else {
 
-                    $.ajax({
-                      url: "/device/add",
-                      type: "post",
-                      dataType: "json",
-                      contentType: "application/json",
-                      success: function() {
-                          window.location.href = "/";
-                      },
-                      data: JSON.stringify(device),
-                    }); 
+                          $.ajax({
+                              url: "/device/add",
+                              type: "post",
+                              dataType: "json",
+                              contentType: "application/json",
+                              success: function() {
+                                  window.location.href = "/";
+                              },
+                              data: JSON.stringify(device),
+                          });
 
-                  }
-                },
-            });
+                      }
+                  },
+              });
 
           }
 

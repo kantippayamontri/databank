@@ -19,14 +19,14 @@
     <!-- Devices-->
     <div id="device_part">{% include "page_sections/device_section.html" ignore missing %}</div>
   </div>
-  <div class="container mt-5">
+  {# <div class="container mt-5">
     <!-- category and action raw data -->
     {% if session.get("devices") %}
       <div id="param_cate_raw_data_part">
         {% include "page_sections/raw_data_section.html" ignore missing %}
       </div>
     {% endif %}
-  </div>
+  </div> #}
   {# Service Part #}
   <div class="container mt-5" style="margin-bottom: -20px;">
     <div class="card shadow rounded mt-5" style="background-color:#f1c232 ;">

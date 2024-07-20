@@ -1,64 +1,56 @@
-<div class="row mb-3">
-    <div class="col-sm-12">
-        <div class="card shadow rounded text-center" style="border-color:#5aa17f;">
-            <div class="card-header text-white" style="background-color: #5aa17f;">
-                <b>Data</b>
-            </div>
-            <div class="card-body">
-                {% if not session.get("raw_data") %}
-                    <h5 class="card-title">Add Details of Data</h5>
-                    {# button call api make show device form #}
-                    <a href="{{ url_for("raw_data.form") }}">
-                        <button id="raw_add" type="submit" class="btn btn-success">Add Data</button>
-                    </a>
-                {% else %}
-                    {% if session.get("raw_data") %}
-                        {% for un_data in session.get("raw_data").keys() %}
-                            <h2 style="color:blue;">{{ un_data }}</h2>
-                            <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-                                <tr>
-                                    <th style="text-align: center;
-                                               padding: 8px;
-                                               background-color: lightblue">Label</th>
-                                    <th style="text-align: center;
-                                               padding: 8px;
-                                               background-color: lightblue">Value</th>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px;">Action</td>
-                                    <td style="padding: 8px;">{{ session.get("raw_data")[un_data] ["action"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px;">Frequency</td>
-                                    <td style="padding: 8px;">{{ session.get("raw_data")[un_data] ["frequency"] }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 8px;">Sensitivity</td>
-                                    <td style="padding: 8px;">{{ session.get("raw_data")[un_data] ["sensitivity"] }}</td>
-                                </tr>
-                            </table>
-                            <!-- <h2 style="color:blue;">{{ un_data }}</h2>
-                            <h3>
-                                <span style="color:green;">Action:</span> {{ session.get("raw_data")[un_data] ["action"] }}
-                            </h3>
-                            <h3>
-                                <span style="color:green;">Frequency:</span> {{ session.get("raw_data")[un_data] ["frequency"] }}
-                            </h3>
-                            <h3>
-                                <span style="color:green;">Sensitivity:</span> {{ session.get("raw_data")[un_data] ["sensitivity"] }}
-</h3> -->
-                            <br>
-                        {% endfor %}
-                    {% endif %}
-                    <a href="{{ url_for("raw_data.form") }}">
-                        <button id="raw_data_edit" type="submit" class="btn btn-primary">Update Data</button>
-                    </a>
-                    <!--
+<div class="row mb-3" style="padding:20px;">
+  <div class="col-sm-12">
+    <div class="card shadow rounded text-center" style="border-color:#5aa17f;">
+      <div class="card-header text-white" style="background-color: #5aa17f;">
+        <b>Unprocessed Data Details</b>
+      </div>
+      <div class="card-body">
+        {% if not session["devices"][device_id]["raw_data"] %}
+          <h5 class="card-title">Add Details of Data</h5>
+          {# button call api make show device form #}
+          <a href="{{ url_for("raw_data.form", device_id=device_id) }}">
+            <button id="raw_add" type="submit" class="btn btn-success">Add Data Details</button>
+          </a>
+        {% else %}
+          {% if session["devices"][device_id]["raw_data"] %}
+            {% for un_data in session["devices"][device_id]["raw_data"].keys() %}
+              <h2 style="color:blue;">{{ un_data }}</h2>
+              <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+                <tr>
+                  <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                  <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+                </tr>
+                <tr>
+                  <td style="padding: 8px;">Action</td>
+                  <td style="padding: 8px;">
+                    {{ session.get("devices")[device_id] ["raw_data"][un_data]["action"] }}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px;">Frequency</td>
+                  <td style="padding: 8px;">
+                    {{ session.get("devices")[device_id] ["raw_data"][un_data]["frequency"] }}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px;">Sensitivity</td>
+                  <td style="padding: 8px;">
+                    {{ session.get("devices")[device_id] ["raw_data"][un_data]["sensitivity"] }}
+                  </td>
+                </tr>
+              </table>
+              <br />
+            {% endfor %}
+          {% endif %}
+          <a href="{{ url_for("raw_data.form", device_id=device_id) }}">
+            <button id="raw_data_edit" type="submit" class="btn btn-primary">Update Data</button>
+          </a>
+          <!--
                     <a href="{{ url_for("raw_data.delete") }}">
                         <button id="raw_data_delete" type="button" class="btn btn-danger">Delete Raw Data</button>
                     </a>-->
-                {% endif %}
-            </div>
-        </div>
+        {% endif %}
+      </div>
     </div>
+  </div>
 </div>
