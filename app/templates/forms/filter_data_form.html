@@ -186,41 +186,42 @@ unprocessed data #}
           data[1].device_unprocessed.forEach((doc) => {
             Object.entries(res[1]).forEach((device, key) => {
               Object.entries(device[1]["cate_service"]).forEach((cate) => {
-                if (
-                  cate[1].device_unprocessed.toLowerCase() == doc.toLowerCase()
-                ) {
-                  if (search) {
-                    if (
-                      doc.toLowerCase().includes(search.toLowerCase()) ||
-                      device[1].service_name
-                        .toLowerCase()
-                        .includes(search.toLowerCase())
-                    ) {
+                Object.entries(cate[1]).forEach((cate_data) => {
+                  if (cate_data[0].toLowerCase() == doc.toLowerCase()) {
+                    if (search) {
                       if (
-                        !(
+                        doc.toLowerCase().includes(search.toLowerCase()) ||
+                        device[1].service_name
+                          .toLowerCase()
+                          .includes(search.toLowerCase())
+                      ) {
+                        if (
+                          !(
+                            json[
+                              doc.toLowerCase() + "/" + device[1].service_name
+                            ] ?? []
+                          ).includes(doc.toLowerCase())
+                        ) {
                           json[
                             doc.toLowerCase() + "/" + device[1].service_name
-                          ] ?? []
-                        ).includes(doc.toLowerCase())
-                      ) {
-                        json[doc.toLowerCase() + "/" + device[1].service_name] =
-                          [device[1].service_name, doc, doc.toLowerCase()];
-                      }
-                    }
-                  } else {
-                    if ((json[doc.toLowerCase()] ?? []).length > 0) {
-                      if (
-                        !json[doc.toLowerCase()].includes(
-                          device[1].service_name
-                        )
-                      ) {
-                        json[doc.toLowerCase()].push(device[1].service_name);
+                          ] = [device[1].service_name, doc, doc.toLowerCase()];
+                        }
                       }
                     } else {
-                      json[doc.toLowerCase()] = [doc, device[1].service_name];
+                      if ((json[doc.toLowerCase()] ?? []).length > 0) {
+                        if (
+                          !json[doc.toLowerCase()].includes(
+                            device[1].service_name
+                          )
+                        ) {
+                          json[doc.toLowerCase()].push(device[1].service_name);
+                        }
+                      } else {
+                        json[doc.toLowerCase()] = [doc, device[1].service_name];
+                      }
                     }
                   }
-                }
+                });
               });
             });
           });
@@ -265,112 +266,122 @@ unprocessed data #}
           data[1].device_unprocessed.forEach((doc) => {
             Object.entries(res[1]).forEach((device, key) => {
               Object.entries(device[1]["cate_service"]).forEach((cate) => {
-                if (
-                  cate[1].device_unprocessed.toLowerCase() == doc.toLowerCase()
-                ) {
-                  if (search) {
-                    if (
-                      cate[1].action
-                        .toLowerCase()
-                        .includes(search.toLowerCase()) ||
-                      doc.toLowerCase().includes(search.toLowerCase()) ||
-                      device[1].service_name
-                        .toLowerCase()
-                        .includes(search.toLowerCase())
-                    ) {
-                      json[
-                        cate[1].action.toLowerCase() +
-                          "/" +
-                          cate[1].device_unprocessed.toLowerCase() +
-                          "/" +
-                          device[1].service_name
-                      ] = [cate[1].action, doc, device[1].service_name];
-                    }
-                  } else {
-                    if (
-                      (
-                        json[
-                          cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                        ] ?? []
-                      ).length > 0
-                    ) {
+                Object.entries(cate[1]).forEach((cate_data) => {
+                  if (cate_data[0].toLowerCase() == doc.toLowerCase()) {
+                    if (search) {
                       if (
-                        !json[
-                          cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                        ].includes(device[1].service_name)
+                        cate_data[1].action
+                          .toLowerCase()
+                          .includes(search.toLowerCase()) ||
+                        doc.toLowerCase().includes(search.toLowerCase()) ||
+                        device[1].service_name
+                          .toLowerCase()
+                          .includes(search.toLowerCase())
                       ) {
-                        in_device_data.push(doc.toLowerCase());
                         json[
-                          cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                        ].push(device[1].service_name);
+                          cate_data[1].action.toLowerCase() +
+                            "/" +
+                            cate_data[0].toLowerCase() +
+                            "/" +
+                            device[1].service_name
+                        ] = [cate_data[1].action, doc, device[1].service_name];
                       }
                     } else {
-                      in_device_data.push(doc.toLowerCase());
-                      json[
-                        cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                      ] = [cate[1].action, doc, device[1].service_name];
+                      if (
+                        (
+                          json[
+                            cate_data[1].action.toLowerCase() +
+                              "/" +
+                              doc.toLowerCase()
+                          ] ?? []
+                        ).length > 0
+                      ) {
+                        if (
+                          !json[
+                            cate_data[1].action.toLowerCase() +
+                              "/" +
+                              doc.toLowerCase()
+                          ].includes(device[1].service_name)
+                        ) {
+                          in_device_data.push(doc.toLowerCase());
+                          json[
+                            cate_data[1].action.toLowerCase() +
+                              "/" +
+                              doc.toLowerCase()
+                          ].push(device[1].service_name);
+                        }
+                      } else {
+                        in_device_data.push(doc.toLowerCase());
+                        json[
+                          cate_data[1].action.toLowerCase() +
+                            "/" +
+                            doc.toLowerCase()
+                        ] = [cate_data[1].action, doc, device[1].service_name];
+                      }
                     }
                   }
-                }
+                });
               });
             });
           });
         });
         Object.entries(res[1]).forEach((device, key) => {
           Object.entries(device[1]["cate_service"]).forEach((cate) => {
-            if (
-              !in_device_data.includes(cate[1].device_unprocessed.toLowerCase())
-            ) {
-              if (search) {
-                if (
-                  cate[1].action.toLowerCase().includes(search.toLowerCase()) ||
-                  cate[1].device_unprocessed
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                  device[1].service_name
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-                ) {
+            Object.entries(cate[1]).forEach((cate_data) => {
+              if (!in_device_data.includes(cate_data[0].toLowerCase())) {
+                if (search) {
                   if (
-                    (
+                    cate_data[1].action
+                      .toLowerCase()
+                      .includes(search.toLowerCase()) ||
+                    cate_data[0].toLowerCase().includes(search.toLowerCase()) ||
+                    device[1].service_name
+                      .toLowerCase()
+                      .includes(search.toLowerCase())
+                  ) {
+                    if (
+                      (
+                        json[
+                          cate_data[1].action.toLowerCase() +
+                            "/" +
+                            cate_data[0].toLowerCase() +
+                            "/" +
+                            device[1].service_name
+                        ] ?? []
+                      ).length == 0
+                    ) {
                       json[
-                        cate[1].action.toLowerCase() +
+                        cate_data[1].action.toLowerCase() +
                           "/" +
-                          cate[1].device_unprocessed.toLowerCase() +
+                          cate_data[0].toLowerCase() +
                           "/" +
                           device[1].service_name
-                      ] ?? []
-                    ).length == 0
-                  ) {
-                    json[
-                      cate[1].action.toLowerCase() +
-                        "/" +
-                        cate[1].device_unprocessed.toLowerCase() +
-                        "/" +
-                        device[1].service_name
-                    ] = [cate[1].action, "", device[1].service_name];
-                  }
-                }
-              } else {
-                if ((json[cate[1].action.toLowerCase()] ?? []).length > 0) {
-                  if (
-                    !json[cate[1].action.toLowerCase()].includes(
-                      device[1].service_name
-                    )
-                  ) {
-                    json[cate[1].action.toLowerCase()].push(
-                      device[1].service_name
-                    );
+                      ] = [cate_data[1].action, "", device[1].service_name];
+                    }
                   }
                 } else {
-                  json[cate[1].action.toLowerCase()] = [
-                    cate[1].action,
-                    "",
-                    device[1].service_name,
-                  ];
+                  if (
+                    (json[cate_data[1].action.toLowerCase()] ?? []).length > 0
+                  ) {
+                    if (
+                      !json[cate_data[1].action.toLowerCase()].includes(
+                        device[1].service_name
+                      )
+                    ) {
+                      json[cate_data[1].action.toLowerCase()].push(
+                        device[1].service_name
+                      );
+                    }
+                  } else {
+                    json[cate_data[1].action.toLowerCase()] = [
+                      cate_data[1].action,
+                      "",
+                      device[1].service_name,
+                    ];
+                  }
                 }
               }
-            }
+            });
           });
         });
         Object.keys(json).forEach((key, index) => {
@@ -495,19 +506,21 @@ unprocessed data #}
           data[1].device_unprocessed.forEach((doc) => {
             Object.entries(res[1]).forEach((device, key) => {
               Object.entries(device[1]["cate_service"]).forEach((cate) => {
-                if (
-                  cate[1].device_unprocessed.toLowerCase() == doc.toLowerCase()
-                ) {
-                  if ((json[doc.toLowerCase()] ?? []).length > 0) {
-                    if (
-                      !json[doc.toLowerCase()].includes(device[1].service_name)
-                    ) {
-                      json[doc.toLowerCase()].push(device[1].service_name);
+                Object.entries(cate[1]).forEach((cate_data) => {
+                  if (cate_data[0].toLowerCase() == doc.toLowerCase()) {
+                    if ((json[doc.toLowerCase()] ?? []).length > 0) {
+                      if (
+                        !json[doc.toLowerCase()].includes(
+                          device[1].service_name
+                        )
+                      ) {
+                        json[doc.toLowerCase()].push(device[1].service_name);
+                      }
+                    } else {
+                      json[doc.toLowerCase()] = [doc, device[1].service_name];
                     }
-                  } else {
-                    json[doc.toLowerCase()] = [doc, device[1].service_name];
                   }
-                }
+                });
               });
             });
           });
@@ -542,60 +555,70 @@ unprocessed data #}
           data[1].device_unprocessed.forEach((doc) => {
             Object.entries(res[1]).forEach((device, key) => {
               Object.entries(device[1]["cate_service"]).forEach((cate) => {
-                if (
-                  cate[1].device_unprocessed.toLowerCase() == doc.toLowerCase()
-                ) {
-                  if (
-                    (
-                      json[
-                        cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                      ] ?? []
-                    ).length > 0
-                  ) {
+                Object.entries(cate[1]).forEach((cate_data) => {
+                  if (cate_data[0].toLowerCase() == doc.toLowerCase()) {
                     if (
-                      !json[
-                        cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                      ].includes(device[1].service_name)
+                      (
+                        json[
+                          cate_data[1].action.toLowerCase() +
+                            "/" +
+                            doc.toLowerCase()
+                        ] ?? []
+                      ).length > 0
                     ) {
+                      if (
+                        !json[
+                          cate_data[1].action.toLowerCase() +
+                            "/" +
+                            doc.toLowerCase()
+                        ].includes(device[1].service_name)
+                      ) {
+                        in_device_data.push(doc.toLowerCase());
+                        json[
+                          cate_data[1].action.toLowerCase() +
+                            "/" +
+                            doc.toLowerCase()
+                        ].push(device[1].service_name);
+                      }
+                    } else {
                       in_device_data.push(doc.toLowerCase());
                       json[
-                        cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                      ].push(device[1].service_name);
+                        cate_data[1].action.toLowerCase() +
+                          "/" +
+                          doc.toLowerCase()
+                      ] = [cate_data[1].action, doc, device[1].service_name];
                     }
-                  } else {
-                    in_device_data.push(doc.toLowerCase());
-                    json[
-                      cate[1].action.toLowerCase() + "/" + doc.toLowerCase()
-                    ] = [cate[1].action, doc, device[1].service_name];
                   }
-                }
+                });
               });
             });
           });
         });
         Object.entries(res[1]).forEach((device, key) => {
           Object.entries(device[1]["cate_service"]).forEach((cate) => {
-            if (
-              !in_device_data.includes(cate[1].device_unprocessed.toLowerCase())
-            ) {
-              if ((json[cate[1].action.toLowerCase()] ?? []).length > 0) {
+            Object.entries(cate[1]).forEach((cate_data) => {
+              if (!in_device_data.includes(cate_data[0].toLowerCase())) {
                 if (
-                  !json[cate[1].action.toLowerCase()].includes(
-                    device[1].service_name
-                  )
+                  (json[cate_data[1].action.toLowerCase()] ?? []).length > 0
                 ) {
-                  json[cate[1].action.toLowerCase()].push(
-                    device[1].service_name
-                  );
+                  if (
+                    !json[cate_data[1].action.toLowerCase()].includes(
+                      device[1].service_name
+                    )
+                  ) {
+                    json[cate_data[1].action.toLowerCase()].push(
+                      device[1].service_name
+                    );
+                  }
+                } else {
+                  json[cate_data[1].action.toLowerCase()] = [
+                    cate_data[1].action,
+                    "",
+                    device[1].service_name,
+                  ];
                 }
-              } else {
-                json[cate[1].action.toLowerCase()] = [
-                  cate[1].action,
-                  "",
-                  device[1].service_name,
-                ];
               }
-            }
+            });
           });
         });
         Object.keys(json).forEach((key, index) => {
