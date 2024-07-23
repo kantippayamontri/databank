@@ -27,65 +27,63 @@
       </div>
     {% else %}
       <!-- <ul class="list-group list-group-flush"> -->
-      {% for service_id in session["services"].keys() %}
-        {% if "cate_service" in session["services"][service_id].keys() %}
-          {% for device_id in session["services"][service_id]["cate_service"] %}
-            <div class="card shadow rounded text-center" style="border-color:#ffd966;">
-              <div class="card-header text-white" style="background-color:#ffd966;">
-                <b>Service with {{ session["devices"][device_id]["device_name"] }}</b>
-              </div>
-              <div class="card-body">
-
-                {% for _data in session.get('services')[service_id]['cate_service'][device_id].keys() %}
-                  <h2>{{ _data }}</h2>
-                  <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-                    <tr>
-                      <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
-                      <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
-                    </tr>
-                    <tr>
-                      <td style="padding: 8px;">Action</td>
-                      <td style="padding: 8px;">
-                        {{ session["services"][service_id]["cate_service"][device_id][_data]['action'] }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding: 8px;">Frequency</td>
-                      <td style="padding: 8px;">
-                        {{ session["services"][service_id]["cate_service"][device_id][_data]['frequency'] }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style="padding: 8px;">Category</td>
-                      <td style="padding: 8px;">
-                        {{ session["services"][service_id]["cate_service"][device_id][_data]['category'] }}
-                      </td>
-                    </tr>
-                  </table>
-                  <a href="{{ url_for('cate_service.form_edit',service_id=service_id, device_id=device_id, unprocessed=_data) }}">
-                    <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
-                  </a>
-                  <a href="{{ url_for('cate_service.delete_unprocessed',service_id=service_id, device_id=device_id ,unprocessed=_data) }}">
-                    <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
-                  </a>
-                  <br />
-                  <br />
-                {% endfor %}
-                <hr />
-                {# show add button until #}
-                <a href="{{ url_for('cate_service.form', service_id=service_id | int, device_id=device_id | int) }}">
-                  <button id="raw_add" type="submit" class="btn btn-success">
-                    Add {{ session["devices"][device_id]["device_name"] }}
-                  </button>
-                </a>
-              </div>
+      {% if "cate_service" in session["services"][service_id].keys() %}
+        {% for device_id in session["services"][service_id]["cate_service"] %}
+          <div class="card shadow rounded text-center" style="border-color:#ffd966;">
+            <div class="card-header text-white" style="background-color:#ffd966;">
+              <b>Service with {{ session["devices"][device_id]["device_name"] }}</b>
             </div>
-            <br />
-          {% endfor %}
-        </div>
+            <div class="card-body">
+
+              {% for _data in session.get('services')[service_id]['cate_service'][device_id].keys() %}
+                <h2>{{ _data }}</h2>
+                <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+                  <tr>
+                    <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                    <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px;">Action</td>
+                    <td style="padding: 8px;">
+                      {{ session["services"][service_id]["cate_service"][device_id][_data]['action'] }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px;">Frequency</td>
+                    <td style="padding: 8px;">
+                      {{ session["services"][service_id]["cate_service"][device_id][_data]['frequency'] }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px;">Category</td>
+                    <td style="padding: 8px;">
+                      {{ session["services"][service_id]["cate_service"][device_id][_data]['category'] }}
+                    </td>
+                  </tr>
+                </table>
+                <a href="{{ url_for('cate_service.form_edit',service_id=service_id, device_id=device_id, unprocessed=_data) }}">
+                  <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
+                </a>
+                <a href="{{ url_for('cate_service.delete_unprocessed',service_id=service_id, device_id=device_id ,unprocessed=_data) }}">
+                  <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
+                </a>
+                <br />
+                <br />
+              {% endfor %}
+              <hr />
+              {# show add button until #}
+              <a href="{{ url_for('cate_service.form', service_id=service_id | int, device_id=device_id | int) }}">
+                <button id="raw_add" type="submit" class="btn btn-success">
+                  Add {{ session["devices"][device_id]["device_name"] }}
+                </button>
+              </a>
+            </div>
+          </div>
+          <br />
+        {% endfor %}
       {% endif %}
-    {% endfor %}
-  {% endif %}
+    {% endif %}
+  </div>
 </div>
 {% if "devices" in session.keys() %}
   {% for device_id in session["devices"].keys() %}

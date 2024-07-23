@@ -52,7 +52,7 @@
                             {% else %}
                                 {% for _frequency in frequency %}
                                     <option value="{{ _frequency }}"
-                                            {% if choose_data["data"]["frequency"] == _frequency %}selected{% endif %}>
+                                            {% if choose_data['data']['frequency'] == _frequency %}selected{% endif %}>
                                         {{ _frequency }}
                                     </option>
                                 {% endfor %}
