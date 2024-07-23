@@ -1,83 +1,102 @@
 <div class="row mb-3">
-    <div class="col-sm-12">
-        <div class="card shadow rounded text-center" style="border-color:#ffd966;">
-            <div class="card-header text-white" style="background-color:#ffd966;">
-                <b>Service (Category and Action)</b>
-            </div>
-            <div class="card-body">
-                {% if not session.get("cate_service") %}
-                    <h5 class="card-title">Add details of services.</h5>
-                    {# button call api make show cate service form #}
-                    {% if "device" not in session.keys() %}
-                        <h3 style="color:#793420;">Plase add device before making services.</h3>
-                    {% elif "raw_data" not in session.keys() %}
-                        <h3 style="color:#793420;">Plase add detail of unprocessed data before making services.</h3>
-                    {% else %}
-                        <a href="{{ url_for("cate_service.form") }}">
-                            <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
-                        </a>
-                    {% endif %}
-                {% else %}
-                    <!-- <ul class="list-group list-group-flush"> -->
-                    {% for _data in session.get('cate_service').keys() %}
-                        <h2>{{ _data }}</h2>
-                        <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-                            <tr>
-                                <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
-                                <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px;">Action</td>
-                                <td style="padding: 8px;">{{ session.get("cate_service")[_data] ['action'] }}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px;">Frequency</td>
-                                <td style="padding: 8px;">{{ session.get("cate_service")[_data] ['frequency'] }}</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 8px;">Category</td>
-                                <td style="padding: 8px;">{{ session.get("cate_service")[_data] ['category'] }}</td>
-                            </tr>
-                        </table>
-                        <a href="{{ url_for('cate_service.form_edit', unprocessed=_data) }}">
-                            <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
-                        </a>
-                        <a href="{{ url_for("cate_service.delete_unprocessed", unprocessed=_data) }}">
-                            <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
-                        </a>
-                        <!-- <li class="list-group-item">
-                                <h2>
-                                    <span style="color:blue;">Data:</span> {{ _data }}
-                                </h2>
-                                <h2>
-                                    <span style="color:green;">Action:</span> {{ session.get("cate_service")[_data] ['action'] }}
-                                </h2>
-                                <h2>
-                                    <span style="color:green;">Frequency:</span> {{ session.get("cate_service")[_data] ['frequency'] }}
-                                </h2>
-                                <h2>
-                                    <span style="color:green;">Category:</span> {{ session.get("cate_service")[_data] ['category'] }}
-                                </h2>
-                                <a href="{{ url_for('cate_service.form_edit', unprocessed=_data) }}">
-                                    <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
-                                </a>
-                                <a href="{{ url_for("cate_service.delete_unprocessed", unprocessed=_data) }}">
-                                    <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
-                                </a>
-                            </li> -->
-                    {% endfor %}
-                    <!-- </ul> -->
-                    {# show add button until #}
-                    {% if ('raw_data' in session.keys()) and ('cate_service' in session.keys()) %}
-                        {% if session.get('raw_data').keys()|length > session.get('cate_service').keys()|length %}
-                            <hr>
-                            <a href="{{ url_for("cate_service.form") }}">
-                                <button id="raw_add" type="submit" class="btn btn-success">Add Service</button>
-                            </a>
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-            </div>
+  <div class="col-sm-12">
+    {% if not session.get("services")[service_id]["cate_service"] %}
+      <div class="card shadow rounded text-center" style="border-color:#ffd966;">
+        <div class="card-header text-white" style="background-color:#ffd966;">
+          <b>Service (Category and Action)</b>
         </div>
-    </div>
+        <div class="card-body">
+          {# button call api make show cate service form #}
+          {% if "devices" not in session.keys() %}
+            <h3 style="color:#793420;">Plase add device and device details before making services.</h3>
+          {% else %}
+            {% set check_raw_data = {"count": 0} %}
+            {% for device_id in session["devices"].keys() %}
+              {% if "raw_data" in session["devices"][device_id].keys() %}
+                <a href="{{ url_for('cate_service.form', service_id=service_id | int,device_id=device_id | int) }}">
+                  <button id="raw_add" type="submit" class="btn btn-success">
+                    {{ session["devices"][device_id]["device_name"] }}
+                  </button>
+                </a>
+                {% if check_raw_data.update({"count": 1}) %}{% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if check_raw_data.count == 0 %}<p>Please add device details for your devices.</p>{% endif %}
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <!-- <ul class="list-group list-group-flush"> -->
+      {% for service_id in session["services"].keys() %}
+        {% if "cate_service" in session["services"][service_id].keys() %}
+          {% for device_id in session["services"][service_id]["cate_service"] %}
+            <div class="card shadow rounded text-center" style="border-color:#ffd966;">
+              <div class="card-header text-white" style="background-color:#ffd966;">
+                <b>Service with {{ session["devices"][device_id]["device_name"] }}</b>
+              </div>
+              <div class="card-body">
+
+                {% for _data in session.get('services')[service_id]['cate_service'][device_id].keys() %}
+                  <h2>{{ _data }}</h2>
+                  <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+                    <tr>
+                      <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                      <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px;">Action</td>
+                      <td style="padding: 8px;">
+                        {{ session["services"][service_id]["cate_service"][device_id][_data]['action'] }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px;">Frequency</td>
+                      <td style="padding: 8px;">
+                        {{ session["services"][service_id]["cate_service"][device_id][_data]['frequency'] }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px;">Category</td>
+                      <td style="padding: 8px;">
+                        {{ session["services"][service_id]["cate_service"][device_id][_data]['category'] }}
+                      </td>
+                    </tr>
+                  </table>
+                  <a href="{{ url_for('cate_service.form_edit',service_id=service_id, device_id=device_id, unprocessed=_data) }}">
+                    <button id="cate_service_edit" type="submit" class="btn btn-primary">Edit</button>
+                  </a>
+                  <a href="{{ url_for('cate_service.delete_unprocessed',service_id=service_id, device_id=device_id ,unprocessed=_data) }}">
+                    <button id="cate_service_delete" type="button" class="btn btn-danger">Delete</button>
+                  </a>
+                  <br />
+                  <br />
+                {% endfor %}
+                <hr />
+                {# show add button until #}
+                <a href="{{ url_for('cate_service.form', service_id=service_id | int, device_id=device_id | int) }}">
+                  <button id="raw_add" type="submit" class="btn btn-success">
+                    Add {{ session["devices"][device_id]["device_name"] }}
+                  </button>
+                </a>
+              </div>
+            </div>
+            <br />
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
 </div>
+{% if "devices" in session.keys() %}
+  {% for device_id in session["devices"].keys() %}
+    {% if "cate_service" in session["services"][service_id].keys() %}
+      {% if ("raw_data" in session["devices"][device_id].keys()) and (device_id not in session["services"][service_id]["cate_service"].keys()) %}
+        <a href="{{ url_for('cate_service.form', service_id=service_id | int,device_id=device_id | int) }}">
+          <button id="raw_add" type="submit" class="btn btn-success">
+            {{ session["devices"][device_id]["device_name"] }}
+          </button>
+        </a>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

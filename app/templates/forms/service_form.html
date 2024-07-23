@@ -1,52 +1,61 @@
 {% extends "base.html" %}
 {% block main %}
-    <div class="container mt-5">
-        <div class="card shadow rounded border-primary">
-            <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Service</h1>
-            <div class="card-body">
-                <form id="service_form" method="POST" action="/service/form">
-                    {#add service name#}
-                    <div class="form-group">
-                        <label for="sevice_name">Service Name</label>
-                        <input type="text"
-                               class="form-control"
-                               id="service_name"
-                               name="service_name"
-                               placeholder="Enter service name"
-                               {% if choose_service_name != "" %}value="{{ choose_service_name }}"{% endif %}
-                               required>
-                    </input>
-                </div>
-                {#add service type#}
-                <div class="form-group">
-                    <label for="service_type">Service Type</label>
-                    <select class="form-select custom-select"
-                            id="service_type"
-                            name="service_type">
-                        {% for _service_type in service_type %}
-                            <option value="{{ _service_type }}"
-                                    {% if choose_service_type == _service_type %}selected{% endif %}>
-                                {{ _service_type }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                {#add submit button#}
-                <div>
-                    <div class="container text-center">
-                        <button type="submit" class="btn btn-primary" value="submit">
-                            {% if not session.get("service") %}
-                                Add Service
-                            {% else %}
-                                Update Service
-                            {% endif %}
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+  <div class="container mt-5">
+    <div class="card shadow rounded border-primary">
+      <h1 class="text-center display-4 mb-4" style="margin-top: 20px">Service</h1>
+      <div class="card-body">
+        <form id="service_form" method="POST" action="/service/form_submit/{{service_id}}">
+          {#add service name#}
+          <div class="form-group">
+            <label for="sevice_name">Service Name</label>
+            <input type="text"
+                   class="form-control"
+                   id="service_name"
+                   name="service_name"
+                   placeholder="Enter service name"
+                   {% if choose_service_name != "" %}value="{{ choose_service_name }}"{% endif %}
+                   required />
+          </div>
+          {#add service type#}
+          <div class="form-group">
+            <label for="service_type">Service Type</label>
+            <select class="form-select custom-select" id="service_type" name="service_type">
+              {% for _service_type in service_type %}
+                <option value="{{ _service_type }}" {% if choose_service_type == _service_type %}selected{% endif %}>
+                  {{ _service_type }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          {#add submit button#}
+          <div>
+            <div class="container text-center">
+              <button type="submit" class="btn btn-primary" value="submit" id="service_submit_button">
+                {% if not session.get("services")[service_id] %}
+                  Add Service
+                {% else %}
+                  Update Service
+                {% endif %}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock main %}
 {% block js %}
+<script>
+const submit_button = document.getElementById("service_submit_button");
+submit_button.onclick = function(){
+  _service_name = document.getElementById("service_name").value;
+   
+
+
+}
+
+
+</script>
+
+
 {% endblock js %}

@@ -19,35 +19,18 @@
     <!-- Devices-->
     <div id="device_part">{% include "page_sections/device_section.html" ignore missing %}</div>
   </div>
-  {# <div class="container mt-5">
-    <!-- category and action raw data -->
-    {% if session.get("devices") %}
-      <div id="param_cate_raw_data_part">
-        {% include "page_sections/raw_data_section.html" ignore missing %}
-      </div>
-    {% endif %}
-  </div> #}
   {# Service Part #}
   <div class="container mt-5" style="margin-bottom: -20px;">
     <div class="card shadow rounded mt-5" style="background-color:#f1c232 ;">
       <div class="card-body text-center">
-        <h5 class="card-title" style="color:white;font-size: 48px;">Service</h5>
+        <h5 class="card-title" style="color:white;font-size: 48px;">Services</h5>
       </div>
     </div>
   </div>
   <div class="container mt-5">
-    {# form section #}
     <!-- Service-->
     <div id="service_part">{% include "page_sections/service_section.html" %}</div>
   </div>
-  {% if session.get("service") %}
-    <div class="container mt-5">
-      <!-- category and action services -->
-      <div id="param_cate_service_part">
-        {% include "page_sections/cate_service_section.html" ignore missing %}
-      </div>
-    </div>
-  {% endif %}
   {# for submit button #}
   {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %}
     <div class="container text-center">
@@ -59,13 +42,6 @@
     </div>
     <br />
   {% endif %}
-  <!-- {# for show graph #}
-                            {% if graph_filename is defined %}
-                              <div class="text-center">
-                                <img src="{{url_for('static', filename=graph_filename)}}" class="img-fluid" alt="Centered image" />
-    </div>
-  {% endif %}
-  -->
 </div>
 {% endblock main %}
 {% block js %}

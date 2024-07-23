@@ -195,10 +195,24 @@ def get_with_id(device_id):
 
 @bp.route("/delete/<int:device_id>", methods=["GET"])
 def delete(device_id):
+    device_id = str(device_id)
     if "devices" in session.keys():
         if str(device_id) in session["devices"].keys():
             del session["devices"][str(device_id)]
+    
+    if session["devices"] == {}:
+        del session["devices"]
 
+    # check device in services and delete
+    if "services" in session.keys():
+        for _service_id in session.get("services").keys():
+            for _device_id in session.get("services")[_service_id]["cate_service"].keys():
+                if device_id == _device_id:
+                    del session["services"][_service_id]["cate_service"][device_id]
+                
+                if session["services"][_service_id]["cate_service"] == {}:
+                    del session["services"][_service_id]["cate_service"]
+    
     # # also raw data
     # if "raw_data" in session.keys():
     #     del session["raw_data"]

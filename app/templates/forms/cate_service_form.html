@@ -6,7 +6,7 @@
             <div class="card-body">
                 <form id="cate_service_form"
                       method="POST"
-                      action="{{ url_for("cate_service.form") }}">
+                      action="{{ url_for('cate_service.form', service_id=service_id, device_id=device_id) }}">
                     {#add unprocessed data#}
                     <div class="form-group">
                         <label for="cate_service_unprocessed">Store Data</label>
@@ -82,7 +82,7 @@
                     <div>
                         <div class="container text-center">
                             <button type="submit" class="btn btn-primary" value="submit">
-                                {% if not session.get("cate_service") %}
+                                {% if not session.get("services")[service_id]["cate_service"] %}
                                     Add
                                 {% else %}
                                     Update

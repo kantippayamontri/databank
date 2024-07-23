@@ -55,10 +55,10 @@
                   {% endif %}
                 </tr>
               </table>
-              <a href="{{ url_for("device.form_edit", device_id=device_id) }}">
+              <a href="{{ url_for('device.form_edit', device_id=device_id) }}">
                 <button id="device_edit" type="submit" class="btn btn-primary">Edit Device</button>
               </a>
-              <a href="{{ url_for("device.delete", device_id=device_id) }}">
+              <a href="{{ url_for('device.delete', device_id=device_id) }}">
                 <button id="device_delete" type="button" class="btn btn-danger">Delete Device</button>
               </a>
               {# raw data section #}

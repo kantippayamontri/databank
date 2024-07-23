@@ -1,51 +1,63 @@
-<div class="row mb-3">
+{% if not session.get("services") %}
+  <div class="row mb-3">
     <div class="col-sm-12">
-        <div class="card shadow rounded text-center" style="border-color: #ffd966">
-            <div class="card-header text-white" style="background-color:#ffd966;">
-                <b>Service</b>
-            </div>
-            <div class="card-body">
-                {% if not session.get("service") %}
-                    <h5 class="card-title">You have 0 service.</h5>
-                    {# button call api make show device form #}
-                    <a href="{{ url_for("service.form") }}">
-                        <button id="service_add" type="submit" class="btn btn-success">Add Service</button>
-                    </a>
-                {% else %}
-                    <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-                        <tr>
-                            <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
-                            <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px;">Service Name</td>
-                            <td style="padding: 8px;">{{ session.get("service")["service_name"] }}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 8px;">Service Type</td>
-                            <td style="padding: 8px;">{{ session.get("service")["service_type"] }}</td>
-                        </tr>
-                    </table>
-                    <a href="{{ url_for("service.form") }}">
-                        <button id="service_edit" type="submit" class="btn btn-primary">Edit Service</button>
-                    </a>
-                    <a href="{{ url_for("service.delete") }}">
-                        <button id="service_delete" type="button" class="btn btn-danger">Delete Service</button>
-                    </a>
-                    <!-- <h2>
-                        <span style="color:green;">Service Name:</span>{{ session.get("service")["service_name"] }}
-                    </h2>
-                    <h2>
-                        <span style="color:green;">Service Type:</span>{{ session.get("service")["service_type"] }}
-                    </h2>
-                    <a href="{{ url_for("service.form") }}">
-                        <button id="service_edit" type="submit" class="btn btn-primary">Edit Service</button>
-                    </a>
-                    <a href="{{ url_for("service.delete") }}">
-                        <button id="service_delete" type="button" class="btn btn-danger">Delete Service</button>
-                    </a> -->
-                {% endif %}
-            </div>
+      <div class="card shadow rounded text-center" style="border-color: #ffd966">
+        <div class="card-header text-white" style="background-color:#ffd966;">
+          <b>Service</b>
         </div>
+        <div class="card-body">
+          <h5 class="card-title">You have 0 service.</h5>
+        </div>
+      </div>
     </div>
+  </div>
+{% else %}
+  {% for service_id in session["services"].keys() %}
+    <br />
+    <div class="row mb-3">
+      <div class="col-sm-12">
+        <div class="card shadow rounded text-center" style="border-color: #ffd966">
+          <div class="card-header text-white" style="background-color:#ffd966;">
+            <b>{{ session["services"][service_id]["service_name"] }}</b>
+          </div>
+          <div class="card-body">
+            <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+              <tr>
+                <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+              </tr>
+              <tr>
+                <td style="padding: 8px;">Service Name</td>
+                <td style="padding: 8px;">{{ session.get("services")[service_id] ["service_name"] }}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px;">Service Type</td>
+                <td style="padding: 8px;">{{ session.get("services")[service_id] ["service_type"] }}</td>
+              </tr>
+            </table>
+            <a href="{{ url_for('service.form_page', service_id=service_id | int) }}">
+              <button id="service_edit" type="submit" class="btn btn-primary">Edit Service</button>
+            </a>
+            <a href="{{ url_for('service.delete', service_id=service_id) }}">
+              <button id="service_delete" type="button" class="btn btn-danger">Delete Service</button>
+            </a>
+            <br />
+            <div class="container mt-5">
+              <!-- category and action services -->
+              <div id="param_cate_service_part">
+                {% include "page_sections/cate_service_section.html" with context %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br />
+  {% endfor %}
+{% endif %}
+<div style="max-width: fit-content;margin-left:auto;margin-right:auto;">
+  <a href="{{ url_for("service.form_page_new") }}">
+    <button id="service_add" type="submit" class="btn btn-success">Add Service</button>
+  </a>
 </div>
+<br />
