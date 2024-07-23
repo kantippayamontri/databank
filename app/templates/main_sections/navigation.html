@@ -32,6 +32,9 @@
     </a>
   {% endif %}
   {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %}
+    <a href="{{ url_for("filter.form") }}">
+      <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Filter Data</button>
+    </a>
     <a href="{{ url_for("graph.show_graph") }}">
       <button type="button" class="btn btn-outline-success" style="margin-left: 20px">Analysis</button>
     </a>
