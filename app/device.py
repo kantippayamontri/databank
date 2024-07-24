@@ -8,7 +8,7 @@ from flask import (
     url_for,
 )
 
-from app import type_device, type_device_details, unprocessed_data
+from .utils.constants import type_device, type_device_details, unprocessed_data
 
 bp = Blueprint("device", __name__, url_prefix="/device")
 

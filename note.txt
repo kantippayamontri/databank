@@ -1,0 +1,16 @@
+# run docker (not in background)
+docker compose up
+
+# run docker in cluster mode (with --scale image name=number of cluster)
+docker compose up --scale databank=3 # creat 3 databank container
+    --> you need to remove container name and port -> for redundant name and port
+
+# สังเกตว่าไม่มีการเปิด port ให้ภายนอก -> หาวิธีให้มันรู้จักกับภายนอก -> nginx เป็น reverse proxy
+
+# note: nginx ห้าม scale -. problem with ports
+
+# stop docker compose 
+docker compose down
+
+# run docker in background mode and rebuild
+docker compose up --scale databank=1 -d --build

@@ -5,6 +5,7 @@ from flask import (
     redirect,
     url_for,
 )
+import socket
 
 
 bp = Blueprint("session", __name__, url_prefix="/session")
@@ -51,3 +52,6 @@ def clear_session():
     
     return redirect(url_for("main_page"))
     
+@bp.route("/hostname", methods=["GET"])
+def hostname():
+    return {"hostname": socket.gethostname()}
