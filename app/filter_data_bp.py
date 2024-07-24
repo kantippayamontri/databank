@@ -12,89 +12,50 @@ from .utils.constants import type_device, type_device_details, unprocessed_data
 
 bp = Blueprint("filter", __name__, url_prefix="/filter")
 data = {
-    "devices": {
-        "0": {
-            "device_name": "Gauge",
-            "device_type": "Smartmetre",
-            "device_unprocessed": [
-                "Footage",
-                "gauge value",
-                "Light status"
-            ],
-            "raw_data": {
-                "Footage": {
-                    "action": "Average",
-                    "frequency": "Daily",
-                    "sensitivity": "Low"
-                },
-                "Light status": {
-                    "action": "Average",
-                    "frequency": "Daily",
-                    "sensitivity": "Low"
-                },
-                "gauge value": {
-                    "action": "Average",
-                    "frequency": "Daily",
-                    "sensitivity": "Low"
+        "devices": {
+            "0": {
+                "device_name": "Gauge",
+                "device_type": "Security Camera",
+                "device_unprocessed": [
+                    "Footage"
+                ]
+            },
+            "1": {
+                "device_name": "smart meter",
+                "device_type": "Security Camera",
+                "device_unprocessed": [
+                    "Footage",
+                    "activity"
+                ],
+                "raw_data": {
+                    "Footage": {
+                        "action": "Average",
+                        "frequency": "Daily",
+                        "sensitivity": "Low"
+                    }
                 }
             }
         },
-        "1": {
-            "device_name": "smart meter",
-            "device_type": "Smartmetre",
-            "device_unprocessed": [
-                "Energy usage"
-            ],
-            "raw_data": {
-                "Energy usage": {
-                    "action": "Average",
-                    "frequency": "Daily",
-                    "sensitivity": "Low"
-                }
-            }
-        }
-    },
-    "services": {
-        "0": {
-            "cate_service": {
-                "0": {
-                    "Footage": {
-                        "action": "View Data",
-                        "category": "Low",
-                        "frequency": "Daily"
-                    },
-                    "Light status": {
-                        "action": "View Data",
-                        "category": "Low",
-                        "frequency": "Daily"
+        "services": {
+            "0": {
+                "cate_service": {
+                    "1": {
+                        "Footage": {
+                            "action": "View Data",
+                            "category": "Low",
+                            "frequency": "Daily"
+                        }
                     }
                 },
-                "1": {
-                    "Energy usage": {
-                        "action": "View Data",
-                        "category": "Low",
-                        "frequency": "Daily"
-                    }
-                }
+                "service_name": "Meta",
+                "service_type": "Advertising Company"
             },
-            "service_name": "The8thFloor",
-            "service_type": "Tech Company"
-        },
-        "1": {
-            "cate_service": {
-                "0": {
-                    "Footage": {
-                        "action": "View Data",
-                        "category": "Low",
-                        "frequency": "Daily"
-                    }
-                }
-            },
-            "service_name": "Meta",
-            "service_type": "Insurance"
+            "1": {
+                "service_name": "Meta_(1)",
+                "service_type": "Tech Company"
+            }
         }
     }
-}
 
 @bp.route("/show_data", methods=["GET"])
 def form():

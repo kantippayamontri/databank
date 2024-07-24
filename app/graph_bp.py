@@ -145,6 +145,52 @@ def create():
 
     data = session
 
+    # data = {
+    #     "devices": {
+    #         "0": {
+    #             "device_name": "Gauge",
+    #             "device_type": "Security Camera",
+    #             "device_unprocessed": [
+    #                 "Footage"
+    #             ]
+    #         },
+    #         "1": {
+    #             "device_name": "smart meter",
+    #             "device_type": "Security Camera",
+    #             "device_unprocessed": [
+    #                 "Footage",
+    #                 "activity"
+    #             ],
+    #             "raw_data": {
+    #                 "Footage": {
+    #                     "action": "Average",
+    #                     "frequency": "Daily",
+    #                     "sensitivity": "Low"
+    #                 }
+    #             }
+    #         }
+    #     },
+    #     "services": {
+    #         "0": {
+    #             "cate_service": {
+    #                 "1": {
+    #                     "Footage": {
+    #                         "action": "View Data",
+    #                         "category": "Low",
+    #                         "frequency": "Daily"
+    #                     }
+    #                 }
+    #             },
+    #             "service_name": "Meta",
+    #             "service_type": "Advertising Company"
+    #         },
+    #         "1": {
+    #             "service_name": "Meta_(1)",
+    #             "service_type": "Tech Company"
+    #         }
+    #     }
+    # }
+
     data_graph = DataGraph(data=data)
     img_filename = data_graph.plot_graph()
 
@@ -216,12 +262,13 @@ class DataGraph:
             service_type_array = set()
             service_name_array = set()
             service_name_connect_array = set()
+            data_array_no_raw_data = set()
             device_key = 'devices'
             if device_key in entry:
                 if entry['devices']:
                     for key in entry["devices"]:
                         # add devicce_type and raw_data
-                        device_type.append([entry["devices"][key]["device_type"],entry["devices"][key]["raw_data"]])
+                        device_type.append([entry["devices"][key]["device_type"],entry["devices"][key]["raw_data"] if 'raw_data' in entry["devices"][key] else [] ])
                         # add devicce_name
                         device_names.append(entry["devices"][key]["device_name"])
                         # add unprocessed_data
@@ -293,118 +340,31 @@ class DataGraph:
                                         if service_key in entry:
                                             if entry["services"]:
                                                 for key in entry["services"]:
-                                                    if entry["services"][key]['cate_service']:
-                                                        for cate_service_id in entry["services"][key]['cate_service']:
-                                                            each_cate_device_service = entry["services"][key]['cate_service'][cate_service_id]
-                                                            for each_cate_device_service_id in each_cate_device_service:
-                                                                each_cate_service = each_cate_device_service[each_cate_device_service_id]
-                                                                if each_cate_device_service_id.lower() == data_item.lower():
-                                                                    service_data = each_cate_service.copy()
-                                                                    service_data["service_name"] = entry["services"][key]["service_name"]
-                                                                    service_data["service_type"] = entry["services"][key]["service_type"]
-                                                                    service_data["cate_name"] = each_cate_device_service_id
-                                                                    print(service_data)
-                                                                    if frozenset(service_data.items()) in service_data_array:
-                                                                        print('')
-                                                                    else:
-                                                                        service_data_array.add(frozenset(service_data.items()))
-                                                                        action = service_data["action"]
-                                                                        category = service_data["category"]  
-                                                                        # Retrieve category from service_data
-                                                                        frequency = service_data["frequency"]  
-                                                                        # Retrieve frequency from service_data
-                                                                        # Add the cate_service node
-                                                                        cate_service_node_name = (
-                                                                            f"{entry["services"][key]["service_name"]}_{data_item}_{action}_CateService".lower()
-                                                                        )
-                                                                        # create cate_service
-                                                                        self.graph.node(
-                                                                            cate_service_node_name,
-                                                                            label=action,
-                                                                            style="filled",
-                                                                            fillcolor="lightblue",
-                                                                            fontsize="24",
-                                                                            fontcolor="black",
-                                                                            fontname="bold",
-                                                                            shape="circle",
-                                                                        )
-                                                                        # Connect the cate_service node with the corresponding combined node
-                                                                        self.graph.edge(
-                                                                            combined_node_name,
-                                                                            cate_service_node_name,
-                                                                            dir="none",
-                                                                            penwidth="3",
-                                                                        )
-                                                                        # Add the 7th node (service_type node), if not already added
-                                                                        service_type = entry["services"][key]["service_type"]
-                                                                        service_type_node_name = f"{entry["services"][key]["service_type"]}_ServiceType".lower()
-                                                                        if service_type not in service_type_array:
-                                                                            service_type_array.add(service_type)
-                                                                            service_type_node_name = self.add_service_type_node(
-                                                                                service_type
-                                                                            )
-                                                                        # Connect the service_type node with the category node
-                                                                        self.graph.edge(
-                                                                            cate_service_node_name,
-                                                                            service_type_node_name,
-                                                                            dir="none",
-                                                                            penwidth="3",
-                                                                        )
-                                                                        # # Add the 8th node (category node)
-                                                                        category_node_name = self.add_category_node(
-                                                                            entry["services"][key]["service_name"], data_item, action, frequency, category
-                                                                        )
-                                                                        # # Connect the category node with the cate_service node
-                                                                        self.graph.edge(
-                                                                            service_type_node_name,
-                                                                            category_node_name,
-                                                                            dir="none",
-                                                                            penwidth="3",
-                                                                        )
-                                                                        
-                                                                        
-                                                                        # Add the 9th node (service_name node), if not already added
-                                                                        service_name = entry["services"][key]["service_name"]
-                                                                        node_name = f"{entry["services"][key]["service_name"]}_ServiceName".lower()
-                                                                        if service_name not in service_name_array:
-                                                                            service_name_array.add(service_name)
-                                                                            service_name_node_name = self.add_service_name_node(
-                                                                                entry["services"][key]["service_name"], service_name
-                                                                            )
-                                                                            self.service_name_nodes[data_item] = service_name_node_name
-                                                                        # Connect the service_name node with the service_type node
-                                                                        service_name_connect = f"{service_name}_{category_node_name}".lower()
-                                                                        if service_name_connect not in service_name_connect_array:
-                                                                            service_name_connect_array.add(service_name_connect)
-                                                                            self.graph.edge(
-                                                                                category_node_name,
-                                                                                node_name,
-                                                                                dir="none",
-                                                                                penwidth="3",
-                                                                            )
-                                                                else:
-                                                                    service_data_no_device = each_cate_service.copy()
-                                                                    isDevice = False
-                                                                    # check not exist
-                                                                    for raw_data in device_type:
-                                                                        if each_cate_device_service_id in raw_data[1].keys():
-                                                                            isDevice=True
-                                                                    if isDevice == False:
-                                                                        # not have device
-                                                                        action = service_data_no_device['action']
-                                                                        category = service_data_no_device["category"]  
-                                                                        frequency = service_data_no_device["frequency"]  
-                                                                        service_data_no_device["service_name"] = entry["services"][key]["service_name"]
-                                                                        service_data_no_device["service_type"] = entry["services"][key]["service_type"]
-                                                                        if frozenset(service_data_no_device.items()) in service_data_not_have_device_array:
+                                                    if 'cate_service' in entry["services"][key]:
+                                                        if entry["services"][key]['cate_service']:
+                                                            for cate_service_id in entry["services"][key]['cate_service']:
+                                                                each_cate_device_service = entry["services"][key]['cate_service'][cate_service_id]
+                                                                for each_cate_device_service_id in each_cate_device_service:
+                                                                    each_cate_service = each_cate_device_service[each_cate_device_service_id]
+                                                                    if each_cate_device_service_id.lower() == data_item.lower():
+                                                                        service_data = each_cate_service.copy()
+                                                                        service_data["service_name"] = entry["services"][key]["service_name"]
+                                                                        service_data["service_type"] = entry["services"][key]["service_type"]
+                                                                        service_data["cate_name"] = each_cate_device_service_id
+                                                                        if frozenset(service_data.items()) in service_data_array:
                                                                             print('')
                                                                         else:
-                                                                            service_data_not_have_device_array.add(frozenset(service_data_no_device.items()))
+                                                                            service_data_array.add(frozenset(service_data.items()))
+                                                                            action = service_data["action"]
+                                                                            category = service_data["category"]  
+                                                                            # Retrieve category from service_data
+                                                                            frequency = service_data["frequency"]  
+                                                                            # Retrieve frequency from service_data
+                                                                            # Add the cate_service node
                                                                             cate_service_node_name = (
-                                                                                f"{entry["services"][key]["service_name"]}_{each_cate_device_service_id}_{action}_CateService".lower()
+                                                                                f"{entry["services"][key]["service_name"]}_{data_item}_{action}_CateService".lower()
                                                                             )
-                                                                            # create node cate_service
-                                                                            # Add the 7th node (service_type node), if not already added
+                                                                            # create cate_service
                                                                             self.graph.node(
                                                                                 cate_service_node_name,
                                                                                 label=action,
@@ -414,6 +374,13 @@ class DataGraph:
                                                                                 fontcolor="black",
                                                                                 fontname="bold",
                                                                                 shape="circle",
+                                                                            )
+                                                                            # Connect the cate_service node with the corresponding combined node
+                                                                            self.graph.edge(
+                                                                                combined_node_name,
+                                                                                cate_service_node_name,
+                                                                                dir="none",
+                                                                                penwidth="3",
                                                                             )
                                                                             # Add the 7th node (service_type node), if not already added
                                                                             service_type = entry["services"][key]["service_type"]
@@ -432,15 +399,17 @@ class DataGraph:
                                                                             )
                                                                             # # Add the 8th node (category node)
                                                                             category_node_name = self.add_category_node(
-                                                                                entry["services"][key]["service_name"], each_cate_device_service_id, action, frequency, category
+                                                                                entry["services"][key]["service_name"], data_item, action, frequency, category
                                                                             )
-                                                                            # Connect the category node with the cate_service node
+                                                                            # # Connect the category node with the cate_service node
                                                                             self.graph.edge(
                                                                                 service_type_node_name,
                                                                                 category_node_name,
                                                                                 dir="none",
                                                                                 penwidth="3",
                                                                             )
+                                                                            
+                                                                            
                                                                             # Add the 9th node (service_name node), if not already added
                                                                             service_name = entry["services"][key]["service_name"]
                                                                             node_name = f"{entry["services"][key]["service_name"]}_ServiceName".lower()
@@ -460,10 +429,163 @@ class DataGraph:
                                                                                     dir="none",
                                                                                     penwidth="3",
                                                                                 )
-                                    # Connect device node with unprocessed data nodes
-                                    self.graph.edge(
-                                        device_name, unprocessed_data_node_name, dir="none", penwidth="3"
-                                    )
+                                                                    else:
+                                                                        service_data_no_device = each_cate_service.copy()
+                                                                        isDevice = False
+                                                                        # check not exist
+                                                                        for raw_data in device_type:
+                                                                            if each_cate_device_service_id in raw_data[1].keys():
+                                                                                isDevice=True
+                                                                        if isDevice == False:
+                                                                            # not have device
+                                                                            action = service_data_no_device['action']
+                                                                            category = service_data_no_device["category"]  
+                                                                            frequency = service_data_no_device["frequency"]  
+                                                                            service_data_no_device["service_name"] = entry["services"][key]["service_name"]
+                                                                            service_data_no_device["service_type"] = entry["services"][key]["service_type"]
+                                                                            if frozenset(service_data_no_device.items()) in service_data_not_have_device_array:
+                                                                                print('')
+                                                                            else:
+                                                                                service_data_not_have_device_array.add(frozenset(service_data_no_device.items()))
+                                                                                cate_service_node_name = (
+                                                                                    f"{entry["services"][key]["service_name"]}_{each_cate_device_service_id}_{action}_CateService".lower()
+                                                                                )
+                                                                                # create node cate_service
+                                                                                # Add the 7th node (service_type node), if not already added
+                                                                                self.graph.node(
+                                                                                    cate_service_node_name,
+                                                                                    label=action,
+                                                                                    style="filled",
+                                                                                    fillcolor="lightblue",
+                                                                                    fontsize="24",
+                                                                                    fontcolor="black",
+                                                                                    fontname="bold",
+                                                                                    shape="circle",
+                                                                                )
+                                                                                # Add the 7th node (service_type node), if not already added
+                                                                                service_type = entry["services"][key]["service_type"]
+                                                                                service_type_node_name = f"{entry["services"][key]["service_type"]}_ServiceType".lower()
+                                                                                if service_type not in service_type_array:
+                                                                                    service_type_array.add(service_type)
+                                                                                    service_type_node_name = self.add_service_type_node(
+                                                                                        service_type
+                                                                                    )
+                                                                                # Connect the service_type node with the category node
+                                                                                self.graph.edge(
+                                                                                    cate_service_node_name,
+                                                                                    service_type_node_name,
+                                                                                    dir="none",
+                                                                                    penwidth="3",
+                                                                                )
+                                                                                # # Add the 8th node (category node)
+                                                                                category_node_name = self.add_category_node(
+                                                                                    entry["services"][key]["service_name"], each_cate_device_service_id, action, frequency, category
+                                                                                )
+                                                                                # Connect the category node with the cate_service node
+                                                                                self.graph.edge(
+                                                                                    service_type_node_name,
+                                                                                    category_node_name,
+                                                                                    dir="none",
+                                                                                    penwidth="3",
+                                                                                )
+                                                                                # Add the 9th node (service_name node), if not already added
+                                                                                service_name = entry["services"][key]["service_name"]
+                                                                                node_name = f"{entry["services"][key]["service_name"]}_ServiceName".lower()
+                                                                                if service_name not in service_name_array:
+                                                                                    service_name_array.add(service_name)
+                                                                                    service_name_node_name = self.add_service_name_node(
+                                                                                        entry["services"][key]["service_name"], service_name
+                                                                                    )
+                                                                                    self.service_name_nodes[data_item] = service_name_node_name
+                                                                                # Connect the service_name node with the service_type node
+                                                                                service_name_connect = f"{service_name}_{category_node_name}".lower()
+                                                                                if service_name_connect not in service_name_connect_array:
+                                                                                    service_name_connect_array.add(service_name_connect)
+                                                                                    self.graph.edge(
+                                                                                        category_node_name,
+                                                                                        node_name,
+                                                                                        dir="none",
+                                                                                        penwidth="3",
+                                                                                    )
+                                                    else :
+                                                        print(entry["services"][key])
+                                                        self.graph.node(
+                                                            'not_show_layer_0',
+                                                            label='',
+                                                            style="filled",
+                                                            fontsize="24",
+                                                            fontcolor="black",
+                                                            fontname="bold",
+                                                            shape="circle",
+                                                            fillcolor="#00000000",
+                                                            color="#00000000",
+                                                        )
+                                                        for i in range(7):
+                                                            self.graph.node(
+                                                                f'not_show_layer_{i+1}',
+                                                                label='',
+                                                                style="filled",
+                                                                fillcolor="#00000000",
+                                                                fontsize="24",
+                                                                fontcolor="black",
+                                                                fontname="bold",
+                                                                shape="circle",
+                                                                color="#00000000",
+                                                            )
+                                                            self.graph.edge(
+                                                                f'not_show_layer_{i}',
+                                                                f'not_show_layer_{i+1}',
+                                                                dir="none",
+                                                                penwidth="3",
+                                                                fillcolor="#00000000",
+                                                                color="#00000000",
+                                                            )
+                                                        node_name = f"{entry["services"][key]['service_name']}_ServiceName".lower()
+                                                        node_label = f"{entry["services"][key]['service_name']}"
+                                                        self.graph.node(
+                                                            node_name,
+                                                            label=node_label,
+                                                            style="filled",
+                                                            fillcolor="lightblue",
+                                                            fontsize="24",
+                                                            fontcolor="black",
+                                                            fontname="bold",
+                                                            shape="circle",
+                                                        )
+                                                        self.graph.edge(
+                                                            f'not_show_layer_{7}',
+                                                            node_name,
+                                                            dir="none",
+                                                            penwidth="3",
+                                                            fillcolor="#00000000",
+                                                            color="#00000000",
+                                                        )
+                                        # Connect device node with unprocessed data nodes
+                                        self.graph.edge(
+                                            device_name, unprocessed_data_node_name, dir="none", penwidth="3"
+                                        )
+                                else:
+                                    if(data_item in unprocessed_datas[index]):
+                                        node_name = f"no_action_{device_name}_{data_item.replace(' ', '_')}_UnprocessedData".lower()
+                                        if(node_name not in data_array_no_raw_data):
+                                            node_label = f"{data_item}"
+                                            data_array_no_raw_data.add(node_name)
+                                            self.graph.node(
+                                                node_name,
+                                                label=node_label,
+                                                style="filled",
+                                                fillcolor="lightgreen",
+                                                fontsize="24",
+                                                fontcolor="black",
+                                                fontname="bold",
+                                                shape="circle",
+                                            )
+                                            self.graph.edge(
+                                                device_name,
+                                                node_name,
+                                                dir="none",
+                                                penwidth="3",
+                                            )
                                 index += 1
                 else:
                     service_key = 'services'
