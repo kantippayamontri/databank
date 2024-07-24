@@ -33,14 +33,16 @@
 
   {# for submit button #}
   {% if ("devices" in session.keys()) or ("services" in session.keys()) %}
-  <div class="container text-center" style="margin-top: 20 px;">
-    <a href="{{ url_for('graph.show_graph') }}">
-      <button type="button" id="submit_button" class="btn btn-success" value="submit">
-        Generate Graph
-      </button>
-    </a>
-  </div>
-  <br />
+    <div class="container mt-5" style="margin-bottom: -20px;">
+      <div class="container text-center" style="margin-top: 20 px;">
+        <a href="{{ url_for("graph.show_graph") }}">
+          <button type="button" id="submit_button" class="btn btn-success" value="submit">
+            Generate Graph
+          </button>
+        </a>
+      </div>
+    </div>
+    <br />
   {% endif %}
 {% endblock main %}
 {% block js %}

@@ -321,20 +321,25 @@ session #}
                   success: function(session_all) {
                       var device_name = []
                       for (_device_id in session_all["devices"]) {
-                          device_name.push(session_all["devices"][_device_id]["device_name"]);
+                          if (_device_id !== "{{form_utils['device_id']}}") {
+
+                              device_name.push(session_all["devices"][_device_id]["device_name"]);
+                          }
                       }
                       if (device_name.includes(device["device_name"])) {
-                          // alert("You already added this device.");
+                          alert("You already added this device.");
+                      } else {
                           $.ajax({
                               url: "/device/update/{{form_utils['device_id']}}",
                               type: "post",
                               dataType: "json",
                               contentType: "application/json",
                               success: function() {
-                                  window.location.href = "";
+                                  window.location.href = "/device/device_page";
                               },
                               data: JSON.stringify(device),
                           });
+
                       }
                   },
               });
@@ -365,7 +370,7 @@ session #}
                               dataType: "json",
                               contentType: "application/json",
                               success: function() {
-                                  window.location.href = "";
+                                  window.location.href = "/device/device_page";
                               },
                               data: JSON.stringify(device),
                           });

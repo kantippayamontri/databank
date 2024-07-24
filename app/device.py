@@ -87,11 +87,29 @@ def update_with_id(device_id):
     # device_type = _device["device_type"]
     # device_unprocessed = _device["device_unprocessed"]
     new_device = _device["new_device"]
+    print({"new_device": new_device})
 
     if not new_device:
         del _device["new_device"]
-        session["devices"][str(device_id)] = _device
-    print("success")
+        session["devices"][str(device_id)]["device_name"]= _device["device_name"]
+        session["devices"][str(device_id)]["device_type"]= _device["device_type"]
+        # check unprocessed data 
+        old_un = session["devices"][str(device_id)]["device_unprocessed"]
+        new_un = _device["device_unprocessed"]
+
+        for _o in old_un:
+            if _o not in new_un:
+                # check _o in raw_data
+                if "raw_data" in session["devices"][str(device_id)].keys():
+                    del session["devices"][str(device_id)]["raw_data"][_o]
+                    
+                    if session["devices"][str(device_id)]["raw_data"] == {}:
+                        del session["devices"][str(device_id)]["raw_data"] 
+        
+        
+        
+        session["devices"][str(device_id)]["device_unprocessed"]= _device["device_unprocessed"]
+        
     
     return jsonify(success=True)
 
@@ -193,8 +211,8 @@ def delete(device_id):
         if str(device_id) in session["devices"].keys():
             del session["devices"][str(device_id)]
     
-    if session["devices"] == {}:
-        del session["devices"]
+        if session["devices"] == {}:
+            del session["devices"]
 
     # check device in services and delete
     if "services" in session.keys():

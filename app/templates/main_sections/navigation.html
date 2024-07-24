@@ -1,45 +1,36 @@
 <!-- As a heading -->
 <style>
-  .right-button {
-  position: absolute;
-  right: 20px; /* Adjust spacing as needed */
-  top: 10px;   /* Adjust spacing as needed */
-}
+    .right-button {
+        position: absolute;
+        right: 20px;
+        /* Adjust spacing as needed */
+        top: 10px;
+        /* Adjust spacing as needed */
+    }
 </style>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark"
-     style="padding-left: 50px">
-  <a href="{{ url_for("main_page") }} " style='text-decoration: none;'>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 50px">
+  <a href="{{ url_for('main_page') }} " style='text-decoration: none;'>
     <p class="navbar-brand mb-0 h1">Databank</p>
   </a>
-  {% if session.get("device") %}
-    <a href="{{ url_for("device.form") }}">
+  {% if session.get("devices") %}
+    <a href="{{ url_for('device.device_page') }}">
       <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Device</button>
     </a>
   {% endif %}
-  {% if session.get("raw_data") %}
-    <a href="{{ url_for("raw_data.form") }}">
-      <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Uprocessed Data</button>
-    </a>
-  {% endif %}
-  {% if session.get("cate_service") %}
-    <a href="{{ url_for("cate_service.form") }}">
-      <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Service Action and Category</button>
-    </a>
-  {% endif %}
-  {% if session.get("service") %}
-    <a href="{{ url_for("service.form") }}">
+  {% if session.get("services") %}
+    <a href="{{ url_for('service.service_page') }}">
       <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Service</button>
     </a>
   {% endif %}
-  {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %}
-    <a href="{{ url_for("filter.form") }}">
+  {% if ("devices" in session.keys()) or ("services" in session.keys()) %}
+    <a href="{{ url_for('filter.form') }}">
       <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Filter Data</button>
     </a>
-    <a href="{{ url_for("graph.show_graph") }}">
+    <a href="{{ url_for('graph.show_graph') }}">
       <button type="button" class="btn btn-outline-success" style="margin-left: 20px">Analysis</button>
     </a>
-  {%endif%}
-  <a href="{{url_for("session.clear_session")}}">
+  {% endif %}
+  <a href="{{ url_for('session.clear_session') }}">
     <button type="button" class="btn btn-outline-danger right-button">Clear Session</button>
   </a>
 </nav>

@@ -58,90 +58,93 @@ def create():
     #         resp.status_code = 200
     #         return resp
    
-    data = {
-        "devices": {
-            "0": {
-                "device_name": "Gauge",
-                "device_type": "Smartmetre",
-                "device_unprocessed": [
-                    "Footage",
-                    "gauge value",
-                    "Light status"
-                ],
-                "raw_data": {
-                    "Footage": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    },
-                    "Light status": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    },
-                    "gauge value": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    }
-                }
-            },
-            "1": {
-                "device_name": "smart meter",
-                "device_type": "Smartmetre",
-                "device_unprocessed": [
-                    "Energy usage"
-                ],
-                "raw_data": {
-                    "Energy usage": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    }
-                }
-            }
-        },
-        "services": {
-            "0": {
-                "cate_service": {
-                    "0": {
-                        "Footage": {
-                            "action": "View Data",
-                            "category": "Low",
-                            "frequency": "Daily"
-                        },
-                        "Light status": {
-                            "action": "View Data",
-                            "category": "Low",
-                            "frequency": "Daily"
-                        }
-                    },
-                    "1": {
-                        "Energy usage": {
-                            "action": "View Data",
-                            "category": "Low",
-                            "frequency": "Daily"
-                        }
-                    }
-                },
-                "service_name": "The8thFloor",
-                "service_type": "Tech Company"
-            },
-            "1": {
-                "cate_service": {
-                    "0": {
-                        "Footage": {
-                            "action": "View Data",
-                            "category": "Low",
-                            "frequency": "Daily"
-                        }
-                    }
-                },
-                "service_name": "Meta",
-                "service_type": "Insurance"
-            }
-        }
-    }
+    # data = {
+    #     "devices": {
+    #         "0": {
+    #             "device_name": "Gauge",
+    #             "device_type": "Smartmetre",
+    #             "device_unprocessed": [
+    #                 "Footage",
+    #                 "gauge value",
+    #                 "Light status"
+    #             ],
+    #             "raw_data": {
+    #                 "Footage": {
+    #                     "action": "Average",
+    #                     "frequency": "Daily",
+    #                     "sensitivity": "Low"
+    #                 },
+    #                 "Light status": {
+    #                     "action": "Average",
+    #                     "frequency": "Daily",
+    #                     "sensitivity": "Low"
+    #                 },
+    #                 "gauge value": {
+    #                     "action": "Average",
+    #                     "frequency": "Daily",
+    #                     "sensitivity": "Low"
+    #                 }
+    #             }
+    #         },
+    #         "1": {
+    #             "device_name": "smart meter",
+    #             "device_type": "Smartmetre",
+    #             "device_unprocessed": [
+    #                 "Energy usage"
+    #             ],
+    #             "raw_data": {
+    #                 "Energy usage": {
+    #                     "action": "Average",
+    #                     "frequency": "Daily",
+    #                     "sensitivity": "Low"
+    #                 }
+    #             }
+    #         }
+    #     },
+    #     "services": {
+    #         "0": {
+    #             "cate_service": {
+    #                 "0": {
+    #                     "Footage": {
+    #                         "action": "View Data",
+    #                         "category": "Low",
+    #                         "frequency": "Daily"
+    #                     },
+    #                     "Light status": {
+    #                         "action": "View Data",
+    #                         "category": "Low",
+    #                         "frequency": "Daily"
+    #                     }
+    #                 },
+    #                 "1": {
+    #                     "Energy usage": {
+    #                         "action": "View Data",
+    #                         "category": "Low",
+    #                         "frequency": "Daily"
+    #                     }
+    #                 }
+    #             },
+    #             "service_name": "The8thFloor",
+    #             "service_type": "Tech Company"
+    #         },
+    #         "1": {
+    #             "cate_service": {
+    #                 "0": {
+    #                     "Footage": {
+    #                         "action": "View Data",
+    #                         "category": "Low",
+    #                         "frequency": "Daily"
+    #                     }
+    #                 }
+    #             },
+    #             "service_name": "Meta",
+    #             "service_type": "Insurance"
+    #         }
+    #     }
+    # }
+
+    data = session
+
     data_graph = DataGraph(data=data)
     img_filename = data_graph.plot_graph()
 

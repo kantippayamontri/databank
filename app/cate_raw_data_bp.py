@@ -54,7 +54,7 @@ def form(device_id):
 
         session["devices"][str(device_id)]["raw_data"] = data
 
-        return redirect(url_for("main_page"))
+        return redirect(url_for("device.device_page"))
 
     if request.method == "GET":
 
@@ -73,4 +73,4 @@ def form(device_id):
 def delete():
     if "raw_data" in session.keys():
         del session["raw_data"]
-    return redirect(url_for("main_page"))
+    return redirect(url_for("device.device_page"))

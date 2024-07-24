@@ -101,7 +101,7 @@ def delete():
     if "cate_service" in session.keys():
         del session["cate_service"]
 
-    return redirect(url_for("main_page"))
+    return redirect(url_for("service.service_page"))
 
 
 @bp.route("/delete_unprocessed/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET"])
@@ -123,4 +123,4 @@ def delete_unprocessed(service_id, device_id, unprocessed):
         return {"error": "can not find this data",
                 "e": e}
 
-    return redirect(url_for("main_page"))
+    return redirect(url_for("service.service_page"))

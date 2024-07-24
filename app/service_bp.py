@@ -41,7 +41,7 @@ def form_submit(service_id):
         session["services"][service_id]["service_name"] = _service_name
         session["services"][service_id]["service_type"] = _service_type
 
-        return redirect(url_for("main_page"))
+        return redirect(url_for("service.service_page"))
 
     return "Service Form Page"
 
@@ -101,7 +101,7 @@ def form_page(service_id):
                 choose_service_type=choose_service_type,
             )
     else:
-        return redirect(url_for("main_page"))
+        return redirect(url_for("service.service_page"))
 
 
 @bp.route("/delete/<string:service_id>", methods=["GET"])
@@ -112,4 +112,4 @@ def delete(service_id: str):
         if session["services"] == {}:
             del session["services"]
 
-    return redirect(url_for("main_page"))
+    return redirect(url_for("service.service_page"))
