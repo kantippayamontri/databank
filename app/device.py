@@ -12,6 +12,9 @@ from app import type_device, type_device_details, unprocessed_data
 
 bp = Blueprint("device", __name__, url_prefix="/device")
 
+@bp.route("/device_page", methods=["GET"])
+def device_page():
+    return render_template("device_page.html")
 
 @bp.route("/form", methods=["GET"])
 def form():
@@ -28,17 +31,6 @@ def form():
             },
         )
     else:
-
-        # return render_template(
-        #     "forms/device_form.html",
-        #     form_utils={
-        #         "device": {
-        #             "type_device": enumerate(type_device),
-        #             "unprocessed_data": enumerate(data_in_dropdown),
-        #         },
-        #         "new_device": False,
-        #     },
-        # )
         return render_template(
             "forms/device_form.html",
             form_utils={
@@ -99,6 +91,7 @@ def update_with_id(device_id):
     if not new_device:
         del _device["new_device"]
         session["devices"][str(device_id)] = _device
+    print("success")
     
     return jsonify(success=True)
 
@@ -221,7 +214,7 @@ def delete(device_id):
     # if "cate_service" in session.keys():
     #     del session["cate_service"]
 
-    return redirect(url_for("main_page"))  # back to homepage
+    return redirect(url_for("device.device_page"))  # back to homepage
 
 
 @bp.route("/get_details", methods=["POST"])

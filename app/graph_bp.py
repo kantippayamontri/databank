@@ -51,76 +51,13 @@ def resize_image(image_path, new_width=None, new_height=None):
 def create():
     # print(f"in function create")
     # check that have all value
-    all_keys = ["device", "raw_data", "cate_service", "service"]
-    for key in all_keys:
-        if key not in session.keys():
-            resp = jsonify({"filename": ""})
-            resp.status_code = 200
-            # return resp    
-    # data = {
-    #     "cate_service": {
-    #         "Colour": {
-    #             "action": "Report Data",
-    #             "category": "Low",
-    #             "frequency": "Daily",
-    #         },
-    #         "Energy usage": {
-    #             "action": "Send Notification",
-    #             "category": "High",
-    #             "frequency": "No fix time",
-    #         },
-    #         "Gauge Value": {
-    #             "action": "View Data",
-    #             "category": "High",
-    #             "frequency": "Daily",
-    #         },
-    #         "Light status": {
-    #             "action": "View Data",
-    #             "category": "High",
-    #             "frequency": "Daily",
-    #         },
-    #     },
-    #     "device": {
-    #         "device_name": "Gauge",
-    #         "device_type": "Digital Gauge",
-    #         "device_unprocessed": [
-    #             "Light status",
-    #             "Energy usage",
-    #             "Colour",
-    #             "Gauge Value",
-    #         ],
-    #     },
-    #     "raw_data": {
-    #         "Colour": {
-    #             "action": "Upload",
-    #             "frequency": "Yearly",
-    #             "sensitivity": "Medium",
-    #         },
-    #         "Energy usage": {
-    #             "action": "Transfer",
-    #             "frequency": "Yearly",
-    #             "sensitivity": "High",
-    #         },
-    #         "Gauge Value": {
-    #             "action": "Average",
-    #             "frequency": "Weekly",
-    #             "sensitivity": "High",
-    #         },
-    #         "Light status": {
-    #             "action": "Anonymise",
-    #             "frequency": "Weekly",
-    #             "sensitivity": "Medium",
-    #         },
-    #     },
-    #     "service": {"service_name": "The8thFloor", "service_type": "Tech Company"},
-    # }
-
-    # data = {
-    #     "device": session["device"],
-    #     "raw_data": session["raw_data"],
-    #     "cate_service": session["cate_service"],
-    #     "service": session["service"],
-    # }
+    # all_keys = ["device", "raw_data", "cate_service", "service"]
+    # for key in all_keys:
+    #     if key not in session.keys():
+    #         resp = jsonify({"filename": ""})
+    #         resp.status_code = 200
+    #         return resp
+   
     data = {
         "devices": {
             "0": {

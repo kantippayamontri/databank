@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block main %}
+  <div class="container mt-5">
+    <div class="card shadow rounded bg-dark mt-5">
+      <div class="card-body text-center">
+        <h5 class="card-title" style="color:white;font-size: 72px;">Databank</h5>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-5" style="margin-bottom: -20px;">
+    <div class="card shadow rounded mt-5" style="background-color:#137a63 ;">
+      <div class="card-body text-center">
+        <h5 class="card-title" style="color:white;font-size: 48px;">Device</h5>
+      </div>
+    </div>
+  </div>
+  <div class="container mt-5">
+    <!-- Devices-->
+    <div id="device_part">{% include "page_sections/device_section.html" ignore missing %}</div>
+  </div>
+
+{% endblock main %}

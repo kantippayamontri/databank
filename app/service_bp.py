@@ -4,6 +4,10 @@ from .utils import service_type
 
 bp = Blueprint("service", __name__, url_prefix="/service")
 
+@bp.route("/service_page", methods=["GET"])
+def service_page():
+    return render_template("service_page.html")
+
 
 @bp.route("/form_submit/<int:service_id>", methods=["GET", "POST"])
 def form_submit(service_id):
