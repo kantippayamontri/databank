@@ -8,40 +8,40 @@
     </div>
   </div>
   {# Device Part #}
-  <div class="container mt-5" style="margin-bottom: -20px;">
-    <div class="card shadow rounded mt-5" style="background-color:#137a63 ;">
-      <div class="card-body text-center">
-        <h5 class="card-title" style="color:white;font-size: 48px;">Device</h5>
+  <a href="{{ url_for("device.device_page") }}">
+    <div class="container mt-5" style="margin-bottom: -20px;">
+      <div class="card shadow rounded mt-5" style="background-color:#137a63 ;">
+        <div class="card-body text-center">
+          <h5 class="card-title" style="color:white;font-size: 48px;">Device</h5>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="container mt-5">
-    <!-- Devices-->
-    <div id="device_part">{% include "page_sections/device_section.html" ignore missing %}</div>
-  </div>
+  </a>
+
+
   {# Service Part #}
-  <div class="container mt-5" style="margin-bottom: -20px;">
-    <div class="card shadow rounded mt-5" style="background-color:#f1c232 ;">
-      <div class="card-body text-center">
-        <h5 class="card-title" style="color:white;font-size: 48px;">Services</h5>
+  <a href="{{ url_for("service.service_page") }}">
+    <div class="container mt-5" style="margin-bottom: -20px;">
+      <div class="card shadow rounded mt-5" style="background-color:#f1c232 ;">
+        <div class="card-body text-center">
+          <h5 class="card-title" style="color:white;font-size: 48px;">Services</h5>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="container mt-5">
-    <!-- Service-->
-    <div id="service_part">{% include "page_sections/service_section.html" %}</div>
-  </div>
+  </a>
+
+
   {# for submit button #}
-  {# {% if ("device" in session.keys()) and ("raw_data" in session.keys()) and ("cate_service" in session.keys()) and ("service" in session.keys()) %} #}
-  <div class="container text-center">
-    <a href="{{ url_for("graph.show_graph") }}">
+  {% if ("devices" in session.keys()) or ("services" in session.keys()) %}
+  <div class="container text-center" style="margin-top: 20 px;">
+    <a href="{{ url_for('graph.show_graph') }}">
       <button type="button" id="submit_button" class="btn btn-success" value="submit">
         Generate Graph
       </button>
     </a>
   </div>
   <br />
-  {# {% endif %} #}
+  {% endif %}
 {% endblock main %}
 {% block js %}
 {% endblock js %}
