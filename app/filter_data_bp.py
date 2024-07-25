@@ -11,47 +11,55 @@ from flask import (
 from .utils.constants import type_device, type_device_details, unprocessed_data
 
 bp = Blueprint("filter", __name__, url_prefix="/filter")
-data = {
+data = data = {
         "devices": {
             "0": {
                 "device_name": "Gauge",
-                "device_type": "Security Camera",
-                "device_unprocessed": [
-                    "Footage"
-                ]
-            },
-            "1": {
-                "device_name": "smart meter",
-                "device_type": "Security Camera",
+                "device_type": "Smartmetre",
                 "device_unprocessed": [
                     "Footage",
-                    "activity"
+                    "Energy usage",
+                    "Light status"
                 ],
                 "raw_data": {
+                    "Energy usage": {
+                        "action": "Average",
+                        "frequency": "Daily",
+                        "sensitivity": "Low"
+                    },
                     "Footage": {
+                        "action": "Average",
+                        "frequency": "Daily",
+                        "sensitivity": "Low"
+                    },
+                    "Light status": {
                         "action": "Average",
                         "frequency": "Daily",
                         "sensitivity": "Low"
                     }
                 }
+            },
+            "1": {
+                "device_name": "Smart TV",
+                "device_type": "Digital TV",
+                "device_unprocessed": [
+                    "Video",
+                    "channel"
+                ]
             }
         },
         "services": {
             "0": {
                 "cate_service": {
-                    "1": {
-                        "Footage": {
-                            "action": "View Data",
-                            "category": "Low",
-                            "frequency": "Daily"
+                    "0": {
+                        "Energy usage": {
+                            "action": "Read Data",
+                            "category": "Medium",
+                            "frequency": "Yearly"
                         }
                     }
                 },
-                "service_name": "Meta",
-                "service_type": "Advertising Company"
-            },
-            "1": {
-                "service_name": "Meta_(1)",
+                "service_name": "The8thFloor",
                 "service_type": "Tech Company"
             }
         }

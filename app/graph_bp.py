@@ -191,6 +191,7 @@ def create():
     #     }
     # }
 
+
     data_graph = DataGraph(data=data)
     img_filename = data_graph.plot_graph()
 
@@ -434,7 +435,10 @@ class DataGraph:
                                                                         isDevice = False
                                                                         # check not exist
                                                                         for raw_data in device_type:
-                                                                            if each_cate_device_service_id in raw_data[1].keys():
+                                                                            if 1 in raw_data:
+                                                                                if each_cate_device_service_id in raw_data[1].keys():
+                                                                                    isDevice=True
+                                                                            else:
                                                                                 isDevice=True
                                                                         if isDevice == False:
                                                                             # not have device
@@ -481,6 +485,7 @@ class DataGraph:
                                                                                 category_node_name = self.add_category_node(
                                                                                     entry["services"][key]["service_name"], each_cate_device_service_id, action, frequency, category
                                                                                 )
+
                                                                                 # Connect the category node with the cate_service node
                                                                                 self.graph.edge(
                                                                                     service_type_node_name,
