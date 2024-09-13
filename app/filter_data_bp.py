@@ -11,59 +11,59 @@ from flask import (
 from .utils.constants import type_device, type_device_details, unprocessed_data
 
 bp = Blueprint("filter", __name__, url_prefix="/filter")
-data = data = {
-        "devices": {
-            "0": {
-                "device_name": "Gauge",
-                "device_type": "Smartmetre",
-                "device_unprocessed": [
-                    "Footage",
-                    "Energy usage",
-                    "Light status"
-                ],
-                "raw_data": {
-                    "Energy usage": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    },
-                    "Footage": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    },
-                    "Light status": {
-                        "action": "Average",
-                        "frequency": "Daily",
-                        "sensitivity": "Low"
-                    }
-                }
-            },
-            "1": {
-                "device_name": "Smart TV",
-                "device_type": "Digital TV",
-                "device_unprocessed": [
-                    "Video",
-                    "channel"
-                ]
-            }
-        },
-        "services": {
-            "0": {
-                "cate_service": {
-                    "0": {
-                        "Energy usage": {
-                            "action": "Read Data",
-                            "category": "Medium",
-                            "frequency": "Yearly"
-                        }
-                    }
-                },
-                "service_name": "The8thFloor",
-                "service_type": "Tech Company"
-            }
-        }
-    }
+# data = data = {
+#         "devices": {
+#             "0": {
+#                 "device_name": "Gauge",
+#                 "device_type": "Smartmetre",
+#                 "device_unprocessed": [
+#                     "Footage",
+#                     "Energy usage",
+#                     "Light status"
+#                 ],
+#                 "raw_data": {
+#                     "Energy usage": {
+#                         "action": "Average",
+#                         "frequency": "Daily",
+#                         "sensitivity": "Low"
+#                     },
+#                     "Footage": {
+#                         "action": "Average",
+#                         "frequency": "Daily",
+#                         "sensitivity": "Low"
+#                     },
+#                     "Light status": {
+#                         "action": "Average",
+#                         "frequency": "Daily",
+#                         "sensitivity": "Low"
+#                     }
+#                 }
+#             },
+#             "1": {
+#                 "device_name": "Smart TV",
+#                 "device_type": "Digital TV",
+#                 "device_unprocessed": [
+#                     "Video",
+#                     "channel"
+#                 ]
+#             }
+#         },
+#         "services": {
+#             "0": {
+#                 "cate_service": {
+#                     "0": {
+#                         "Energy usage": {
+#                             "action": "Read Data",
+#                             "category": "Medium",
+#                             "frequency": "Yearly"
+#                         }
+#                     }
+#                 },
+#                 "service_name": "The8thFloor",
+#                 "service_type": "Tech Company"
+#             }
+#         }
+#     }
 
 @bp.route("/show_data", methods=["GET"])
 def form():
@@ -86,6 +86,7 @@ def form():
 @bp.route("/filter", methods=["GET"])
 def filter():
     type = request.args.get('type')
+    data = session
     match type:
         case 'devices':
             if "devices" in data:
