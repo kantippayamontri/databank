@@ -1,36 +1,131 @@
 <!-- As a heading -->
 <style>
-    .right-button {
-        position: absolute;
-        right: 20px;
-        /* Adjust spacing as needed */
-        top: 10px;
-        /* Adjust spacing as needed */
-    }
+  .navbar {
+    height: 80px;
+  }
+  .main-logo {
+    font-size: 42px;
+  }
+  .show-border button {
+    border-color: #295f98;
+    border-width: 2px;
+  }
+  .btn-outline-light:hover {
+    border-color: #295f98;
+    background-color: #295f98;
+    color: white;
+  }
 </style>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="padding-left: 50px">
-  <a href="{{ url_for('main_page') }} " style='text-decoration: none;'>
-    <p class="navbar-brand mb-0 h1">Databank</p>
+<nav
+  class="navbar navbar-expand-lg navbar-dark bg-dark"
+  style="padding-left: 50px"
+>
+  <a href="{{ url_for('main_page') }} " style="text-decoration: none">
+    <p class="navbar-brand mb-0 h1 main-logo">Databank</p>
   </a>
-  {% if session.get("devices") %}
-    <a href="{{ url_for('device.device_page') }}">
-      <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Device</button>
-    </a>
-  {% endif %}
-  {% if session.get("services") %}
-    <a href="{{ url_for('service.service_page') }}">
-      <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Service</button>
-    </a>
-  {% endif %}
-  {% if ("devices" in session.keys()) or ("services" in session.keys()) %}
-    <a href="{{ url_for('filter.form') }}">
-      <button type="button" class="btn btn-outline-light" style="margin-left: 20px">Filter Data</button>
-    </a>
-    <a href="{{ url_for('graph.show_graph') }}">
-      <button type="button" class="btn btn-outline-success" style="margin-left: 20px">Analysis</button>
-    </a>
+  <div class="show-border d-flex justify-content-between w-100">
+    <div class="d-flex">
+      <a href="{{ url_for('device.device_page') }}">
+        <button
+          type="button"
+          class="btn btn-outline-light"
+          style="margin-left: 20px"
+        >
+          Device
+        </button>
+      </a>
+      <a href="{{ url_for('service.service_page') }}">
+        <button
+          type="button"
+          class="btn btn-outline-light"
+          style="margin-left: 20px"
+        >
+          Service
+        </button>
+      </a>
+      <a href="{{ url_for('filter.form') }}">
+        <button
+          type="button"
+          class="btn btn-outline-light"
+          style="margin-left: 20px"
+        >
+          Filter Data
+        </button>
+      </a>
+      <a href="{{ url_for('graph.show_graph') }}">
+        <button
+          type="button"
+          class="btn btn-outline-light"
+          style="margin-left: 20px"
+        >
+          Analysis
+        </button>
+      </a>
+    </div>
+    <div class="d-flex">
+      <button
+        onclick="showRemoveSession()"
+        type="button"
+        style="margin-right: 20px"
+        class="btn btn-outline-light"
+      >
+        Clear Session
+      </button>
+      {% if request.path != "/" %}
+      <a href="/">
+        <img
+          src="{{ url_for('static', filename='icon/backtomain.png' ) }}"
+          alt="Uploaded Image"
+          style="margin-right: 20px; width: 40px; height: 40px"
+        />
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  <!-- {% if session.get("devices") %}
+  <a href="{{ url_for('device.device_page') }}">
+    <button
+      type="button"
+      class="btn btn-outline-light"
+      style="margin-left: 20px"
+    >
+      Device
+    </button>
+  </a>
+  {% endif %} {% if session.get("services") %}
+  <a href="{{ url_for('service.service_page') }}">
+    <button
+      type="button"
+      class="btn btn-outline-light"
+      style="margin-left: 20px"
+    >
+      Service
+    </button>
+  </a>
+  {% endif %} {% if ("devices" in session.keys()) or ("services" in
+  session.keys()) %}
+  <a href="{{ url_for('filter.form') }}">
+    <button
+      type="button"
+      class="btn btn-outline-light"
+      style="margin-left: 20px"
+    >
+      Filter Data
+    </button>
+  </a>
+  <a href="{{ url_for('graph.show_graph') }}">
+    <button
+      type="button"
+      class="btn btn-outline-success"
+      style="margin-left: 20px"
+    >
+      Analysis
+    </button>
+  </a>
   {% endif %}
   <a href="{{ url_for('session.clear_session') }}">
-    <button type="button" class="btn btn-outline-danger right-button">Clear Session</button>
-  </a>
+    <button type="button" class="btn btn-outline-danger right-button">
+      Clear Session
+    </button>
+  </a> -->
 </nav>

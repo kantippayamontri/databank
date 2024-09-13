@@ -14,7 +14,29 @@ bp = Blueprint("device", __name__, url_prefix="/device")
 
 @bp.route("/device_page", methods=["GET"])
 def device_page():
-    return render_template("device_page.html")
+    if "devices" not in session.keys():
+        return render_template(
+            "device_page.html",
+            form_utils={
+                "device": {
+                    "type_device": enumerate(type_device),
+                    "unprocessed_data": enumerate(unprocessed_data),
+                },
+                "new_device": True,
+            },
+        )
+    else:
+        return render_template(
+            "device_page.html",
+            form_utils={
+                "device": {
+                    "type_device": enumerate(type_device),
+                    "unprocessed_data": enumerate(unprocessed_data),
+                },
+                "new_device": False,
+            },
+        )
+    # return render_template("device_page.html")
 
 @bp.route("/form", methods=["GET"])
 def form():

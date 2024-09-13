@@ -1,12 +1,47 @@
 {% extends "base.html" %}
 {% block main %}
-  <div class="container mt-5">
+
+  <div class="screen position-relative">
+    <div class="d-flex to-center">
+      <div class="card card-show device">
+          <div class="card-header position-relative">
+              <div class="show-title">Device</div>
+              <a href='{{ url_for("device.device_page") }}'>
+                <img
+                  src="{{ url_for('static', filename='icon/icon-arrow-right.png' ) }}"
+                  alt="Uploaded Image"
+                  class="icon-header"
+                />
+              </a>
+          </div>
+          <div class="card-body">
+          </div>
+      </div>
+      <div class="card card-show service">
+        <div class="card-header position-relative">
+            <div class="show-title">Service</div>
+            <a href='{{ url_for("service.service_page") }}'>
+              <img
+                  src="{{ url_for('static', filename='icon/icon-arrow-right.png' ) }}"
+                  alt="Uploaded Image"
+                  class="icon-header"
+                />
+            </a>
+        </div>
+        <div class="card-body">
+            
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="container mt-5">
     <div class="card shadow rounded bg-dark mt-5">
       <div class="card-body text-center">
         <h5 class="card-title" style="color:white;font-size: 72px;">Databank</h5>
       </div>
     </div>
   </div>
+  
   {# Device Part #}
   <a href="{{ url_for("device.device_page") }}">
     <div class="container mt-5" style="margin-bottom: -20px;">
@@ -28,7 +63,7 @@
         </div>
       </div>
     </div>
-  </a>
+  </a> -->
 
 
   {# for submit button #}
@@ -62,5 +97,51 @@
           max-width: 100%;
           /* Make the image responsive within the container */
       }
+  </style>
+  <style>
+    .screen{
+      width:100vw;
+      height:100vh;
+    }
+    .card-show{
+      width:36.5vw;
+      height:39.2vw;
+    }
+    .card-show:first-child{
+      margin-right: 3%;
+    }
+    .to-center{
+      position:absolute;
+      top:5%;
+      left:50%;
+      transform: translateX(-50%);
+    }
+    .card-header{
+      height: 5.68vw;
+      font-size: 2.81vw;
+      text-align: center;
+      color:white;
+    }
+    .device .card-header{
+      background-color: var(--device-color);
+    }
+    .service .card-header{
+      background-color: var(--service-color);
+    }
+    .icon-header{
+      position: absolute;
+      right:2%;
+      top:50%;
+      transform:translateY(-50%);
+      margin-right: 20px; 
+      width: 2.1vw; 
+      height: 2.1vw
+    }
+    .show-title{
+      position: absolute;
+      top:50%;
+      left: 50%;
+      transform:translate(-50%,-50%);
+    }
   </style>
 {% endblock css %}

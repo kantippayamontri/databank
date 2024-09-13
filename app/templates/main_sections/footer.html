@@ -19,3 +19,20 @@
   </div>
 </footer>
 -->
+<script>
+  function showRemoveSession() {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4B8B4C",
+      cancelButtonColor: "#B41A1A",
+      confirmButtonText: "Confirm",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "{{url_for('session.clear_session')}}";
+      }
+    });
+  }
+</script>

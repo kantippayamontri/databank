@@ -1,22 +1,279 @@
-{% extends "base.html" %}
-{% block main %}
-  <div class="container mt-5">
-    <div class="card shadow rounded bg-dark mt-5">
-      <div class="card-body text-center">
-        <h5 class="card-title" style="color:white;font-size: 72px;">Databank</h5>
-      </div>
+{% extends "base.html" %} {% block main %}
+<!-- <div class="container mt-5">
+  <div class="card shadow rounded bg-dark mt-5">
+    <div class="card-body text-center">
+      <h5 class="card-title" style="color: white; font-size: 72px">Databank</h5>
     </div>
   </div>
-  <div class="container mt-5" style="margin-bottom: -20px;">
-    <div class="card shadow rounded mt-5" style="background-color:#137a63 ;">
-      <div class="card-body text-center">
-        <h5 class="card-title" style="color:white;font-size: 48px;">Device</h5>
-      </div>
+</div>
+<div class="container mt-5" style="margin-bottom: -20px">
+  <div class="card shadow rounded mt-5" style="background-color: #137a63">
+    <div class="card-body text-center">
+      <h5 class="card-title" style="color: white; font-size: 48px">Device</h5>
     </div>
   </div>
-  <div class="container mt-5">
-    <!-- Devices-->
-    <div id="device_part">{% include "page_sections/device_section.html" ignore missing %}</div>
+</div> -->
+<dib class="screen">
+  <div class="to-center">
+    <div class="card card-show device">
+      <div class="card-header position-relative">
+        <div class="show-title">Device</div>
+        <a href="javascript:void(0)" onclick="openAddModal()">
+          <img
+            src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
+            alt="Uploaded Image"
+            class="icon-header"
+          />
+        </a>
+      </div>
+      <div class="card-body"></div>
+    </div>
   </div>
+</dib>
 
-{% endblock main %}
+<div class="container mt-5">
+  <!-- Devices-->
+  <!-- <div id="device_part">
+    {% include "page_sections/device_section.html" ignore missing %}
+  </div> -->
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade device-modal"
+  id="addModal"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header position-relative">
+        <h5 class="modal-title">Add Device</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row">
+            <div class="col-md-12">
+              <label for="device_name" class="d-flex"
+                ><div class="text-label">Device Name</div>
+                <span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="device_name"
+                placeholder="Enter device name"
+                required
+              />
+            </div>
+            <div class="col-md-12 mt-1">
+              <label for="device_type" class="d-flex"
+                ><div class="text-label">Device Type</div>
+                <span class="text-danger">*</span></label
+              >
+              <div class="select2-select">
+                <select id="device_type" name="deviceType" class="form-control">
+                  <!-- <option value="" selected disabled>Device Type</option> -->
+                  {% for (index , _type_device) in
+                  form_utils["device"]["type_device"]%}
+                  <option value="{{ _type_device }}">{{ _type_device }}</option>
+                  {% endfor %}
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-12 mt-1"></div>
+              <label for="unprocessed_data" class="d-flex"
+                ><div class="text-label">Unprocessed Data</div>
+                <span class="text-danger">*</span></label
+              >
+              <div class="show-unprocess-data">
+                <!-- <span class="badge badge-device mb-2">
+                  <input type="hidden" name="unprocessData[]" id="unprocess_data_{}">
+                  <span class="text-show">Color</span>
+                  <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                </span>
+                <span class="badge badge-device mb-2">
+                  <input type="hidden" name="unprocessData[]" id="unprocess_data_{}">
+                  <span class="text-show">Temperature</span>
+                  <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
+                </span> -->
+              </div>
+              <div class="select2-select mt-2 me-2 d-flex">
+                <select id="unprocessed_data" class="form-control">
+                  <!-- <option value="" selected disabled>Unprocessed Data</option> -->
+                  {% for (index , _unprocessed_data) in
+                  form_utils["device"]["unprocessed_data"]%}
+                  <option value="{{ _unprocessed_data }}">
+                    {{ _unprocessed_data }}
+                  </option>
+                  {% endfor %}
+                  <option value="other">Other</option>
+                </select>
+                <button type="button" onclick="showAddUnprocessedData()" class="btn btn-device ms-2">
+                  Add
+                </button>
+              </div>
+              <div class="text-center mt-2">
+                <button type="button" onclick="validation()" class="btn btn-add ms-2">
+                  Add device
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main %} {% block js %}
+<script>
+  $("#device_type").select2({
+    width: "100%",
+    dropdownParent: $("#addModal"),
+  });
+  $("#unprocessed_data").select2({
+    width: "100%",
+    dropdownParent: $("#addModal"),
+  });
+  $(document).ready(async function () {
+    let res = await $.ajax({ url: '{{ url_for("device.form") }}' });
+    console.log(res);
+  });
+  function openAddModal() {
+    $("#addModal").modal("show");
+  }
+  function showAddUnprocessedData(){
+    let id = $("#unprocessed_data").val();
+    if($('#unprocess_data_'+id)){
+      $('.show-unprocess-data').append(`
+        <span class="badge badge-device mb-2" id="unprocess_data_${id}">
+          <input type="hidden" name="unprocessData[]" value="${id}">
+          <span class="text-show">${id}</span>
+          <button type="button" onclick="deleteUnprocessedData('unprocess_data_${id}')" class="btn-close btn-close-white" aria-label="Close"></button>
+        </span>
+      `)
+    }
+  }
+  function deleteUnprocessedData(id){
+    $(id).remove();
+  }
+  function validation(){
+    var valid = true;
+    if($('#device_name').val()){
+      $('#device_name').removeClass('is-invalid')
+    }else{
+      valid = false;
+      $('#device_name').addClass('is-invalid')
+    }
+    if(valid){
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#4B8B4C",
+        cancelButtonColor: "#B41A1A",
+        confirmButtonText: "Confirm",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log('submit');
+        }
+      });
+    }
+  }
+</script>
+{% endblock js %} {% block css %}
+<style>
+  /* button-add */
+  .btn-add:hover{
+    background-color:var(--add-collor);
+    border-color:var(--add-collor);
+    color:white;
+  }
+  .btn-add{
+    background-color:var(--add-collor);
+    border-color:var(--add-collor);
+    color:white;
+  }
+  /* button-device */
+  .btn-device{
+    background-color:var(--device-color);
+    border-color:var(--device-color);
+    color:white;
+  }
+  .btn-device:hover{
+    background-color:var(--device-color);
+    border-color:var(--device-color);
+    color:white;
+  }
+
+  .badge-device{
+    font-size: 1.0vw;
+    background-color:var(--device-color);
+    border-color:var(--device-color);
+    position: relative;
+  }
+  .badge-device .text-show{
+    margin-right: 1vw;
+    font-weight:500;
+  }
+  .badge-device button{
+    width: 0.7vw !important;
+    height: 0.7vw !important;;
+    position:absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    padding-right: 0px !important;
+  }
+  .device-modal .modal-header {
+    height: 4.17vw;
+    font-size: 1.67vw;
+    text-align: center;
+    color: white;
+  }
+  .device-modal .modal-header {
+    background-color: var(--device-color);
+  }
+  .service-modal .modal-header {
+    background-color: var(--service-color);
+  }
+  .modal-title {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.67vw;
+  }
+  .btn-close {
+    width: 1.2vw !important;
+    height: 1.4vw !important;
+    filter: brightness(0) invert(1);
+    opacity: 1 !important;
+    padding: 0px 2vw 0px 0px !important;
+  }
+
+  /* height */
+  .select2-container .select2-selection--single {
+    height: 1.82vw; /* Set height */
+  }
+  .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 1.82vw; /* Align text vertically */
+  }
+  .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 1.82vw; /* Set height of the dropdown arrow */
+  }
+
+  .text-label {
+    font-weight: 800;
+  }
+</style>
+{% include "css/card-header.html" ignore missing %} {% endblock css %}
