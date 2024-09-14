@@ -25,8 +25,63 @@
             class="icon-header"
           />
         </a>
+        <a href="javascript:void(0)" onclick="showDelete()">
+          <img
+            src="{{ url_for('static', filename='icon/delete-icon.png' ) }}"
+            alt="Uploaded Image"
+            class="icon-header-left delete-icon-show"
+          />
+        </a>
+        <a href="javascript:void(0)" onclick="closeDelete()">
+          <img
+            src="{{ url_for('static', filename='icon/x-icon.png' ) }}"
+            alt="Uploaded Image"
+            class="icon-header-left x-icon-show d-none"
+          />
+        </a>
       </div>
-      <div class="card-body"></div>
+        <div class="card-body">
+          {% if not session.get("devices") %}
+            <div class="text-center">You have 0 device.</div>
+          {% else %}
+            <div class="data-content">
+              {# loop device key show in table#}
+              {% if session.get("devices") %}
+                {% for device_id in session.get("devices").keys() %}
+                  
+                  <div class="card card-width card-item">
+                    <div class="card-body body-height position-relative">
+                      <div class="text-margin-top">Device Name: {{ session.get("devices")[device_id] ["device_name"] }}</div>
+                      <div>Device Type: {{ session.get("devices")[device_id] ["device_type"] }}</div>
+                      <div>
+                        Unprocessed Data:
+                        {% for un_data in  session.get("devices")[device_id]["device_unprocessed"][:-1] %}
+                          {{ un_data }},
+                        {% endfor %}
+                        {{ session.get("devices")[device_id] ["device_unprocessed"] [-1] }}
+                      </div>
+                      <img
+                        src="{{ url_for('static', filename='icon/edit-icon.png' ) }}"
+                        alt="edit icon"
+                        class="edit-icon"
+                        onclick='showEditModal("{{device_id}}","{{session.get("devices")[device_id]}}")'
+                      />
+                      <a href="javascript:void(0)" onclick="closeAlert('{{device_id}}')">
+                        <div class="box-animation">
+                          <img
+                            src="{{ url_for('static', filename='icon/delete-icon.png' ) }}"
+                            alt="edit icon"
+                            class="delete-icon d-none"
+                          />
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            </div>
+          {% endif %}
+      </div>
     </div>
   </div>
 </dib>
@@ -58,7 +113,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form id="device_form">
           <div class="row">
             <div class="col-md-12">
               <label for="device_name" class="d-flex"
@@ -73,13 +128,14 @@
                 required
               />
             </div>
+            <div class="d-none text-danger" id="same_name">this device name is already exist.</div>
             <div class="col-md-12 mt-1">
               <label for="device_type" class="d-flex"
                 ><div class="text-label">Device Type</div>
                 <span class="text-danger">*</span></label
               >
               <div class="select2-select">
-                <select id="device_type" name="deviceType" class="form-control">
+                <select id="device_type" onchange="deviceTypeOther()" name="deviceType" class="form-control">
                   <!-- <option value="" selected disabled>Device Type</option> -->
                   {% for (index , _type_device) in
                   form_utils["device"]["type_device"]%}
@@ -87,6 +143,18 @@
                   {% endfor %}
                   <option value="other">Other</option>
                 </select>
+                <div class="d-none col-12 mb-2 mt-2 d-flex" id="device_type_other_input">
+                  <input
+                    id="device_input_device_type"
+                    type="text"
+                    class="form-control me-2"
+                    placeholder="Enter your device type"
+                  />
+                  <button type="button" class="btn btn-add" onclick="addNewType()" id="addOptionButton">
+                    Add
+                  </button>
+                </div>
+                <div class="d-none text-danger" id="type_duplicate">New device type is duplicate.</div>
               </div>
             </div>
             <div class="col-md-12 mt-1"></div>
@@ -107,7 +175,7 @@
                 </span> -->
               </div>
               <div class="select2-select mt-2 me-2 d-flex">
-                <select id="unprocessed_data" class="form-control">
+                <select id="unprocessed_data" onchange="unprocessedDataOther()" class="form-control">
                   <!-- <option value="" selected disabled>Unprocessed Data</option> -->
                   {% for (index , _unprocessed_data) in
                   form_utils["device"]["unprocessed_data"]%}
@@ -121,8 +189,21 @@
                   Add
                 </button>
               </div>
+              <div class="d-none col-12 mb-3 mt-2 d-flex" id="device_unprocessed_other_input">
+                <input
+                  id="device_input_unprocessed"
+                  type="text"
+                  class="form-control me-2"
+                  placeholder="Enter your unprocessed data"
+                />
+                <button type="button" class="btn btn-add" onclick="addNewUnprocessedData()" id="device_upprocessed_data_add_button">
+                  Add
+                </button>
+              </div>
+              <div class="d-none text-danger" id="data_duplicate">New device unprocessed type is duplicate.</div>
+              <div class="text-danger d-none" id="no_data">no unprocessed data</div>
               <div class="text-center mt-2">
-                <button type="button" onclick="validation()" class="btn btn-add ms-2">
+                <button type="button" id="modal_add_btn" onclick="validation()" class="btn btn-add ms-2">
                   Add device
                 </button>
               </div>
@@ -143,35 +224,125 @@
     width: "100%",
     dropdownParent: $("#addModal"),
   });
-  $(document).ready(async function () {
-    let res = await $.ajax({ url: '{{ url_for("device.form") }}' });
-    console.log(res);
-  });
   function openAddModal() {
     $("#addModal").modal("show");
+    $('#device_name').val('');
+    let firstOptionValue = $('#device_type option:first').val();
+    $('#device_type').val(firstOptionValue).trigger('change');
+    firstOptionValue = $('#unprocessed_data option:first').val();
+    $('#unprocessed_data').val(firstOptionValue).trigger('change');
+    $('.show-unprocess-data').empty();
+    $('.modal-title')[0].innerHTML = "Add Device";
+    $('#modal_add_btn')[0].innerHTML = "Add Device";
+    $('#modal_add_btn').attr('onclick','validation()');
+    resetInvalid();
+  }
+  function resetInvalid(){
+    $('#device_name').removeClass('is-invalid')
+    $('#device_input_device_type').removeClass('is-invalid');
+    $('#device_type').parent().find('span').removeClass('is-invalid');
+    $('#device_input_unprocessed').removeClass('is-invalid');
+    $('#no_data').addClass('d-none');
+    $('#unprocessed_data').parent().find('span').removeClass('is-invalid');
+    $('#same_name').addClass('d-none');
   }
   function showAddUnprocessedData(){
     let id = $("#unprocessed_data").val();
-    if($('#unprocess_data_'+id)){
+    if($('#unprocessed_data_'+id.replaceAll(" ","_")).length==0){
       $('.show-unprocess-data').append(`
-        <span class="badge badge-device mb-2" id="unprocess_data_${id}">
+        <span class="badge badge-device mb-2" id="unprocessed_data_${id.replaceAll(" ","_")}">
           <input type="hidden" name="unprocessData[]" value="${id}">
           <span class="text-show">${id}</span>
-          <button type="button" onclick="deleteUnprocessedData('unprocess_data_${id}')" class="btn-close btn-close-white" aria-label="Close"></button>
+          <button type="button" onclick="deleteUnprocessedData(this)" class="btn-close btn-close-white" aria-label="Close"></button>
         </span>
       `)
     }
   }
-  function deleteUnprocessedData(id){
-    $(id).remove();
+  function deleteUnprocessedData(e){
+    $(e).parent().remove();
   }
-  function validation(){
+  async function validation(type = "add",id = "add"){
     var valid = true;
     if($('#device_name').val()){
       $('#device_name').removeClass('is-invalid')
     }else{
       valid = false;
       $('#device_name').addClass('is-invalid')
+    }
+    if($('#device_type').val()== "other"){
+      valid = false;
+      $('#device_type').parent().find('span').addClass('is-invalid');
+      if($('#device_input_device_type').val()){
+        $('#device_input_device_type').removeClass('is-invalid');
+      }else{
+        valid = false;
+        $('#device_input_device_type').addClass('is-invalid');
+      }
+    }else{
+      $('#device_type').parent().find('span').removeClass('is-invalid');
+    }
+    if($('#unprocessed_data').val() == "other"){
+      valid=false
+      $('#unprocessed_data').parent().find('span').addClass('is-invalid');
+      if($('#device_input_unprocessed').val()){
+        $('#device_input_unprocessed').removeClass('is-invalid');
+      }else{
+        valid = false;
+        $('#device_input_unprocessed').addClass('is-invalid');
+      }
+    }else{
+      $('#unprocessed_data').parent().find('span').removeClass('is-invalid');
+      if($('input[name="unprocessData[]"]').length>0){
+        $('#no_data').addClass('d-none');
+        $('#unprocessed_data').parent().find('span').removeClass('is-invalid');
+      }else{
+        valid = false;
+        $('#no_data').removeClass('d-none');
+        $('#unprocessed_data').parent().find('span').addClass('is-invalid');
+      }
+    }
+    let session_all = await $.ajax({
+            url: "/session/get",
+            type: "get",
+            dataType: "json",
+            contentType: "application/json",
+    })
+    let device_data = [];
+    $('input[name="unprocessData[]"]').each((index,data)=>{
+      device_data.push($(data).val());
+    })
+    device = {
+      device_name:$('#device_name').val(),
+      device_type:$('#device_type').val(),
+      device_unprocessed: device_data,
+      new_device: true
+    }
+    if(type == 'edit'){
+      var device_name = [];
+      for (_device_id in session_all["devices"]) {
+        if (_device_id !== "{{form_utils['device_id']}}" && _device_id != id) {
+          device_name.push(
+            session_all["devices"][_device_id]["device_name"]
+          );
+        }
+      }
+      if (device_name.includes(device["device_name"])) {
+        valid = false;
+        $('#same_name').removeClass('d-none');
+      }else{
+        $('#same_name').addClass('d-none');
+      }
+    }else{
+      var device_name = [];
+      for (_device_id in session_all["devices"]) {
+        device_name.push(session_all["devices"][_device_id]["device_name"]);
+      }
+      if (device_name.includes(device["device_name"])) {
+        valid = false;
+        $('#same_name').removeClass('d-none');
+      }else{
+        $('#same_name').addClass('d-none');
+      }
     }
     if(valid){
       Swal.fire({
@@ -184,23 +355,212 @@
         confirmButtonText: "Confirm",
       }).then((result) => {
         if (result.isConfirmed) {
-          console.log('submit');
+          if(type == 'edit'){
+            device.new_device = false;
+            $.ajax({
+              url: "/device/update/"+id,
+              type: "post",
+              dataType: "json",
+              contentType: "application/json",
+              success: function () {
+                window.location.href = "/device/device_page";
+              },
+              data: JSON.stringify(device),
+            });
+          }else{
+            device.new_device = true;
+            $.ajax({
+              url: "/device/add",
+              type: "post",
+              dataType: "json",
+              contentType: "application/json",
+              success: function () {
+                window.location.href = "/device/device_page";
+              },
+              data: JSON.stringify(device),
+            });
+          }
         }
       });
     }
   }
+  function deviceTypeOther(){
+    if($('#device_type').val()=="other"){
+      $('#device_type_other_input').removeClass('d-none');
+    }else{
+      $('#device_type_other_input').addClass('d-none');
+    }
+  }
+  function unprocessedDataOther(){
+    if($('#unprocessed_data').val()=="other"){
+      $('#device_unprocessed_other_input').removeClass('d-none');
+    }else{
+      $('#device_unprocessed_other_input').addClass('d-none');
+    }
+  }
+  function checkDuplicate(selectId,data) {
+    let select = document.getElementById(selectId);
+    let optionValues = [];
+    let hasDuplicates = false;
+
+    for (let i = 0; i < select.options.length; i++) {
+      let value = select.options[i].value;
+      if (value.toUpperCase() == data.toUpperCase()) {
+        hasDuplicates = true;
+      } else {
+        optionValues.push(value);
+      }
+    }
+
+    return hasDuplicates;
+  }
+  function addNewType(){
+    if($('#device_type').val() == "other"){
+      let data = $('#device_input_device_type').val();
+      let isDuplicate = checkDuplicate('device_type',data);
+      if(isDuplicate){
+        $('#type_duplicate').removeClass('d-none');
+        $('#device_input_device_type').addClass('is-invalid');
+      }else{
+        $('#type_duplicate').addClass('d-none');
+        $('#device_input_device_type').removeClass('is-invalid');
+        if(data){
+          $('#device_input_device_type').removeClass('is-invalid');
+          $('#device_type').prepend(`<option value="${data}">${data}</option>`);
+          $('#device_type').val(data).toggle('change');
+          $('#device_input_device_type').val('');
+          $('#device_type_other_input').addClass('d-none')
+        }else{
+          $('#device_input_device_type').addClass('is-invalid');
+        }
+      }
+    }
+  }
+  function addNewUnprocessedData(){
+    if($('#unprocessed_data').val() == "other"){
+      let data = $('#device_input_unprocessed').val();
+      let isDuplicate = checkDuplicate('unprocessed_data',data);
+      if(isDuplicate){
+        $('#data_duplicate').removeClass('d-none');
+        $('#device_input_unprocessed').addClass('is-invalid');
+      }else{
+        $('#data_duplicate').addClass('d-none');
+        $('#device_input_unprocessed').removeClass('is-invalid');
+        if(data){
+          $('#device_input_unprocessed').removeClass('is-invalid');
+          $('#unprocessed_data').prepend(`<option value="${data}">${data}</option>`);
+          $('#unprocessed_data').val(data).toggle('change');
+          $('#device_input_unprocessed').val('');
+          $('#device_unprocessed_other_input').addClass('d-none')
+        }else{
+          $('#device_input_unprocessed').addClass('is-invalid');
+        }
+      }
+    }
+  }
+  function showDelete(){
+    $('.box-animation').addClass('box-animation-forward');
+    $('.box-animation').removeClass('box-animation-reverse');
+    $('.box-animation img').removeClass('d-none');
+    $('.delete-icon-show').addClass('d-none');
+    $('.x-icon-show').removeClass('d-none');
+  }
+  function closeDelete(){
+    $('.box-animation').addClass('box-animation-reverse');
+    $('.box-animation').removeClass('box-animation-forward');
+    $('.box-animation img').addClass('d-none');
+    $('.delete-icon-show').removeClass('d-none');
+    $('.x-icon-show').addClass('d-none');
+  }
+  function closeAlert(id){
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#4B8B4C",
+        cancelButtonColor: "#B41A1A",
+        confirmButtonText: "Confirm",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/device/delete/"+id;
+        }
+      })
+  }
+  function showEditModal(id,data){
+    let device = JSON.parse(data.replaceAll("'",'"'));
+    $("#addModal").modal("show");
+    $('#device_name').val(device['device_name']);
+    $('#device_type').val(device['device_type']).trigger('change');
+    firstOptionValue = $('#unprocessed_data option:first').val();
+    $('#unprocessed_data').val(firstOptionValue).trigger('change');
+    $('.show-unprocess-data').empty();
+    device['device_unprocessed'].forEach((doc,key)=>{
+      $('.show-unprocess-data').append(`
+        <span class="badge badge-device mb-2" id="unprocessed_data_${doc.replaceAll(" ","_")}">
+          <input type="hidden" name="unprocessData[]" value="${doc}">
+          <span class="text-show">${doc}</span>
+          <button type="button" onclick="deleteUnprocessedData(this)" class="btn-close btn-close-white" aria-label="Close"></button>
+        </span>
+      `);
+    })
+    $('.modal-title')[0].innerHTML = "Edit Device";
+    $('#modal_add_btn')[0].innerHTML = "Edit Device";
+    $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
+    resetInvalid();
+  }
 </script>
 {% endblock js %} {% block css %}
 <style>
+  /* animation */
+  .box-animation{
+    width: 0vw;
+    height: 100%;
+    background-color: var(--delete-color);
+    position: absolute;
+    top: 0%;
+    right: 0%; 
+    border-top-left-radius: 10px;
+  }
+  .box-animation-reverse{
+      animation: expandWidthReverse 0.5s ease-in-out 1 forwards;
+  }
+  .box-animation-forward{
+      animation: expandWidth 0.5s ease-in-out 1 forwards;
+  }
+  @keyframes expandWidth {
+      0% {
+          width: 0%; 
+      }
+      100% {
+          width: 7%; 
+      }
+  }
+  @keyframes expandWidthReverse {
+      0% {
+          width: 7%; 
+      }
+      100% {
+          width: 0%; 
+      }
+  }
+  
+  /* end animation */
+  .device .icon-header-left{
+    position: absolute;
+    left:3%;
+    top:50%;
+    transform: translateY(-50%);
+  }
   /* button-add */
   .btn-add:hover{
-    background-color:var(--add-collor);
-    border-color:var(--add-collor);
+    background-color:var(--add-color);
+    border-color:var(--add-color);
     color:white;
   }
   .btn-add{
-    background-color:var(--add-collor);
-    border-color:var(--add-collor);
+    background-color:var(--add-color);
+    border-color:var(--add-color);
     color:white;
   }
   /* button-device */
@@ -274,6 +634,48 @@
 
   .text-label {
     font-weight: 800;
+  }
+  .is-invalid .select2-selection,
+  .needs-validation~span>.select2-dropdown {
+      border-color: red !important;
+  }
+
+  /* body */
+  /* .device .show-amount{
+    text-align: center;
+  } */
+  .device .body-height{
+    height: 4.8vw;
+    width:100%;
+    border-left: 1.21vw solid var(--device-color);
+  }
+  .device .card-width{
+    width:90%;
+  }
+  .device .data-content{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+  .device .card-item:not(:first-child){
+    margin-top:-1px;
+  }
+  .device .text-margin-top{
+    margin-top:-0.45vw;
+  }
+  .device .edit-icon{
+    position:absolute;
+    top:50%;
+    right:3%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  .device .delete-icon{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%);
   }
 </style>
 {% include "css/card-header.html" ignore missing %} {% endblock css %}
