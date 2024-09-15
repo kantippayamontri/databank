@@ -13,7 +13,38 @@
           />
         </a>
       </div>
-      <div class="card-body"></div>
+      <div class="card-body">
+        {% if not session.get("devices") %}
+        <div class="text-center">You have 0 device.</div>
+        {% else %}
+        <div class="data-content">
+          {# loop device key show in table#} {% if session.get("devices") %} {%
+          for device_id in session.get("devices").keys() %}
+          <div
+            class="card card-width card-item"
+            onclick='showDataDetail("{{device_id}}")'
+          >
+            <div class="card-body body-height position-relative">
+              <div class="text-margin-top">
+                Device Name: {{ session.get("devices")[device_id]
+                ["device_name"] }}
+              </div>
+              <div>
+                Device Type: {{ session.get("devices")[device_id]
+                ["device_type"] }}
+              </div>
+              <div class="show-unprocess-data">
+                Unprocessed Data: {% for un_data in
+                session.get("devices")[device_id]["device_unprocessed"][:-1] %}
+                {{ un_data }}, {% endfor %} {{ session.get("devices")[device_id]
+                ["device_unprocessed"] [-1] }}
+              </div>
+            </div>
+          </div>
+          {% endfor %} {% endif %}
+        </div>
+        {% endif %}
+      </div>
     </div>
     <div class="card card-show service">
       <div class="card-header position-relative">
@@ -30,51 +61,13 @@
     </div>
   </div>
 </div>
-<!-- <div class="container mt-5">
-    <div class="card shadow rounded bg-dark mt-5">
-      <div class="card-body text-center">
-        <h5 class="card-title" style="color:white;font-size: 72px;">Databank</h5>
-      </div>
-    </div>
-  </div>
-  
-  {# Device Part #}
-  <a href="{{ url_for("device.device_page") }}">
-    <div class="container mt-5" style="margin-bottom: -20px;">
-      <div class="card shadow rounded mt-5" style="background-color:#137a63 ;">
-        <div class="card-body text-center">
-          <h5 class="card-title" style="color:white;font-size: 48px;">Device</h5>
-        </div>
-      </div>
-    </div>
-  </a>
-
-
-  {# Service Part #}
-  <a href="{{ url_for("service.service_page") }}">
-    <div class="container mt-5" style="margin-bottom: -20px;">
-      <div class="card shadow rounded mt-5" style="background-color:#f1c232 ;">
-        <div class="card-body text-center">
-          <h5 class="card-title" style="color:white;font-size: 48px;">Services</h5>
-        </div>
-      </div>
-    </div>
-  </a> -->
-
-<!-- {# for submit button #}
-  {% if ("devices" in session.keys()) or ("services" in session.keys()) %}
-    <div class="container mt-5" style="margin-bottom: -20px;">
-      <div class="container text-center" style="margin-top: 20 px;">
-        <a href="{{ url_for("graph.show_graph") }}">
-          <button type="button" id="submit_button" class="btn btn-success" value="submit">
-            Generate Graph
-          </button>
-        </a>
-      </div>
-    </div>
-    <br />
-  {% endif %} -->
-{% endblock main %} {% block js %} {% endblock js %} {% block css %}
+{% endblock main %} {% block js %}
+<script>
+  function showDataDetail(device_id) {
+    window.location.href = "/device/device_page?device_id=" + device_id;
+  }
+</script>
+{% endblock js %} {% block css %}
 <style>
   .image-container {
     max-width: fit-content;
@@ -134,6 +127,38 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .device .body-height {
+    height: 4.8vw;
+    width: 100%;
+    border-left: 1.21vw solid var(--device-color);
+  }
+  .device .card-width {
+    width: 90%;
+  }
+  .device .card-item:not(:first-child) {
+    margin-top: -1px;
+  }
+  .device .text-margin-top {
+    margin-top: -0.45vw;
+  }
+  .device .data-content {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+  .device .card-item {
+    cursor: pointer;
+  }
+  .device .card-selected {
+    filter: brightness(0.7);
+  }
+  .device .show-unprocess-data {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>
 {% endblock css %}

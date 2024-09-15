@@ -48,7 +48,7 @@
               {# loop device key show in table#}
               {% if session.get("devices") %}
                 {% for device_id in session.get("devices").keys() %}
-                  <div class="card card-width card-item" onclick='showDataDetail(this,"{{ session.get("devices")[device_id] }}","{{device_id}}")'>
+                  <div class="card card-width card-item" data-device-id="{{device_id}}" onclick='showDataDetail(this,"{{ session.get("devices")[device_id] }}","{{device_id}}")'>
                     <div class="card-body body-height position-relative">
                       <div class="text-margin-top">Device Name: {{ session.get("devices")[device_id] ["device_name"] }}</div>
                       <div>Device Type: {{ session.get("devices")[device_id] ["device_type"] }}</div>
@@ -264,6 +264,16 @@
 </div>
 {% endblock main %} {% block js %}
 <script>
+  $(document).ready(function(){
+    const url = window.location.href;
+    const params = new URLSearchParams(window.location.search);
+    $('.card-item').each((index,doc)=>{
+      if($(doc).attr('data-device-id')== params.get('device_id')){
+        $(doc).click();
+        window.history.pushState({}, '', `${url.split('?')[0]}`);
+      }
+    })
+  })
   $("#device_type").select2({
     width: "100%",
     dropdownParent: $("#addModal"),
