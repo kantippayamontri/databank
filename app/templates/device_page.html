@@ -13,8 +13,8 @@
     </div>
   </div>
 </div> -->
-<dib class="screen">
-  <div class="to-center">
+<div class="screen">
+  <div class="to-center" id="to_center">
     <div class="card card-show device">
       <div class="card-header position-relative">
         <div class="show-title">Device</div>
@@ -48,12 +48,11 @@
               {# loop device key show in table#}
               {% if session.get("devices") %}
                 {% for device_id in session.get("devices").keys() %}
-                  
-                  <div class="card card-width card-item">
+                  <div class="card card-width card-item" onclick='showDataDetail(this,"{{ session.get("devices")[device_id] }}","{{device_id}}")'>
                     <div class="card-body body-height position-relative">
                       <div class="text-margin-top">Device Name: {{ session.get("devices")[device_id] ["device_name"] }}</div>
                       <div>Device Type: {{ session.get("devices")[device_id] ["device_type"] }}</div>
-                      <div>
+                      <div class="show-unprocess-data">
                         Unprocessed Data:
                         {% for un_data in  session.get("devices")[device_id]["device_unprocessed"][:-1] %}
                           {{ un_data }},
@@ -84,13 +83,62 @@
       </div>
     </div>
   </div>
-</dib>
-
-<div class="container mt-5">
-  <!-- Devices-->
-  <!-- <div id="device_part">
-    {% include "page_sections/device_section.html" ignore missing %}
-  </div> -->
+  <div class="to-right d-none" id="show_data_detail">
+    <div class="card card-show-right device">
+      <div class="card-header position-relative">
+        <div class="show-title">Device Name: <span id="name_title">test device</span></div>
+        <a href="javascript:void(0)" onclick="backLeft()">
+          <img
+            src="{{ url_for('static', filename='icon/arrow-left.png' ) }}"
+            alt="Uploaded Image"
+            class="icon-header-left delete-icon-show"
+          />
+        </a>
+      </div>
+        <div class="card-body" id="show_detail_list">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Accordion Item #1
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            This is the content of the first accordion item.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            Accordion Item #2
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            This is the content of the second accordion item.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            Accordion Item #3
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            This is the content of the third accordion item.
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal -->
@@ -162,7 +210,7 @@
                 ><div class="text-label">Unprocessed Data</div>
                 <span class="text-danger">*</span></label
               >
-              <div class="show-unprocess-data">
+              <div class="show-unprocess-data-list">
                 <!-- <span class="badge badge-device mb-2">
                   <input type="hidden" name="unprocessData[]" id="unprocess_data_{}">
                   <span class="text-show">Color</span>
@@ -231,7 +279,7 @@
     $('#device_type').val(firstOptionValue).trigger('change');
     firstOptionValue = $('#unprocessed_data option:first').val();
     $('#unprocessed_data').val(firstOptionValue).trigger('change');
-    $('.show-unprocess-data').empty();
+    $('.show-unprocess-data-list').empty();
     $('.modal-title')[0].innerHTML = "Add Device";
     $('#modal_add_btn')[0].innerHTML = "Add Device";
     $('#modal_add_btn').attr('onclick','validation()');
@@ -249,7 +297,7 @@
   function showAddUnprocessedData(){
     let id = $("#unprocessed_data").val();
     if($('#unprocessed_data_'+id.replaceAll(" ","_")).length==0){
-      $('.show-unprocess-data').append(`
+      $('.show-unprocess-data-list').append(`
         <span class="badge badge-device mb-2" id="unprocessed_data_${id.replaceAll(" ","_")}">
           <input type="hidden" name="unprocessData[]" value="${id}">
           <span class="text-show">${id}</span>
@@ -486,6 +534,7 @@
           window.location.href = "/device/delete/"+id;
         }
       })
+      event.stopPropagation();
   }
   function showEditModal(id,data){
     let device = JSON.parse(data.replaceAll("'",'"'));
@@ -494,9 +543,9 @@
     $('#device_type').val(device['device_type']).trigger('change');
     firstOptionValue = $('#unprocessed_data option:first').val();
     $('#unprocessed_data').val(firstOptionValue).trigger('change');
-    $('.show-unprocess-data').empty();
+    $('.show-unprocess-data-list').empty();
     device['device_unprocessed'].forEach((doc,key)=>{
-      $('.show-unprocess-data').append(`
+      $('.show-unprocess-data-list').append(`
         <span class="badge badge-device mb-2" id="unprocessed_data_${doc.replaceAll(" ","_")}">
           <input type="hidden" name="unprocessData[]" value="${doc}">
           <span class="text-show">${doc}</span>
@@ -508,6 +557,279 @@
     $('#modal_add_btn')[0].innerHTML = "Edit Device";
     $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
     resetInvalid();
+    event.stopPropagation();
+  }
+  async function showRawDataList(device_id,id,raw_data,type="add"){
+    if($('#'+id)[0].innerHTML.trim()=='' || type=="new"){
+      let res = await $.ajax("/raw_data/getData/"+device_id);
+      let showData = "";
+      Object.keys(res.raw_data).forEach((key)=>{
+        if(key == raw_data){
+          showData = res.raw_data[key];
+        }
+      })
+      if(!showData){
+        let html = `<div class="row">`;
+        //sensitivity
+        html +=`
+          <div class="col-12">
+          <label class="ms-2" for="raw_data_sensitivity_${ raw_data }">Sensitivity</label>
+          <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data }" name="sensitivity_${ raw_data }">
+        `;
+        res['sensitivity'].forEach((doc)=>{
+          html +=`
+            <option value="${doc}">
+              ${doc}
+            </option>
+          `;
+        })
+        html += `</select>`;
+        //action
+        html +=`
+          <div class="col-12">
+          <label class="ms-2" for="raw_data_action_${ raw_data }">Action</label>
+          <select class="form-select custom-select" id="raw_data_action_${ raw_data }" name="action_${ raw_data }">
+        `;
+        res['action'].forEach((doc)=>{
+          html +=`
+            <option value="${doc}">
+              ${doc}
+            </option>
+          `;
+        })
+        html += `</select>`;
+
+        //frequency
+        html +=`
+          <div class="col-12">
+          <label class="ms-2" for="raw_data_frequency_${ raw_data }">frequency</label>
+          <select class="form-select custom-select" id="raw_data_frequency_${ raw_data }" name="frequency_${ raw_data }">
+        `;
+        res['frequency'].forEach((doc)=>{
+          html +=`
+            <option value="${doc}">
+              ${doc}
+            </option>
+          `;
+        })
+        html += `</select>`;
+        
+        html += `<div class="col-12">
+            <div class="text-center mt-3">
+              <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add ms-2">
+                Add Data
+              </button>
+            </div>
+          </div>`;
+        html += `</div>`;
+        html += `</div>`;
+        $('#'+id).empty().append(html);
+        $(`#raw_data_sensitivity_${ raw_data }`).select2({
+          width: "100%",
+          minimumResultsForSearch:-1,
+        });
+        $(`#raw_data_action_${ raw_data }`).select2({
+          width: "100%",
+          minimumResultsForSearch:-1,
+        });
+        $(`#raw_data_frequency_${ raw_data }`).select2({
+          width: "100%",
+          minimumResultsForSearch:-1,
+        });
+      }else{
+        html = `
+          <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+            <tr>
+              <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+              <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+            </tr>
+            <tr>
+              <td style="padding: 8px;" class="text-center">Action</td>
+              <td style="padding: 8px;" class="text-center">
+                ${showData.sensitivity}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;" class="text-center">Frequency</td>
+              <td style="padding: 8px;" class="text-center">
+                ${showData.action}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px;" class="text-center">Sensitivity</td>
+              <td style="padding: 8px;" class="text-center">
+                ${showData.frequency}
+              </td>
+            </tr>
+          </table>
+          <div class="col-12">
+            <div class="text-center mt-3">
+              <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add ms-2">
+                Edit Data
+              </button>
+            </div>
+          </div>
+        `;
+        $('#'+id).empty().append(html);
+      }
+    }else if(type=="edit"){
+      let res = await $.ajax("/raw_data/getData/"+device_id);
+      let showData = "";
+      Object.keys(res.raw_data).forEach((key)=>{
+        if(key == raw_data){
+          showData = res.raw_data[key];
+        }
+      })
+      let html = `<div class="row">`;
+      //sensitivity
+      html +=`
+        <div class="col-12">
+        <label class="ms-2" for="raw_data_sensitivity_${ raw_data }">Sensitivity</label>
+        <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data }" name="sensitivity_${ raw_data }">
+      `;
+      res['sensitivity'].forEach((doc)=>{
+        html +=`
+          <option value="${doc}" ${showData['sensitivity']==doc? 'selected':''}>
+            ${doc}
+          </option>
+        `;
+      })
+      html += `</select>`;
+      //action
+      html +=`
+        <div class="col-12">
+        <label class="ms-2" for="raw_data_action_${ raw_data }">Action</label>
+        <select class="form-select custom-select" id="raw_data_action_${ raw_data }" name="action_${ raw_data }">
+      `;
+      res['action'].forEach((doc)=>{
+        html +=`
+          <option value="${doc}" ${showData['action']==doc? 'selected':''}>
+            ${doc}
+          </option>
+        `;
+      })
+      html += `</select>`;
+
+      //frequency
+      html +=`
+        <div class="col-12">
+        <label class="ms-2" for="raw_data_frequency_${ raw_data }">frequency</label>
+        <select class="form-select custom-select" id="raw_data_frequency_${ raw_data }" name="frequency_${ raw_data }">
+      `;
+      res['frequency'].forEach((doc)=>{
+        html +=`
+          <option value="${doc}" ${showData['frequency']==doc? 'selected':''}>
+            ${doc}
+          </option>
+        `;
+      })
+      html += `</select>`;
+      
+      html += `<div class="col-12">
+          <div class="text-center mt-3">
+            <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add ms-2">
+              Edit Data
+            </button>
+          </div>
+        </div>`;
+      html += `</div>`;
+      html += `</div>`;
+      $('#'+id).empty().append(html);
+      $(`#raw_data_sensitivity_${ raw_data }`).select2({
+        width: "100%",
+        minimumResultsForSearch:-1,
+      });
+      $(`#raw_data_action_${ raw_data }`).select2({
+        width: "100%",
+        minimumResultsForSearch:-1,
+      });
+      $(`#raw_data_frequency_${ raw_data }`).select2({
+        width: "100%",
+        minimumResultsForSearch:-1,
+      });
+    }
+  }
+  async function validationData(raw_data,id,device_id){
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4B8B4C",
+      cancelButtonColor: "#B41A1A",
+      confirmButtonText: "Confirm",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let res = await $.ajax({
+          url:'/raw_data/ajax/'+device_id,
+          method:'POST',
+          data:{
+            "raw_data":raw_data,
+            "sensitivity":$(`#raw_data_sensitivity_${ raw_data }`).val(),
+            "action":$(`#raw_data_action_${ raw_data }`).val(),
+            "frequency":$(`#raw_data_frequency_${ raw_data }`).val(),
+          }
+        })
+        showRawDataList(device_id,id,raw_data,type='new');
+      }
+    });
+  }
+  function showDataDetail(e,data,id){
+    let device = JSON.parse(data.replaceAll("'",'"'));
+    $('.card-item').each(async (index,data)=>{
+      if(data == e){
+        if(!$(data).hasClass('card-selected')){
+          $(data).addClass('card-selected');
+          $('#to_center').removeClass('to-center');
+          $('#to_center').addClass('to-left');
+          $(data).parent().parent().parent().addClass('card-show-left');
+          $(data).parent().parent().parent().removeClass('card-show');
+          $('#name_title')[0].innerHTML = device['device_name'];
+          $('#show_data_detail').removeClass("d-none");
+          $('#show_detail_list').empty();
+          var html = '<div class="accordion" id="accordionExample">';
+          device['device_unprocessed'].forEach((doc,key)=>{
+            html += `
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                    <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                      ${doc}
+                    </button>
+                  </h2>
+                  <div id="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
+                    <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                    </div>
+                  </div>
+                </div>`;
+          })
+          // <div class="row">
+          //   <div class="col-12">
+          //   </div>
+          // </div>
+          html += "</div>";
+          $('#show_detail_list').append(html);
+        }else{
+          $(data).removeClass('card-selected');
+          $('#to_center').addClass('to-center');
+          $('#to_center').removeClass('to-left');
+          $(data).parent().parent().parent().removeClass('card-show-left');
+          $(data).parent().parent().parent().addClass('card-show');
+          $('#show_data_detail').addClass("d-none");
+        }
+      }else{
+        $(data).removeClass('card-selected');
+      }
+    })
+  }
+  function backLeft(){
+    $('.card-item').each((index,data)=>{
+      $(data).removeClass('card-selected');
+      $('#to_center').addClass('to-center');
+      $('#to_center').removeClass('to-left');
+      $(data).parent().parent().parent().removeClass('card-show-left');
+      $(data).parent().parent().parent().addClass('card-show');
+      $('#show_data_detail').addClass("d-none");
+    })
   }
 </script>
 {% endblock js %} {% block css %}
@@ -533,12 +855,12 @@
           width: 0%; 
       }
       100% {
-          width: 7%; 
+          width: 9%; 
       }
   }
   @keyframes expandWidthReverse {
       0% {
-          width: 7%; 
+          width: 9%; 
       }
       100% {
           width: 0%; 
@@ -676,6 +998,24 @@
     top:50%;
     left:50%;
     transform: translate(-50%,-50%);
+  }
+  .device .card-item{
+    cursor:pointer;
+  }
+  .device .card-selected{
+    filter: brightness(0.7);
+  }
+  .device .show-unprocess-data{
+    white-space: nowrap;      
+    overflow: hidden;        
+    text-overflow: ellipsis;
+  }
+  .accordion-button:not(.collapsed){
+    background-color: var(--device-color);
+    color:white;
+  }
+  .accordion-button:not(.collapsed)::after{
+    filter: brightness(0) invert(1);
   }
 </style>
 {% include "css/card-header.html" ignore missing %} {% endblock css %}
