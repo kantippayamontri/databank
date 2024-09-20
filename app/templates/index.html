@@ -22,7 +22,7 @@
           for device_id in session.get("devices").keys() %}
           <div
             class="card card-width card-item"
-            onclick='showDataDetail("{{device_id}}")'
+            onclick='showDataDetail("{{device_id}}","device")'
           >
             <div class="card-body body-height position-relative">
               <div class="text-margin-top">
@@ -57,14 +57,39 @@
           />
         </a>
       </div>
-      <div class="card-body"></div>
+      <div class="card-body">
+        {% if not session.get("services") %}
+        <div class="text-center">You have 0 service.</div>
+        {% else %}
+        <div class="data-content">
+          {# loop service key show in table#} {% if session.get("services") %}
+          {% for service_id in session.get("services").keys() %}
+          <div
+            class="card card-width card-item"
+            onclick='showDataDetail("{{service_id}}","service")'
+          >
+            <div class="card-body body-height position-relative">
+              <div class="text-margin-top">
+                Device Name: {{ session.get("services")[service_id]
+                ["service_name"] }}
+              </div>
+              <div>
+                Device Type: {{ session.get("services")[service_id]
+                ["service_type"] }}
+              </div>
+            </div>
+          </div>
+          {% endfor %} {% endif %}
+        </div>
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>
 {% endblock main %} {% block js %}
 <script>
-  function showDataDetail(device_id) {
-    window.location.href = "/device/device_page?device_id=" + device_id;
+  function showDataDetail(id, type) {
+    window.location.href = `/${type}/${type}_page?${type}_id=` + id;
   }
 </script>
 {% endblock js %} {% block css %}
@@ -134,28 +159,36 @@
     width: 100%;
     border-left: 1.21vw solid var(--device-color);
   }
-  .device .card-width {
+  .service .body-height {
+    height: 4.8vw;
+    width: 100%;
+    border-left: 1.21vw solid var(--service-color);
+  }
+  .card-width {
     width: 90%;
   }
-  .device .card-item:not(:first-child) {
+  .card-item:not(:first-child) {
     margin-top: -1px;
   }
   .device .text-margin-top {
     margin-top: -0.45vw;
   }
-  .device .data-content {
+  .service .text-margin-top {
+    margin-top: 0.25vw;
+  }
+  .data-content {
     display: flex;
     justify-content: center;
     align-content: center;
     flex-wrap: wrap;
   }
-  .device .card-item {
+  .card-item {
     cursor: pointer;
   }
-  .device .card-selected {
+  .card-selected {
     filter: brightness(0.7);
   }
-  .device .show-unprocess-data {
+  .show-unprocess-data {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

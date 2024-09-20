@@ -161,40 +161,6 @@ def add():
             del _device["new_device"]
             session["devices"][str(device_id_new_device)] = _device
 
-        # # check device type
-        # session["device"]["device_name"] = device_name
-        # if device_type == session["device"]["device_type"]:
-        #     # assign new unprocessed
-        #     session["device"]["device_unprocessed"] = device_unprocessed
-
-        #     # check unprocessed in device and raw data
-        #     if "raw_data" in session.keys():
-        #         _del_p = []
-        #         for _un_p_raw in session["raw_data"].keys():
-        #             if _un_p_raw not in session["device"]["device_unprocessed"]:
-        #                 _del_p.append(_un_p_raw)
-
-        #         for _d in _del_p:
-        #             del session["raw_data"][_d]
-
-        #         # check in cate_service
-        #         if "cate_service" in session.keys():
-        #             for _d in _del_p:
-        #                 if _d in session["cate_service"].keys():
-        #                     del session["cate_service"][_d]
-
-        # else:
-        #     # new device type and device unprocessed
-        #     session["device"]["device_name"] = device_name
-        #     session["device"]["device_type"] = device_type
-        #     session["device"]["device_unprocessed"] = device_unprocessed
-
-        #     if "raw_data" in session.keys():
-        #         del session["raw_data"]
-
-        #     if "cate_service" in session.keys():
-        #         del session["cate_service"]
-
     return jsonify(success=True)
 
 

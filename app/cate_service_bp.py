@@ -62,6 +62,32 @@ def form(service_id: int, device_id: int):
 
     return "Service Form Page"
 
+@bp.route("/ajax/<int:service_id>/<int:device_id>", methods=["GET"])
+def ajax(service_id: int, device_id: int):
+    service_id = str(service_id)
+    device_id = str(device_id)
+
+    unprocessed_data = []
+
+    if "raw_data" in session["devices"][device_id].keys():
+        if len(session["devices"][device_id]["raw_data"].keys()) > 0:
+            unprocessed_data = session["devices"][device_id]["raw_data"].keys()
+    return{
+        "device_id":device_id,
+        "service_id":service_id,
+        "frequency":frequency,
+        "action":service_action,
+        "unprocessed_data":unprocessed_data,
+        "cate_service":cate_service
+    }
+
+@bp.route("/ajaxData", methods=["GET"])
+def ajaxData():
+    return{
+        "frequency":frequency,
+        "action":service_action,
+        "cate_service":cate_service
+    }
 
 @bp.route("/form_edit/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET", "POST"])
 def form_edit(service_id, device_id, unprocessed):
