@@ -109,7 +109,6 @@ def update_with_id(device_id):
     # device_type = _device["device_type"]
     # device_unprocessed = _device["device_unprocessed"]
     new_device = _device["new_device"]
-    print({"new_device": new_device})
 
     if not new_device:
         del _device["new_device"]
@@ -205,12 +204,13 @@ def delete(device_id):
     # check device in services and delete
     if "services" in session.keys():
         for _service_id in session.get("services").keys():
-            for _device_id in session.get("services")[_service_id]["cate_service"].keys():
-                if device_id == _device_id:
-                    del session["services"][_service_id]["cate_service"][device_id]
-                
-                if session["services"][_service_id]["cate_service"] == {}:
-                    del session["services"][_service_id]["cate_service"]
+            if "cate_service" in session["services"][_service_id]:
+                for _device_id in session.get("services")[_service_id]["cate_service"].keys():
+                    if device_id == _device_id:
+                        del session["services"][_service_id]["cate_service"][device_id]
+                    
+                    if session["services"][_service_id]["cate_service"] == {}:
+                        del session["services"][_service_id]["cate_service"]
     
     # # also raw data
     # if "raw_data" in session.keys():

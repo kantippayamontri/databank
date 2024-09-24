@@ -81,6 +81,17 @@ def ajax(service_id: int, device_id: int):
         "cate_service":cate_service
     }
 
+@bp.route("/ajaxEdit/<int:service_id>/<int:device_id>", methods=["post"])
+def ajaxEdit(service_id: int, device_id: int):
+    service_id = str(service_id)
+    device_id = str(device_id)
+    cat_data = request.form['cat_data']
+    data = session["services"][service_id]['cate_service'][device_id][cat_data]
+    data['action'] = request.form['action']
+    data['frequency'] = request.form['frequency']
+    data['category'] = request.form['category']
+    return jsonify(success=True)
+
 @bp.route("/ajaxData", methods=["GET"])
 def ajaxData():
     return{
@@ -88,11 +99,37 @@ def ajaxData():
         "action":service_action,
         "cate_service":cate_service
     }
+@bp.route("/ajaxGetData/<string:service_id>/<string:device_id>", methods=["post"])
+def ajaxGetData(service_id,device_id):
+    return{
+        "data":session["services"][service_id]["cate_service"][device_id][request.form["cat_data"]],
+        "frequency":frequency,
+        "action":service_action,
+        "cate_service":cate_service
+    }
+@bp.route("/form_edit_data/<string:service_id>/<string:device_id>", methods=["POST"])
+def form_edit_data(service_id, device_id):
+    _unprocessed = request.form["cate_service_unprocessed"]
+    _frequency = request.form["cate_service_frequency"]
+    _action = request.form["cate_service_action"]
+    _cate = request.form["cate_service_cate"]
 
+    # record the cate_service data
+    if "cate_service" not in session["services"][service_id].keys():
+        session["services"][service_id]["cate_service"] = {}
+
+    if device_id not in session["services"][service_id]["cate_service"].keys():
+        session["services"][service_id]["cate_service"][device_id] = {}
+
+    session["services"][service_id]["cate_service"][device_id][_unprocessed] = {
+        "action": _action,
+        "frequency": _frequency,
+        "category": _cate,
+    }
+    return jsonify(success=True)
 @bp.route("/form_edit/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET", "POST"])
 def form_edit(service_id, device_id, unprocessed):
     # print(f"form_edit")
-
     unprocessed_data = []
 
     if "raw_data" in session["devices"][device_id].keys():

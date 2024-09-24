@@ -578,13 +578,14 @@
           showData = res.raw_data[key];
         }
       })
+      console.log(res);
       if(!showData){
         let html = `<div class="row">`;
         //sensitivity
         html +=`
           <div class="col-12">
-          <label class="ms-2" for="raw_data_sensitivity_${ raw_data }">Sensitivity</label>
-          <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data }" name="sensitivity_${ raw_data }">
+          <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
+          <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
         `;
         res['sensitivity'].forEach((doc)=>{
           html +=`
@@ -597,8 +598,8 @@
         //action
         html +=`
           <div class="col-12">
-          <label class="ms-2" for="raw_data_action_${ raw_data }">Action</label>
-          <select class="form-select custom-select" id="raw_data_action_${ raw_data }" name="action_${ raw_data }">
+          <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
+          <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
         `;
         res['action'].forEach((doc)=>{
           html +=`
@@ -612,8 +613,8 @@
         //frequency
         html +=`
           <div class="col-12">
-          <label class="ms-2" for="raw_data_frequency_${ raw_data }">frequency</label>
-          <select class="form-select custom-select" id="raw_data_frequency_${ raw_data }" name="frequency_${ raw_data }">
+          <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
+          <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
         `;
         res['frequency'].forEach((doc)=>{
           html +=`
@@ -634,15 +635,15 @@
         html += `</div>`;
         html += `</div>`;
         $('#'+id).empty().append(html);
-        $(`#raw_data_sensitivity_${ raw_data }`).select2({
+        $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
           width: "100%",
           minimumResultsForSearch:-1,
         });
-        $(`#raw_data_action_${ raw_data }`).select2({
+        $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
           width: "100%",
           minimumResultsForSearch:-1,
         });
-        $(`#raw_data_frequency_${ raw_data }`).select2({
+        $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
           width: "100%",
           minimumResultsForSearch:-1,
         });
@@ -694,8 +695,8 @@
       //sensitivity
       html +=`
         <div class="col-12">
-        <label class="ms-2" for="raw_data_sensitivity_${ raw_data }">Sensitivity</label>
-        <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data }" name="sensitivity_${ raw_data }">
+        <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
+        <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
       `;
       res['sensitivity'].forEach((doc)=>{
         html +=`
@@ -708,8 +709,8 @@
       //action
       html +=`
         <div class="col-12">
-        <label class="ms-2" for="raw_data_action_${ raw_data }">Action</label>
-        <select class="form-select custom-select" id="raw_data_action_${ raw_data }" name="action_${ raw_data }">
+        <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
+        <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
       `;
       res['action'].forEach((doc)=>{
         html +=`
@@ -723,8 +724,8 @@
       //frequency
       html +=`
         <div class="col-12">
-        <label class="ms-2" for="raw_data_frequency_${ raw_data }">frequency</label>
-        <select class="form-select custom-select" id="raw_data_frequency_${ raw_data }" name="frequency_${ raw_data }">
+        <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
+        <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
       `;
       res['frequency'].forEach((doc)=>{
         html +=`
@@ -745,15 +746,15 @@
       html += `</div>`;
       html += `</div>`;
       $('#'+id).empty().append(html);
-      $(`#raw_data_sensitivity_${ raw_data }`).select2({
+      $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
         width: "100%",
         minimumResultsForSearch:-1,
       });
-      $(`#raw_data_action_${ raw_data }`).select2({
+      $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
         width: "100%",
         minimumResultsForSearch:-1,
       });
-      $(`#raw_data_frequency_${ raw_data }`).select2({
+      $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
         width: "100%",
         minimumResultsForSearch:-1,
       });
@@ -775,9 +776,9 @@
           method:'POST',
           data:{
             "raw_data":raw_data,
-            "sensitivity":$(`#raw_data_sensitivity_${ raw_data }`).val(),
-            "action":$(`#raw_data_action_${ raw_data }`).val(),
-            "frequency":$(`#raw_data_frequency_${ raw_data }`).val(),
+            "sensitivity":$(`#raw_data_sensitivity_${ raw_data.replaceAll(' ',"_") }`).val(),
+            "action":$(`#raw_data_action_${ raw_data.replaceAll(' ',"_") }`).val(),
+            "frequency":$(`#raw_data_frequency_${ raw_data.replaceAll(' ',"_") }`).val(),
           }
         })
         showRawDataList(device_id,id,raw_data,type='new');

@@ -71,7 +71,10 @@ def form(device_id):
 def ajax(device_id):
     print(f"data from form : {request.form}")
     raw_data = request.form['raw_data']
-    data = session["devices"][str(device_id)]["raw_data"]
+    if "raw_data" in session["devices"][str(device_id)]:
+        data = session["devices"][str(device_id)]["raw_data"]
+    else:
+        data = session["devices"][str(device_id)]["raw_data"] = []
     if data == []:
         data = {}
     data[raw_data] = {"action": "" , "frequency" : "", "sensitivity" : ""}
@@ -85,19 +88,32 @@ def ajax(device_id):
 
 @bp.route("/getData/<int:device_id>", methods=["GET"])
 def getData(device_id):
+    isData = 1
     if "raw_data" in session["devices"][str(device_id)]:
         rawData = session["devices"][str(device_id)]["raw_data"]
     else:
         rawData = session["devices"][str(device_id)]
+        isData = 0
 
     data = {
         "device_id":str(device_id),   
         "frequency":frequency,
         "action":raw_data_action,
         "sensitivity":cate_raw_data,
-        "raw_data":rawData
+        "raw_data":rawData,
+        "is_raw_data": isData
     }
     return data
+@bp.route("/getAll", methods=["GET"])
+def getAll():
+    # if "raw_data" in session["devices"][str(device_id)]:
+    #     rawData = session["devices"][str(device_id)]["raw_data"]
+    # else:
+    #     rawData = session["devices"][str(device_id)]
+    if "devices" in session:
+        return session["devices"]
+    else:
+        return ''
 
 
 

@@ -241,12 +241,12 @@
                 <span class="text-danger">*</span></label
               >
               <div class="select2-select">
-                <select id="device_data" name="device_data" class="form-control">
-                  {% if not choose_data %}
+                <select id="device_data" name="device_data" class="form-control" onchange="showStoreData()">
+                  <!-- {% if not choose_data %}
                       {% for _un_data in unprocessed_data %}<option value="{{ _un_data }}">{{ _un_data }}</option>{% endfor %}
                   {% else %}
                       <option value="{{ choose_data["data"]["unprocessed_data"] }}">{{ choose_data["data"]["unprocessed_data"] }}</option>
-                  {% endif %}
+                  {% endif %} -->
                 </select>
               </div>
             </div>
@@ -257,13 +257,9 @@
               >
               <div class="select2-select">
                 <select id="cate_service_unprocessed" onchange="serviceTypeOther()" name="cate_service_unprocessed" class="form-control">
-                  {% if not choose_data %}
-                      {% for _un_data in unprocessed_data %}<option value="{{ _un_data }}">{{ _un_data }}</option>{% endfor %}
-                  {% else %}
-                      <option value="{{ choose_data["data"]["unprocessed_data"] }}">{{ choose_data["data"]["unprocessed_data"] }}</option>
-                  {% endif %}
                 </select>
               </div>
+              <div class="text-danger d-none" id="no_unporcessed_data">No data store.</div>
             </div>
             <div class="col-md-12 mt-1">
               <label for="cate_service_action" class="d-flex"
@@ -282,19 +278,6 @@
               >
               <div class="select2-select">
                 <select id="cate_service_frequency" onchange="serviceTypeOther()" name="cate_service_frequency" class="form-control">
-                  {% if not choose_data %}
-                      {% for _frequency in frequency %}
-                          <option value="{{ _frequency }}" >{{ _frequency }}
-                          </option>
-                      {% endfor %}
-                  {% else %}
-                      {% for _frequency in frequency %}
-                          <option value="{{ _frequency }}"
-                                  {% if choose_data['data']['frequency'] == _frequency %}selected{% endif %}>
-                              {{ _frequency }}
-                          </option>
-                      {% endfor %}
-                  {% endif %}
                 </select>
               </div>
             </div>
@@ -305,21 +288,11 @@
               >
               <div class="select2-select">
                 <select id="cate_service_cate" onchange="serviceTypeOther()" name="cate_service_cate" class="form-control">
-                  {% if not choose_data %}
-                      {% for _cate_service in cate_service %}<option value="{{ _cate_service }}">{{ _cate_service }}</option>{% endfor %}
-                  {% else %}
-                      {% for _cate_service in cate_service %}
-                          <option value="{{ _cate_service }}"
-                                  {% if choose_data["data"]['category'] == _cate_service %}selected{% endif %}>
-                              {{ _cate_service }}
-                          </option>
-                      {% endfor %}
-                  {% endif %}
                 </select>
               </div>
             </div>
             <div class="text-center mt-2">
-              <button type="button" id="modal_add_btn" onclick="validation()" class="btn btn-add ms-2">
+              <button type="button" id="modal_add_btn" onclick="validationAddDetail()" class="btn btn-add ms-2">
                 Add Service Detail
               </button>
             </div>
@@ -330,14 +303,12 @@
   </div>
 </div>
 
-  <div class="container mt-5">
-    <div id="service_part">{% include "page_sections/service_section.html" %}</div>
-  </div>
 {% endblock main %}
 {% block js %}
 <script>
   let service_id = 0;
   $(document).ready(function(){
+    $('#cate_service_unprocessed').attr('disabled',true);
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
     $('.card-item').each((index,doc)=>{
@@ -347,7 +318,6 @@
       }
     })
     $.ajax({url:'/ajaxData'}).then((data)=>{
-      console.log(data);
       let option = "";
       data.action.forEach((doc)=>{
         option +=`
@@ -355,13 +325,42 @@
         `
       })
       $('#cate_service_action').empty().append(option);
+      option = "";
+      data.frequency.forEach((doc)=>{
+        option +=`
+          <option value="${doc}">${doc}</option>
+        `
+      })
+      $('#cate_service_frequency').empty().append(option);
+      option = "";
+      data.cate_service.forEach((doc)=>{
+        option +=`
+          <option value="${doc}">${doc}</option>
+        `
+      })
+      $('#cate_service_cate').empty().append(option);
     })
   })
+  $('#device_data').select2({
+    width: "100%",
+    dropdownParent: $("#service_detail_modal"),
+  });
   $('#cate_service_action').select2({
     width: "100%",
     dropdownParent: $("#service_detail_modal"),
     minimumResultsForSearch: -1
   });
+  $('#cate_service_frequency').select2({
+    width: "100%",
+    dropdownParent: $("#service_detail_modal"),
+    minimumResultsForSearch: -1
+  });
+  $('#cate_service_cate').select2({
+    width: "100%",
+    dropdownParent: $("#service_detail_modal"),
+    minimumResultsForSearch: -1
+  });
+
   $("#service_type").select2({
     width: "100%",
     dropdownParent: $("#addModal"),
@@ -370,6 +369,47 @@
     width: "100%",
     dropdownParent: $("#addModal"),
   });
+  function validationAddDetail(){
+    let valid = true;
+    if($('#device_data').val()){
+      $('#device_data').parent().find('span').removeClass('is-invalid');
+    }else{
+      valid = false;
+      $('#device_data').parent().find('span').addClass('is-invalid');
+    }
+    if($('#cate_service_unprocessed').val()){
+      $('#cate_service_unprocessed').parent().find('span').removeClass('is-invalid');
+    }else{
+      valid = false;
+      $('#cate_service_unprocessed').parent().find('span').addClass('is-invalid');
+    }
+    if(valid){
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#4B8B4C",
+        cancelButtonColor: "#B41A1A",
+        confirmButtonText: "Confirm",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            url: '/form_edit_data/'+service_id+'/'+$('#device_data').val(),
+            method:'POST',
+            data:{
+              "cate_service_action":$('#cate_service_action').val(),
+              "cate_service_frequency":$('#cate_service_frequency').val(),
+              "cate_service_cate":$('#cate_service_cate').val(),
+              "cate_service_unprocessed":$('#cate_service_unprocessed').val()
+            }
+          }).then((doc)=>{
+            window.location.href="/service/service_page?service_id="+service_id;
+          })
+        }
+      });
+    }
+  }
   function openAddModal() {
     $("#addModal").modal("show");
     $('#service_name').val('');
@@ -383,8 +423,59 @@
     $('#modal_add_btn').attr('onclick','validation()');
     resetInvalid();
   }
+  function showStoreData(){
+    let id = $('#device_data').val();
+    $.ajax({url:'/raw_data/getData/'+id}).then((data)=>{
+      if(data.is_raw_data){
+        $('#cate_service_unprocessed').attr('disabled',false);
+        $('#cate_service_unprocessed').parent().find('span').removeClass('is-invalid');
+        $('#no_unporcessed_data').addClass('d-none');
+        option = `<option value="" selected disabled>select store data</option>`;
+        Object.keys(data.raw_data).forEach((key)=>{
+          option +=`
+            <option value="${key}">${key}</option>
+          `
+        })
+        $('#cate_service_unprocessed').empty().append(option);
+        $('#service_detail_modal').modal('show');
+      }else{
+        $('#cate_service_unprocessed').select2('destroy');
+        $('#cate_service_unprocessed').attr('disabled',true);
+        $('#cate_service_unprocessed').empty();
+        $('#cate_service_unprocessed').parent().find('span').addClass('is-invalid');
+        $('#no_unporcessed_data').removeClass('d-none');
+      }
+      $('#cate_service_unprocessed')
+    })
+    $('#cate_service_unprocessed').select2({
+      width: "100%",
+      dropdownParent: $("#service_detail_modal"),
+    });
+  }
   function openAddServiceDetailModal(){
-    $('#service_detail_modal').modal('show');
+    $.ajax({url:'/raw_data/getAll'}).then((data)=>{
+      if(data){
+        option = `<option value="" selected disabled>select device</option>`;
+        Object.keys(data).forEach((key)=>{
+          option +=`
+            <option value="${key}">${data[key].device_name}</option>
+          `
+        })
+        $('#device_data').empty().append(option);
+        $('#service_detail_modal').modal('show');
+      }else{
+        Swal.fire({
+          title: "No Device.",
+          // text: "You won't be able to revert this!",
+          icon: "warning",
+          // showCancelButton: true,
+          confirmButtonColor: "#aaaaaa",
+          // cancelButtonColor: "#B41A1A",
+          confirmButtonText: "Close"
+        })
+      }
+    })
+    
   }
   function resetInvalid(){
     $('#service_name').removeClass('is-invalid')
@@ -579,6 +670,7 @@
   }
   function showEditModal(id,data){
     let service = JSON.parse(data.replaceAll("'",'"'));
+    service_id = id;
     $("#addModal").modal("show");
     $('#service_name').val(service['service_name']);
     $('#service_type').val(service['service_type']).trigger('change');
@@ -589,147 +681,78 @@
     resetInvalid();
     event.stopPropagation();
   }
-  async function showRawDataList(service_id,id,raw_data,type="add"){
-    if($('#'+id)[0].innerHTML.trim()=='' || type=="new"){
-      let res = await $.ajax("/raw_data/getData/"+service_id);
-      let showData = "";
-      Object.keys(res.raw_data).forEach((key)=>{
-        if(key == raw_data){
-          showData = res.raw_data[key];
-        }
+  async function showDeleteDetail(service_id,id,cat_data,device_id){
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#4B8B4C",
+      cancelButtonColor: "#B41A1A",
+      confirmButtonText: "Confirm",
+    }).then(async (result) => {
+      let res = await $.ajax({
+        url:'/delete_unprocessed/'+service_id+'/'+device_id+'/'+cat_data,
+        method:'get',
       })
-      if(!showData){
-        let html = `<div class="row">`;
-        //sensitivity
-        html +=`
-          <div class="col-12">
-          <label class="ms-2" for="raw_data_sensitivity_${ raw_data }">Sensitivity</label>
-          <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data }" name="sensitivity_${ raw_data }">
-        `;
-        res['sensitivity'].forEach((doc)=>{
-          html +=`
-            <option value="${doc}">
-              ${doc}
-            </option>
-          `;
-        })
-        html += `</select>`;
-        //action
-        html +=`
-          <div class="col-12">
-          <label class="ms-2" for="raw_data_action_${ raw_data }">Action</label>
-          <select class="form-select custom-select" id="raw_data_action_${ raw_data }" name="action_${ raw_data }">
-        `;
-        res['action'].forEach((doc)=>{
-          html +=`
-            <option value="${doc}">
-              ${doc}
-            </option>
-          `;
-        })
-        html += `</select>`;
-
-        //frequency
-        html +=`
-          <div class="col-12">
-          <label class="ms-2" for="raw_data_frequency_${ raw_data }">frequency</label>
-          <select class="form-select custom-select" id="raw_data_frequency_${ raw_data }" name="frequency_${ raw_data }">
-        `;
-        res['frequency'].forEach((doc)=>{
-          html +=`
-            <option value="${doc}">
-              ${doc}
-            </option>
-          `;
-        })
-        html += `</select>`;
-        
-        html += `<div class="col-12">
-            <div class="text-center mt-3">
-              <button type="button" onclick="validationData('${raw_data}','${id}','${service_id}')" class="btn btn-add ms-2">
-                Add Data
-              </button>
-            </div>
-          </div>`;
-        html += `</div>`;
-        html += `</div>`;
-        $('#'+id).empty().append(html);
-        $(`#raw_data_sensitivity_${ raw_data }`).select2({
-          width: "100%",
-          minimumResultsForSearch:-1,
-        });
-        $(`#raw_data_action_${ raw_data }`).select2({
-          width: "100%",
-          minimumResultsForSearch:-1,
-        });
-        $(`#raw_data_frequency_${ raw_data }`).select2({
-          width: "100%",
-          minimumResultsForSearch:-1,
-        });
-      }else{
-        html = `
-          <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-            <tr>
-              <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
-              <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
-            </tr>
-            <tr>
-              <td style="padding: 8px;" class="text-center">Action</td>
-              <td style="padding: 8px;" class="text-center">
-                ${showData.sensitivity}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px;" class="text-center">Frequency</td>
-              <td style="padding: 8px;" class="text-center">
-                ${showData.action}
-              </td>
-            </tr>
-            <tr>
-              <td style="padding: 8px;" class="text-center">Sensitivity</td>
-              <td style="padding: 8px;" class="text-center">
-                ${showData.frequency}
-              </td>
-            </tr>
-          </table>
-          <div class="col-12">
-            <div class="text-center mt-3">
-              <button type="button" onclick="showRawDataList('${service_id}','${id}','${raw_data}','edit')" class="btn btn-add ms-2">
-                Edit Data
-              </button>
-            </div>
-          </div>
-        `;
-        $('#'+id).empty().append(html);
+      window.location.href="/service/service_page?service_id="+service_id;
+    })
+  }
+  async function showRawDataList(device_id,id,cat_data,type="add"){
+    let ser_id = id.split('_').reverse()[0];
+    let res = await $.ajax({
+      "url":"/ajaxGetData/"+ser_id+"/"+device_id,
+      method:"POST",
+      data:{
+        cat_data:cat_data
       }
+    });
+    let showData = res.data; 
+    if(type=="add"){
+      html = `
+        <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+          <tr>
+            <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+            <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+          </tr>
+          <tr>
+            <td style="padding: 8px;" class="text-center">Action</td>
+            <td style="padding: 8px;" class="text-center">
+              ${showData.action}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 8px;" class="text-center">Frequency</td>
+            <td style="padding: 8px;" class="text-center">
+              ${showData.frequency}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 8px;" class="text-center">Category</td>
+            <td style="padding: 8px;" class="text-center">
+              ${showData.category}
+            </td>
+          </tr>
+        </table>
+        <div class="col-12">
+          <div class="text-center mt-3">
+            <button type="button" onclick="showRawDataList('${ser_id}','${id}','${cat_data}','edit')" class="btn btn-add ms-2">
+              Edit Data
+            </button>
+            <button type="button" onclick="showDeleteDetail('${ser_id}','${id}','${cat_data}',${device_id})" class="btn btn-cancel ms-2">
+              Delete
+            </button>
+          </div>
+        </div>
+      `;
+      $('#'+id).empty().append(html);
     }else if(type=="edit"){
-      let res = await $.ajax("/raw_data/getData/"+service_id);
-      let showData = "";
-      Object.keys(res.raw_data).forEach((key)=>{
-        if(key == raw_data){
-          showData = res.raw_data[key];
-        }
-      })
       let html = `<div class="row">`;
       //sensitivity
       html +=`
         <div class="col-12">
-        <label class="ms-2" for="raw_data_sensitivity_${ raw_data }">Sensitivity</label>
-        <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data }" name="sensitivity_${ raw_data }">
-      `;
-      res['sensitivity'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}" ${showData['sensitivity']==doc? 'selected':''}>
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
-      //action
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_action_${ raw_data }">Action</label>
-        <select class="form-select custom-select" id="raw_data_action_${ raw_data }" name="action_${ raw_data }">
+        <label class="ms-2" for="cat_data_action_${ cat_data.replaceAll(' ','_') }">Action</label>
+        <select class="form-select custom-select" id="cat_data_action_${ cat_data.replaceAll(' ','_') }" name="action_${ cat_data.replaceAll(' ','_') }">
       `;
       res['action'].forEach((doc)=>{
         html +=`
@@ -739,12 +762,11 @@
         `;
       })
       html += `</select>`;
-
-      //frequency
+      //action
       html +=`
         <div class="col-12">
-        <label class="ms-2" for="raw_data_frequency_${ raw_data }">frequency</label>
-        <select class="form-select custom-select" id="raw_data_frequency_${ raw_data }" name="frequency_${ raw_data }">
+        <label class="ms-2" for="cat_data_frequency_${ cat_data.replaceAll(' ','_') }">Frequency</label>
+        <select class="form-select custom-select" id="cat_data_frequency_${ cat_data.replaceAll(' ','_') }" name="frequency_${ cat_data.replaceAll(' ','_') }">
       `;
       res['frequency'].forEach((doc)=>{
         html +=`
@@ -754,10 +776,25 @@
         `;
       })
       html += `</select>`;
+
+      //frequency
+      html +=`
+        <div class="col-12">
+        <label class="ms-2" for="cat_data_cate_service_${ cat_data.replaceAll(' ','_') }">Category</label>
+        <select class="form-select custom-select" id="cat_data_cate_service_${ cat_data.replaceAll(' ','_') }" name="cate_service_${ cat_data.replaceAll(' ','_') }">
+      `;
+      res['cate_service'].forEach((doc)=>{
+        html +=`
+          <option value="${doc}" ${showData['cate_service']==doc? 'selected':''}>
+            ${doc}
+          </option>
+        `;
+      })
+      html += `</select>`;
       
       html += `<div class="col-12">
           <div class="text-center mt-3">
-            <button type="button" onclick="validationData('${raw_data}','${id}','${service_id}')" class="btn btn-add ms-2">
+            <button type="button" onclick="validationData('${cat_data}','${id}','${ser_id}','${device_id}')" class="btn btn-add ms-2">
               Edit Data
             </button>
           </div>
@@ -765,21 +802,21 @@
       html += `</div>`;
       html += `</div>`;
       $('#'+id).empty().append(html);
-      $(`#raw_data_sensitivity_${ raw_data }`).select2({
+      $(`#cat_data_action_${ cat_data.replaceAll(' ','_') }`).select2({
         width: "100%",
         minimumResultsForSearch:-1,
       });
-      $(`#raw_data_action_${ raw_data }`).select2({
+      $(`#cat_data_frequency_${ cat_data.replaceAll(' ','_') }`).select2({
         width: "100%",
         minimumResultsForSearch:-1,
       });
-      $(`#raw_data_frequency_${ raw_data }`).select2({
+      $(`#cat_data_cate_service_${ cat_data.replaceAll(' ','_') }`).select2({
         width: "100%",
         minimumResultsForSearch:-1,
       });
     }
   }
-  async function validationData(raw_data,id,service_id){
+  async function validationData(cat_data,id,service_id,device_id){
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -791,16 +828,16 @@
     }).then(async (result) => {
       if (result.isConfirmed) {
         let res = await $.ajax({
-          url:'/raw_data/ajax/'+service_id,
+          url:'/ajaxEdit/'+service_id+'/'+device_id,
           method:'POST',
           data:{
-            "raw_data":raw_data,
-            "sensitivity":$(`#raw_data_sensitivity_${ raw_data }`).val(),
-            "action":$(`#raw_data_action_${ raw_data }`).val(),
-            "frequency":$(`#raw_data_frequency_${ raw_data }`).val(),
+            "cat_data":cat_data,
+            "action":$(`#cat_data_action_${ cat_data.replaceAll(' ','_') }`).val(),
+            "frequency":$(`#cat_data_frequency_${ cat_data.replaceAll(' ','_') }`).val(),
+            "category":$(`#cat_data_cate_service_${ cat_data.replaceAll(' ','_') }`).val(),
           }
         })
-        showRawDataList(service_id,id,raw_data,type='new');
+        showRawDataList(service_id,id,cat_data,type='add');
       }
     });
   }
@@ -818,24 +855,23 @@
           $('#show_data_detail').removeClass("d-none");
           $('#show_detail_list').empty();
           var html = '<div class="accordion" id="accordionExample">';
-          // service['service_unprocessed'].forEach((doc,key)=>{
-          //   html += `
-          //       <div class="accordion-item">
-          //         <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-          //           <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-          //             ${doc}
-          //           </button>
-          //         </h2>
-          //         <div id="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
-          //           <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-          //           </div>
-          //         </div>
-          //       </div>`;
-          // })
-          // <div class="row">
-          //   <div class="col-12">
-          //   </div>
-          // </div>
+          let cate_service = service['cate_service'];
+          Object.keys(cate_service).forEach((device_id)=>{
+            Object.keys(cate_service[device_id]).forEach((doc)=>{
+              html += `
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}">
+                      <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}">
+                        ${doc}
+                      </button>
+                    </h2>
+                    <div id="collapse${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}" data-bs-parent="#accordionExample">
+                      <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+device_id+"_"+id}">
+                      </div>
+                    </div>
+                  </div>`;
+            })
+          })
           html += "</div>";
           $('#show_detail_list').append(html);
         }else{
@@ -1055,6 +1091,16 @@
   }
   .accordion-button:not(.collapsed)::after{
     filter: brightness(0) invert(1);
+  }
+  .btn-cancel{
+    background-color: var(--delete-color);
+    border-color: var(--delete-color);
+    color:white
+  }
+  .btn-cancel:hover{
+    background-color: white;
+    border-color: var(--delete-color);
+    color:var(--delete-color)
   }
 </style>
 {% include "css/card-header.html" ignore missing %} {% endblock css %}
