@@ -13,7 +13,6 @@ bp = Blueprint("session", __name__, url_prefix="/session")
 @bp.route("/get", methods=["GET"])
 def get():
     resp = {}
-
     for key in session.keys():
         resp[key] = session[key]
 

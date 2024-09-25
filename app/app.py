@@ -6,8 +6,11 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import CSRFProtect, FlaskForm
 from icecream import ic
 from wtforms.validators import DataRequired, Length
-
 from flask_session import Session
+from flask import (
+    session,
+)
+import socket
 
 from .forms import DeviceForm
 
@@ -51,8 +54,10 @@ def create_app():
 
     @app.route("/", methods=["POST", "GET"])
     def main_page():
+        print('1')
         if request.method == "GET":
-
+            if 'tour' not in session.keys():
+                session['tour']=1
             if "graph_filename" in request.args.keys():
                 return render_template("index.html", graph_filename=request.args.get("graph_filename"))
 

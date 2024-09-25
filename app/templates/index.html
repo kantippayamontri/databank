@@ -86,9 +86,63 @@
     </div>
   </div>
 </div>
-
 {% endblock main %} {% block js %}
 <script>
+  $(document).ready(async function () {
+    $.ajax("/session/get").then((doc) => {
+      if (doc.tour == 1) {
+        const driver = window.driver.js.driver;
+        const driverObj = driver({
+          showProgress: true,
+          steps: [
+            {
+              element: ".device",
+              popover: { title: "Device", description: "device section." },
+            },
+            {
+              element: ".device .card-header img",
+              popover: {
+                title: "Device page",
+                description: "go to device page.",
+                onNextClick: () => {
+                  window.location.href = "/device/device_page";
+                  driverObj.moveNext();
+                },
+              },
+            },
+            {
+              element: ".to-center .icon-header",
+              popover: {
+                title: "Add device",
+                description: "open add device modal.",
+              },
+            },
+            {
+              element: "#addModal .modal-dialog",
+              popover: {
+                title: "Device page",
+                description: "go to device page.",
+              },
+            },
+          ],
+        });
+        const url = window.location.href;
+        const params = new URLSearchParams(window.location.search);
+        $(".card-item").each((index, doc) => {
+          if ($(doc).attr("data-device-id") == params.get("device_id")) {
+            $(doc).click();
+          }
+        });
+        if (params.get("back") == "1") {
+          window.history.pushState({}, "", `${url.split("?")[0]}`);
+          driverObj.drive(1);
+        } else {
+          driverObj.drive();
+        }
+      }
+    });
+  });
+
   function showDataDetail(id, type) {
     window.location.href = `/${type}/${type}_page?${type}_id=` + id;
   }

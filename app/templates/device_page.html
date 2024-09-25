@@ -265,6 +265,56 @@
 {% endblock main %} {% block js %}
 <script>
   $(document).ready(function(){
+    $.ajax("/session/get").then((doc) => {
+      if (doc.tour == 1) {
+        const driver = window.driver.js.driver;
+        const driverObj = driver({
+          showProgress: true,
+          steps: [
+            {
+              element: ".device",
+              popover: { title: "Device", description: "device section." },
+            },
+            {
+              element: ".device .card-header img",
+              popover: {
+                title: "Device page",
+                description: "go to device page.",
+              },
+            },
+            {
+              element: ".to-center .icon-header",
+              popover: { 
+                title: "Add device", 
+                description: "open add device modal.",
+                onNextClick: () => {
+                  // .. load element dynamically
+                  // .. and then call
+                  $('#addModal').modal('show')
+                  driverObj.moveNext();
+                },
+                onPrevClick:()=>{
+                  window.location.href = "/?back=1";
+                  driverObj.movePrevious();
+                }
+              },
+            },
+            {
+              element: "#addModal .modal-dialog",
+              popover: {
+                title: "Device page",
+                description: "go to device page.",
+                onPrevClick:()=>{
+                  $('#addModal').modal('hide')
+                  driverObj.movePrevious();
+                }
+              },
+            },
+          ],
+        });
+        driverObj.drive(2);
+      }
+    });
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
     $('.card-item').each((index,doc)=>{
