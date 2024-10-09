@@ -94,6 +94,8 @@
         const driver = window.driver.js.driver;
         const driverObj = driver({
           showProgress: true,
+          allowClose: false,
+          allowKeyboardControl: false,
           steps: [
             {
               element: ".device",
@@ -129,7 +131,10 @@
         const url = window.location.href;
         const params = new URLSearchParams(window.location.search);
         $(".card-item").each((index, doc) => {
-          if ($(doc).attr("data-device-id") == params.get("device_id")) {
+          if (
+            $(doc).attr("data-device-id") == params.get("device_id") &&
+            params.get("device_id")
+          ) {
             $(doc).click();
           }
         });
@@ -143,9 +148,9 @@
     });
   });
 
-  function showDataDetail(id, type) {
-    window.location.href = `/${type}/${type}_page?${type}_id=` + id;
-  }
+  // function showDataDetail(id, type) {
+  //   window.location.href = `/${type}/${type}_page?${type}_id=` + id;
+  // }
 </script>
 {% endblock js %} {% block css %}
 <style>

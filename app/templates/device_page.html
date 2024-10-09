@@ -158,6 +158,7 @@
           class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
+          onclick="showModalClose()"
         ></button>
       </div>
       <div class="modal-body">
@@ -264,12 +265,17 @@
 </div>
 {% endblock main %} {% block js %}
 <script>
+  var driverObj;
+  var isTour = 0;
   $(document).ready(function(){
     $.ajax("/session/get").then((doc) => {
+      isTour = doc.tour;
       if (doc.tour == 1) {
         const driver = window.driver.js.driver;
-        const driverObj = driver({
+        driverObj = driver({
+          allowClose: false,
           showProgress: true,
+          allowKeyboardControl:false,
           steps: [
             {
               element: ".device",
@@ -302,18 +308,234 @@
             {
               element: "#addModal .modal-dialog",
               popover: {
-                title: "Device page",
-                description: "go to device page.",
+                title: "Device Modal",
+                description: "Show add modal.",
                 onPrevClick:()=>{
                   $('#addModal').modal('hide')
                   driverObj.movePrevious();
-                }
+                },
+                onNextClick: () => {
+                  validation();
+                },
+              },
+            },
+            {
+              element: ".swal2-confirm",
+              popover: {
+                title: "Confirm Add",
+                description: "Confirm add new data.",
+                onPrevClick: () => {
+                  Swal.close();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.swal2-confirm').click();
+                },
+              },
+            },
+            {
+              element: ".icon-header-left",
+              popover: {
+                title: "Delete section",
+                description: "Show delete section.",
+                onPrevClick: () => {
+                  driverObj.drive(2);
+                  $('#addModal').modal('show')
+                  driverObj.moveNext();
+                  validation();
+                },
+                onNextClick: () => {
+                  showDelete();
+                },
+              },
+            },
+            {
+              element: ".box-animation",
+              popover: {
+                title: "Delete section",
+                description: "Show delete section.",
+                side:"right",
+                onPrevClick: () => {
+                  closeDelete();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  closeDelete();
+                  driverObj.moveNext();
+                },
+              },
+            },
+            {
+              element: ".edit-icon",
+              popover: {
+                title: "Edit button",
+                description: "Click to show edit Modal.",
+                onPrevClick: () => {
+                  showDelete();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+              },
+            },
+            {
+              element: ".card-item",
+              popover: {
+                title: "Divice section",
+                description: "Show device section.",
+                onNextClick: () => {
+                  $('.card-item:first-child').click();
+                },
+              },
+            },
+            {
+              element: ".accordion-item:first-child",
+              popover: {
+                title: "Divice data detial",
+                description: "Show device data detail section.",
+                onPrevClick: () => {
+                  $('.card-item:first-child').click();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.accordion-button').click();
+                },
+              },
+            },
+            {
+              element: ".accordion-collapse",
+              popover: {
+                title: "Divice data section",
+                description: "Show device data section.",
+                onPrevClick: () => {
+                  driverObj.movePrevious();
+                  $('.accordion-collapse').removeClass('show');
+                  $('.accordion-button').addClass('collapsed');
+                },
+              },
+            },
+            {
+              element: ".accordion-item:first-child .btn-add",
+              popover: {
+                title: "Add/Edit divice data ",
+                description: "Click to add/edit device data.",
+                onNextClick: () => {
+                  if($('.accordion-item:first-child .show-edit-accon').length>0){
+                    $('.accordion-item:first-child .driver-active-element').click();
+                  }else{
+                    $('.accordion-item:first-child .driver-active-element').click();
+                  }
+                },
+              },
+            },
+            {
+              element: ".accordion-collapse",
+              popover: {
+                title: "Divice data section",
+                description: "Show device data section.",
+                onPrevClick: () => {
+                  if($('.add-section').length == 0) {
+                    let data = '{{session.get("devices")["0"]}}';
+                    let device = JSON.parse(data.replaceAll("&#39;",'"'));
+                    let id = "0";
+                    $('#show_detail_list').empty();
+                    var html = '<div class="accordion" id="accordionExample">';
+                    device['device_unprocessed'].forEach((doc,key)=>{
+                      html += `
+                          <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                              <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                                ${doc}
+                              </button>
+                            </h2>
+                            <div id="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
+                              <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                              </div>
+                            </div>
+                          </div>`;
+                    })
+                    html += "</div>";
+                    $('#show_detail_list').append(html);
+                    $('.accordion-button').click();
+                  }
+                  setTimeout(function(){
+                    driverObj.movePrevious();
+                  },100)
+                },
+                onNextClick: () => {
+                  $('.accordion-item:first-child .btn-add').click();
+                },
+              },
+            },
+            {
+              element: ".swal2-confirm",
+              popover: {
+                title: "Confirm Add/Edit",
+                description: "Confirm add/edit new data.",
+                onPrevClick: () => {
+                  Swal.close();
+                  if($('.add-section').length > 0) {
+                    driverObj.movePrevious();
+                    driverObj.movePrevious();
+                  }else{
+                    driverObj.movePrevious();
+                  }
+                },
+                onNextClick: () => {
+                  $('.swal2-confirm').click();
+                  // driverObj.moveNext();
+                },
+              },
+            },
+            {
+              element: ".service-navigator",
+              popover: {
+                title: "Service page",
+                description: "Show Service page button.",
+                onPrevClick: () => {
+                  $('.accordion-item .btn-add').click();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  window.location.href = "{{ url_for('service.service_page') }}";
+                  driverObj.moveNext();
+                },
+              },
+            },
+            //service
+            {
+              element: ".service-page",
+              popover: {
+                title: "Service page",
+                description: "Show Service page button.",
               },
             },
           ],
         });
-        driverObj.drive(2);
+        const url = window.location.href;
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("to")) {
+          window.history.pushState({}, "", `${url.split("?")[0]}`);
+          if(params.get("to")==14){
+            if($('.card-selected').length==0){
+              $('.card-item:first-child').click();
+              $('.accordion-button').click();
+            }
+          }
+          driverObj.drive(parseInt(params.get("to")));
+        } else {
+          driverObj.drive(2);
+        }
       }
+      $("#device_type").select2({
+        width: "100%",
+        dropdownParent: isTour?$("#addModal .modal-dialog"):$("#addModal"),
+      });
+      $("#unprocessed_data").select2({
+        width: "100%",
+        dropdownParent: isTour?$("#addModal .modal-dialog"):$("#addModal"),
+      });
     });
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
@@ -324,14 +546,6 @@
       }
     })
   })
-  $("#device_type").select2({
-    width: "100%",
-    dropdownParent: $("#addModal"),
-  });
-  $("#unprocessed_data").select2({
-    width: "100%",
-    dropdownParent: $("#addModal"),
-  });
   function openAddModal() {
     $("#addModal").modal("show");
     $('#device_name').val('');
@@ -344,6 +558,9 @@
     $('#modal_add_btn')[0].innerHTML = "Add Device";
     $('#modal_add_btn').attr('onclick','validation()');
     resetInvalid();
+    if(isTour == 1){
+      driverObj.moveNext();
+    }
   }
   function resetInvalid(){
     $('#device_name').removeClass('is-invalid')
@@ -453,6 +670,9 @@
       }
     }
     if(valid){
+      if(isTour){
+        driverObj.moveNext();
+      }
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -461,6 +681,212 @@
         confirmButtonColor: "#4B8B4C",
         cancelButtonColor: "#B41A1A",
         confirmButtonText: "Confirm",
+        didOpen: () => {
+            if(isTour){
+              const driver = window.driver.js.driver;
+              driverObj = driver({
+                allowClose: false,
+                showProgress: true,
+                allowKeyboardControl:false,
+                steps: [
+                  {
+                    element: ".device",
+                    popover: { title: "Device", description: "device section." },
+                  },
+                  {
+                    element: ".device .card-header img",
+                    popover: {
+                      title: "Device page",
+                      description: "go to device page.",
+                    },
+                  },
+                  {
+                    element: ".to-center .icon-header",
+                    popover: { 
+                      title: "Add device", 
+                      description: "open add device modal.",
+                      onNextClick: () => {
+                        // .. load element dynamically
+                        // .. and then call
+                        $('#addModal').modal('show')
+                        driverObj.moveNext();
+                      },
+                      onPrevClick:()=>{
+                        window.location.href = "/?back=1";
+                        driverObj.movePrevious();
+                      }
+                    },
+                  },
+                  {
+                    element: "#addModal .modal-dialog",
+                    popover: {
+                      title: "Device Modal",
+                      description: "Show add modal.",
+                      onPrevClick:()=>{
+                        $('#addModal').modal('hide')
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        validation();
+                      },
+                    },
+                  },
+                  {
+                    element: ".swal2-confirm",
+                    popover: {
+                      title: "Confirm Add",
+                      description: "Confirm add new data.",
+                      onPrevClick: () => {
+                        Swal.close();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.swal2-confirm').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".icon-header-left",
+                    popover: {
+                      title: "Delete section",
+                      description: "Show delete section.",
+                      onPrevClick: () => {
+                        driverObj.drive(2);
+                        $('#addModal').modal('show')
+                        driverObj.moveNext();
+                        validation();
+                      },
+                      onNextClick: () => {
+                        showDelete();
+                      },
+                    },
+                  },
+                  {
+                    element: ".box-animation",
+                    popover: {
+                      title: "Delete section",
+                      description: "Show delete section.",
+                      side:"right",
+                      onPrevClick: () => {
+                        closeDelete();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        closeDelete();
+                        driverObj.moveNext();
+                      },
+                    },
+                  },
+                  {
+                    element: ".edit-icon",
+                    popover: {
+                      title: "Edit button",
+                      description: "Click to show edit Modal.",
+                      onPrevClick: () => {
+                        showDelete();
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                      },
+                    },
+                  },
+                  {
+                    element: ".card-item",
+                    popover: {
+                      title: "Divice section",
+                      description: "Show device section.",
+                      onNextClick: () => {
+                        $('.card-item:first-child').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-item:first-child",
+                    popover: {
+                      title: "Divice data detial",
+                      description: "Show device data detail section.",
+                      onPrevClick: () => {
+                        $('.card-item:first-child').click();
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.accordion-button').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-collapse",
+                    popover: {
+                      title: "Divice data section",
+                      description: "Show device data section.",
+                      onPrevClick: () => {
+                        driverObj.movePrevious();
+                        $('.accordion-collapse').removeClass('show');
+                        $('.accordion-button').addClass('collapsed');
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-item:first-child .btn-add",
+                    popover: {
+                      title: "Add/Edit divice data ",
+                      description: "Click to add/edit device data.",
+                      onNextClick: () => {
+                        if($('.accordion-item:first-child .show-edit-accon').length>0){
+                          $('.accordion-item:first-child .driver-active-element').click();
+                        }else{
+                          $('.accordion-item:first-child .driver-active-element').click();
+                        }
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-collapse",
+                    popover: {
+                      title: "Divice data section",
+                      description: "Show device data section.",
+                      onNextClick: () => {
+                        $('.accordion-item:first-child .btn-add').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".swal2-confirm",
+                    popover: {
+                      title: "Confirm Add/Edit",
+                      description: "Confirm add/edit new data.",
+                      onPrevClick: () => {
+                        Swal.close();
+                        if($('.add-section').length > 0) {
+                          driverObj.movePrevious();
+                          driverObj.movePrevious();
+                        }else{
+                          driverObj.movePrevious();
+                        }
+                      },
+                      onNextClick: () => {
+                        $('.swal2-confirm').click();
+                        // driverObj.moveNext();
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-collapse",
+                    popover: {
+                      title: "Divice data section",
+                      description: "Show device data section.",
+                      onPrevClick: () => {
+                        $('.accordion-item .btn-add').click();
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                      },
+                    },
+                  },
+                ],
+              });
+              driverObj.drive(4);
+            }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
           if(type == 'edit'){
@@ -471,7 +897,7 @@
               dataType: "json",
               contentType: "application/json",
               success: function () {
-                window.location.href = "/device/device_page";
+                window.location.href = "/device/device_page?to=5";
               },
               data: JSON.stringify(device),
             });
@@ -483,7 +909,7 @@
               dataType: "json",
               contentType: "application/json",
               success: function () {
-                window.location.href = "/device/device_page";
+                window.location.href = "/device/device_page?to=5";
               },
               data: JSON.stringify(device),
             });
@@ -567,6 +993,9 @@
     }
   }
   function showDelete(){
+    if(isTour){
+      driverObj.moveNext();
+    }
     $('.box-animation').addClass('box-animation-forward');
     $('.box-animation').removeClass('box-animation-reverse');
     $('.box-animation img').removeClass('d-none');
@@ -581,7 +1010,11 @@
     $('.x-icon-show').addClass('d-none');
   }
   function closeAlert(id){
-    Swal.fire({
+    if(isTour){
+      closeDelete();
+      driverObj.moveNext();
+    }else{
+      Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
         icon: "warning",
@@ -594,32 +1027,60 @@
           window.location.href = "/device/delete/"+id;
         }
       })
-      event.stopPropagation();
+    }
+    event.stopPropagation();
   }
   function showEditModal(id,data){
-    let device = JSON.parse(data.replaceAll("'",'"'));
-    $("#addModal").modal("show");
-    $('#device_name').val(device['device_name']);
-    $('#device_type').val(device['device_type']).trigger('change');
-    firstOptionValue = $('#unprocessed_data option:first').val();
-    $('#unprocessed_data').val(firstOptionValue).trigger('change');
-    $('.show-unprocess-data-list').empty();
-    device['device_unprocessed'].forEach((doc,key)=>{
-      $('.show-unprocess-data-list').append(`
-        <span class="badge badge-device mb-2" id="unprocessed_data_${doc.replaceAll(" ","_")}">
-          <input type="hidden" name="unprocessData[]" value="${doc}">
-          <span class="text-show">${doc}</span>
-          <button type="button" onclick="deleteUnprocessedData(this)" class="btn-close btn-close-white" aria-label="Close"></button>
-        </span>
-      `);
-    })
-    $('.modal-title')[0].innerHTML = "Edit Device";
-    $('#modal_add_btn')[0].innerHTML = "Edit Device";
-    $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
-    resetInvalid();
+    if(isTour){
+      var step = driverObj.getState().activeIndex;
+      if(step !=8){
+        driverObj.moveNext();
+      }else{
+        $('.card-item:first-child').click();
+      }
+    }else{
+      let device = JSON.parse(data.replaceAll("'",'"'));
+      $("#addModal").modal("show");
+      $('#device_name').val(device['device_name']);
+      $('#device_type').val(device['device_type']).trigger('change');
+      firstOptionValue = $('#unprocessed_data option:first').val();
+      $('#unprocessed_data').val(firstOptionValue).trigger('change');
+      $('.show-unprocess-data-list').empty();
+      device['device_unprocessed'].forEach((doc,key)=>{
+        $('.show-unprocess-data-list').append(`
+          <span class="badge badge-device mb-2" id="unprocessed_data_${doc.replaceAll(" ","_")}">
+            <input type="hidden" name="unprocessData[]" value="${doc}">
+            <span class="text-show">${doc}</span>
+            <button type="button" onclick="deleteUnprocessedData(this)" class="btn-close btn-close-white" aria-label="Close"></button>
+          </span>
+        `);
+      })
+      $('.modal-title')[0].innerHTML = "Edit Device";
+      $('#modal_add_btn')[0].innerHTML = "Edit Device";
+      $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
+      resetInvalid();
+    }
     event.stopPropagation();
   }
   async function showRawDataList(device_id,id,raw_data,type="add"){
+    if(isTour && type != 'new'){
+      var step = driverObj.getState().activeIndex
+      switch(step){
+        case 10: 
+          driverObj.moveNext();
+          if($('.show-edit-accon').length>0){
+            driverObj.moveNext();
+          }
+        break;
+        case 9:
+          driverObj.moveNext();
+        break;
+        case 11:
+          driverObj.moveNext();
+        break;
+      }
+      
+    }
     if($('#'+id)[0].innerHTML.trim()=='' || type=="new"){
       let res = await $.ajax("/raw_data/getData/"+device_id);
       let showData = "";
@@ -628,7 +1089,6 @@
           showData = res.raw_data[key];
         }
       })
-      console.log(res);
       if(!showData){
         let html = `<div class="row">`;
         //sensitivity
@@ -677,7 +1137,7 @@
         
         html += `<div class="col-12">
             <div class="text-center mt-3">
-              <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add ms-2">
+              <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add add-section ms-2">
                 Add Data
               </button>
             </div>
@@ -725,7 +1185,7 @@
           </table>
           <div class="col-12">
             <div class="text-center mt-3">
-              <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add ms-2">
+              <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add show-edit-accon ms-2">
                 Edit Data
               </button>
             </div>
@@ -831,9 +1291,27 @@
             "frequency":$(`#raw_data_frequency_${ raw_data.replaceAll(' ',"_") }`).val(),
           }
         })
+        if(isTour){
+          driverObj.moveNext();
+        }
         showRawDataList(device_id,id,raw_data,type='new');
       }
     });
+    if(isTour){
+      if($('.add-section').length > 0) {
+        var step = driverObj.getState().activeIndex;
+        if(step == 10){
+          driverObj.moveNext();
+          driverObj.moveNext();
+          driverObj.moveNext();
+        }else{
+          driverObj.moveNext();
+          driverObj.moveNext();
+        }
+      }else{
+        driverObj.moveNext();
+      }
+    }
   }
   function showDataDetail(e,data,id){
     let device = JSON.parse(data.replaceAll("'",'"'));
@@ -881,6 +1359,9 @@
         $(data).removeClass('card-selected');
       }
     })
+    if(isTour){
+      driverObj.moveNext();
+    }
   }
   function backLeft(){
     $('.card-item').each((index,data)=>{
@@ -892,9 +1373,30 @@
       $('#show_data_detail').addClass("d-none");
     })
   }
+  function disableKeyboardNavigation(e) {
+    const key = e.key || e.keyCode;
+    
+    if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'Escape' || key === 37 || key === 39 || key === 27) {
+        e.preventDefault();
+    }
+  }
+
+  function enableKeyboardNavigation() {
+    document.removeEventListener('keydown', disableKeyboardNavigation);
+  }
+  function showModalClose(){
+    if(isTour){
+      driverObj.movePrevious();
+    }
+  }
 </script>
 {% endblock js %} {% block css %}
 <style>
+  .btn:focus-visible{
+    background-color: var(--add-color);
+    border-color: var(--add-color);
+    color: white;
+  }
   /* animation */
   .box-animation{
     width: 0vw;
@@ -1079,6 +1581,9 @@
   }
   .accordion-button:not(.collapsed)::after{
     filter: brightness(0) invert(1);
+  }
+  .select2-container{
+    pointer-events: auto !important;
   }
 </style>
 {% include "css/card-header.html" ignore missing %} {% endblock css %}

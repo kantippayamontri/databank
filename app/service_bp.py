@@ -28,6 +28,7 @@ def service_page():
         service_name_all=service_name_all,
         service_id=str(service_id),
         service_type=service_type,
+        device=session["devices"],
         choose_service_name=choose_service_name,
         choose_service_type=choose_service_type)
 
@@ -108,7 +109,10 @@ def form_add():
             + 1
         )
         session["services"][str(service_id_new_service)] = {"service_name":_service_name,"service_type":_service_type}
-    return redirect(url_for("service.service_page"))
+    if(request.form["isTour"]== "1"):
+        return redirect(url_for("service.service_page")+"?to=18")
+    else:
+        return redirect(url_for("service.service_page"))
 
 @bp.route("/form_page_new", methods=["GET"])
 def form_page_new():
