@@ -470,7 +470,7 @@
             {
               element: ".accordion-item:first-child",
               popover: {
-                title: "Divice data detial",
+                title: "Divice data detail",
                 description: "Show device data detail section.",
                 onPrevClick: () => {
                   $('.card-item:first-child').click();
@@ -565,7 +565,7 @@
                   driverObj.moveNext();
                 },
                 onPrevClick:()=>{
-                  window.location.href = "/?back=1";
+                  window.location.href = "/device/device_page?to=14";
                   driverObj.movePrevious();
                 }
               },
@@ -603,6 +603,11 @@
               popover: {
                 title: "Service section",
                 description: "Show Service section.",
+                onPrevClick: () => {
+                  $('#addModal').modal('show')
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
                 onNextClick: () => {
                   $('.card-item:first-child').click();
                 },
@@ -654,9 +659,13 @@
             {
               element: ".accordion-item:first-child",
               popover: {
-                title: "Service data detial",
+                title: "Service data detail",
                 description: "Show Service data detail section.",
                 onPrevClick: () => {
+                  openAddServiceDetailModal()
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
                 },
                 onNextClick: () => {
                   $('.accordion-button').click();
@@ -675,12 +684,124 @@
                 },
               },
             },
+            {
+              element: ".btn-add",
+              popover: {
+                title: "Edit button",
+                description: "Show Edit button.",
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            {
+              element: ".accordion-collapse",
+              popover: {
+                title: "Service edit data",
+                description: "Show Service edit data section.",
+                onPrevClick: () => {
+                  driverObj.drive(21);
+                  $('.accordion-collapse').removeClass('show');
+                  $('.accordion-button').addClass('collapsed');
+                  $('.accordion-button').click();
+                  driverObj.moveNext();
+                },
+              },
+            },
+            {
+              element: ".btn-add",
+              popover: {
+                title: "Edit button",
+                description: "Show Edit button.",
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            {
+              element: ".swal2-confirm",
+              popover: {
+                title: "Confirm Edit",
+                description: "Confirm edit service detail.",
+                onPrevClick: () => {
+                  Swal.close();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.swal2-confirm').click();
+                },
+              },
+            },
+            {
+              element: ".btn-cancel",
+              popover: {
+                title: "Delete button",
+                description: "Show delete button.",
+                onPrevClick:()=>{
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                  $('.btn-add').click();
+                  driverObj.movePrevious();
+                },
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            {
+              element: ".filter-btn",
+              popover: {
+                title: "Filter section",
+                description: "show filter page.",
+                onPrevClick:()=>{
+                  $('.accordion-button').click();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            //filter
+            {
+              element: ".container",
+              popover: {
+                title: "Filter section",
+                description: "show filter page.",
+                onPrevClick: () => {
+                  window.location.href =
+                    "/service/service_page?service_id=0&to=29";
+                },
+              },
+            },
+            {
+              element: ".btn-analysis",
+              popover: {
+                title: "Analysis section",
+                description: "show analysis page.",
+                onNextClick: () => {
+                  $(".driver-active-element").click();
+                },
+              },
+            },
+            //analysis
+            {
+              element: ".container",
+              popover: {
+                title: "Analysis graph",
+                description: "show analysis graph.",
+                onPrevClick: () => {
+                  window.location.href = "/filter/show_data?to=32";
+                },
+              },
+            },
           ],
         });
         const url = window.location.href;
         const params = new URLSearchParams(window.location.search);
         if (params.get("to")) {
-          // window.history.pushState({}, "", `${url.split("?")[0]}`);
+          window.history.pushState({}, "", `${url.split("?")[0]}`);
           driverObj.drive(parseInt(params.get("to")));
         } else {
           driverObj.drive(15);
@@ -1029,34 +1150,40 @@
       event.stopPropagation();
   }
   function showEditModal(id,data){
-    let service = JSON.parse(data.replaceAll("'",'"'));
-    service_id = id;
-    $("#addModal").modal("show");
-    $('#service_name').val(service['service_name']);
-    $('#service_type').val(service['service_type']).trigger('change');
-    firstOptionValue = $('#unprocessed_data option:first').val();
-    $('.modal-title')[0].innerHTML = "Edit Service";
-    $('#modal_add_btn')[0].innerHTML = "Edit Service";
-    $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
-    resetInvalid();
-    event.stopPropagation();
+    if(!isTour){
+      let service = JSON.parse(data.replaceAll("'",'"'));
+      service_id = id;
+      $("#addModal").modal("show");
+      $('#service_name').val(service['service_name']);
+      $('#service_type').val(service['service_type']).trigger('change');
+      firstOptionValue = $('#unprocessed_data option:first').val();
+      $('.modal-title')[0].innerHTML = "Edit Service";
+      $('#modal_add_btn')[0].innerHTML = "Edit Service";
+      $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
+      resetInvalid();
+      event.stopPropagation();
+    }
   }
   async function showDeleteDetail(service_id,id,cat_data,device_id){
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#4B8B4C",
-      cancelButtonColor: "#B41A1A",
-      confirmButtonText: "Confirm",
-    }).then(async (result) => {
-      let res = await $.ajax({
-        url:'/delete_unprocessed/'+service_id+'/'+device_id+'/'+cat_data,
-        method:'get',
+    if(isTour){
+      driverObj.moveNext();
+    }else{
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#4B8B4C",
+        cancelButtonColor: "#B41A1A",
+        confirmButtonText: "Confirm",
+      }).then(async (result) => {
+        let res = await $.ajax({
+          url:'/delete_unprocessed/'+service_id+'/'+device_id+'/'+cat_data,
+          method:'get',
+        })
+        window.location.href="/service/service_page?service_id="+service_id;
       })
-      window.location.href="/service/service_page?service_id="+service_id;
-    })
+    }
   }
   async function showRawDataList(device_id,id,cat_data,type="add"){
     let ser_id = id.split('_').reverse()[0];
@@ -1176,6 +1303,10 @@
       });
     }
     if(isTour){
+      var step = driverObj.getState().activeIndex;
+      if(step == 23){
+        driverObj.moveNext();
+      }
       driverObj.moveNext();
     }
   }
@@ -1203,6 +1334,13 @@
         showRawDataList(device_id,id,cat_data,type='add');
       }
     });
+    if(isTour){
+      var step = driverObj.getState().activeIndex;
+      if(step == 25){
+        driverObj.moveNext();
+      }
+      driverObj.moveNext();
+    }
   }
   function showDataDetail(e,data,id){
     let service = JSON.parse(data.replaceAll("'",'"'));

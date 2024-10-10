@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, redirect, render_template, request, sessio
 
 from .utils import service_type
 
+
 bp = Blueprint("service", __name__, url_prefix="/service")
 
 @bp.route("/service_page", methods=["GET"])
@@ -23,14 +24,22 @@ def service_page():
                 if _service_id != service_id
             ]
         )
-
-    return render_template("service_page.html",
-        service_name_all=service_name_all,
-        service_id=str(service_id),
-        service_type=service_type,
-        device=session["devices"],
-        choose_service_name=choose_service_name,
-        choose_service_type=choose_service_type)
+    if "devices" in session.keys():
+        return render_template("service_page.html",
+            service_name_all=service_name_all,
+            service_id=str(service_id),
+            service_type=service_type,
+            device=session["devices"],
+            choose_service_name=choose_service_name,
+            choose_service_type=choose_service_type)
+    else:
+        return render_template("service_page.html",
+            service_name_all=service_name_all,
+            service_id=str(service_id),
+            service_type=service_type,
+            device=[],
+            choose_service_name=choose_service_name,
+            choose_service_type=choose_service_type)
 
 # @bp.route("/get_data", methods=["GET"])
 # def get_data():

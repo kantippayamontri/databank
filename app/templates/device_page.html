@@ -294,8 +294,6 @@
                 title: "Add device", 
                 description: "open add device modal.",
                 onNextClick: () => {
-                  // .. load element dynamically
-                  // .. and then call
                   $('#addModal').modal('show')
                   driverObj.moveNext();
                 },
@@ -398,7 +396,7 @@
                   driverObj.movePrevious();
                 },
                 onNextClick: () => {
-                  $('.accordion-button').click();
+                  $('.accordion-item:first-child .accordion-button').click();
                 },
               },
             },
@@ -434,6 +432,7 @@
                 title: "Divice data section",
                 description: "Show device data section.",
                 onPrevClick: () => {
+                  console.log("show");
                   if($('.add-section').length == 0) {
                     let data = '{{session.get("devices")["0"]}}';
                     let device = JSON.parse(data.replaceAll("&#39;",'"'));
@@ -456,7 +455,7 @@
                     })
                     html += "</div>";
                     $('#show_detail_list').append(html);
-                    $('.accordion-button').click();
+                    $('.accordion-item:first-child .accordion-button').click();
                   }
                   setTimeout(function(){
                     driverObj.movePrevious();
@@ -493,7 +492,7 @@
                 title: "Service page",
                 description: "Show Service page button.",
                 onPrevClick: () => {
-                  $('.accordion-item .btn-add').click();
+                  $('.accordion-item:first-child .btn-add').click();
                   driverObj.movePrevious();
                   driverObj.movePrevious();
                 },
@@ -505,10 +504,239 @@
             },
             //service
             {
-              element: ".service-page",
+              element: ".to-center .icon-header",
+              popover: { 
+                title: "Add service", 
+                description: "open add service modal.",
+                onNextClick: () => {
+                  $('#addModal').modal('show')
+                  driverObj.moveNext();
+                },
+                onPrevClick:()=>{
+                  window.location.href = "/device/device_page?to=14";
+                  driverObj.movePrevious();
+                }
+              },
+            },
+            {
+              element: "#addModal .modal-dialog",
               popover: {
-                title: "Service page",
-                description: "Show Service page button.",
+                title: "Service Modal",
+                description: "Show add service modal.",
+                onPrevClick:()=>{
+                  $('#addModal').modal('hide')
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  validation();
+                },
+              },
+            },
+            {
+              element: ".swal2-confirm",
+              popover: {
+                title: "Confirm Add",
+                description: "Confirm add new service.",
+                onPrevClick: () => {
+                  Swal.close();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.swal2-confirm').click();
+                },
+              },
+            },
+            {
+              element: ".card-item",
+              popover: {
+                title: "Service section",
+                description: "Show Service section.",
+                onPrevClick: () => {
+                  $('#addModal').modal('show')
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.card-item:first-child').click();
+                },
+              },
+            },
+            {
+              element: ".icon-service-left",
+              popover: {
+                title: "Service data",
+                description: "Show Service data section.",
+                onPrevClick: () => {
+                  $('.card-item:first-child').click();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  openAddServiceDetailModal()
+                },
+              },
+            },
+            {
+              element: "#service_detail_modal .modal-dialog",
+              popover: {
+                title: "Service data Modal",
+                description: "Show add service data modal.",
+                onPrevClick:()=>{
+                  $('#service_detail_modal').modal('hide')
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  validationAddDetail();
+                },
+              },
+            },
+            {
+              element: ".swal2-confirm",
+              popover: {
+                title: "Confirm Add",
+                description: "Confirm add new service.",
+                onPrevClick: () => {
+                  Swal.close();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.swal2-confirm').click();
+                },
+              },
+            },
+            {
+              element: ".accordion-item:first-child",
+              popover: {
+                title: "Service data detail",
+                description: "Show Service data detail section.",
+                onPrevClick: () => {
+                  openAddServiceDetailModal()
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.accordion-button').click();
+                },
+              },
+            },
+            {
+              element: ".accordion-collapse",
+              popover: {
+                title: "Divice data section",
+                description: "Show device data section.",
+                onPrevClick: () => {
+                  driverObj.movePrevious();
+                  $('.accordion-collapse').removeClass('show');
+                  $('.accordion-button').addClass('collapsed');
+                },
+              },
+            },
+            {
+              element: ".btn-add",
+              popover: {
+                title: "Edit button",
+                description: "Show Edit button.",
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            {
+              element: ".accordion-collapse",
+              popover: {
+                title: "Service edit data",
+                description: "Show Service edit data section.",
+                onPrevClick: () => {
+                  driverObj.drive(21);
+                  $('.accordion-collapse').removeClass('show');
+                  $('.accordion-button').addClass('collapsed');
+                  $('.accordion-button').click();
+                  driverObj.moveNext();
+                },
+              },
+            },
+            {
+              element: ".btn-add",
+              popover: {
+                title: "Edit button",
+                description: "Show Edit button.",
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            {
+              element: ".swal2-confirm",
+              popover: {
+                title: "Confirm Edit",
+                description: "Confirm edit service detail.",
+                onPrevClick: () => {
+                  Swal.close();
+                  driverObj.movePrevious();
+                },
+                onNextClick: () => {
+                  $('.swal2-confirm').click();
+                },
+              },
+            },
+            {
+              element: ".btn-cancel",
+              popover: {
+                title: "Delete button",
+                description: "Show delete button.",
+                onPrevClick:()=>{
+                  driverObj.movePrevious();
+                  driverObj.movePrevious();
+                  $('.btn-add').click();
+                  driverObj.movePrevious();
+                },
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            {
+              element: ".filter-btn",
+              popover: {
+                title: "Filter section",
+                description: "show filter page.",
+                onNextClick:()=>{
+                  $('.driver-active-element').click();
+                }
+              },
+            },
+            //filter
+            {
+              element: ".container",
+              popover: {
+                title: "Filter section",
+                description: "show filter page.",
+                onPrevClick: () => {
+                  window.location.href =
+                    "/service/service_page?service_id=0&to=29";
+                },
+              },
+            },
+            {
+              element: ".btn-analysis",
+              popover: {
+                title: "Analysis section",
+                description: "show analysis page.",
+                onNextClick: () => {
+                  $(".driver-active-element").click();
+                },
+              },
+            },
+            //analysis
+            {
+              element: ".container",
+              popover: {
+                title: "Analysis graph",
+                description: "show analysis graph.",
+                onPrevClick: () => {
+                  window.location.href = "/filter/show_data?to=32";
+                },
               },
             },
           ],
@@ -516,11 +744,11 @@
         const url = window.location.href;
         const params = new URLSearchParams(window.location.search);
         if (params.get("to")) {
-          window.history.pushState({}, "", `${url.split("?")[0]}`);
+          // window.history.pushState({}, "", `${url.split("?")[0]}`);
           if(params.get("to")==14){
             if($('.card-selected').length==0){
               $('.card-item:first-child').click();
-              $('.accordion-button').click();
+              $('.accordion-item:first-child .accordion-button').click();
             }
           }
           driverObj.drive(parseInt(params.get("to")));
@@ -876,9 +1104,246 @@
                       title: "Divice data section",
                       description: "Show device data section.",
                       onPrevClick: () => {
-                        $('.accordion-item .btn-add').click();
+                        $('.accordion-item:first-child .btn-add').click();
                         driverObj.movePrevious();
                         driverObj.movePrevious();
+                      },
+                    },
+                  },
+                  //service
+                  {
+                    element: ".to-center .icon-header",
+                    popover: { 
+                      title: "Add service", 
+                      description: "open add service modal.",
+                      onNextClick: () => {
+                        $('#addModal').modal('show')
+                        driverObj.moveNext();
+                      },
+                      onPrevClick:()=>{
+                        window.location.href = "/device/device_page?to=14";
+                        driverObj.movePrevious();
+                      }
+                    },
+                  },
+                  {
+                    element: "#addModal .modal-dialog",
+                    popover: {
+                      title: "Service Modal",
+                      description: "Show add service modal.",
+                      onPrevClick:()=>{
+                        $('#addModal').modal('hide')
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        validation();
+                      },
+                    },
+                  },
+                  {
+                    element: ".swal2-confirm",
+                    popover: {
+                      title: "Confirm Add",
+                      description: "Confirm add new service.",
+                      onPrevClick: () => {
+                        Swal.close();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.swal2-confirm').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".card-item",
+                    popover: {
+                      title: "Service section",
+                      description: "Show Service section.",
+                      onPrevClick: () => {
+                        $('#addModal').modal('show')
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.card-item:first-child').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".icon-service-left",
+                    popover: {
+                      title: "Service data",
+                      description: "Show Service data section.",
+                      onPrevClick: () => {
+                        $('.card-item:first-child').click();
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        openAddServiceDetailModal()
+                      },
+                    },
+                  },
+                  {
+                    element: "#service_detail_modal .modal-dialog",
+                    popover: {
+                      title: "Service data Modal",
+                      description: "Show add service data modal.",
+                      onPrevClick:()=>{
+                        $('#service_detail_modal').modal('hide')
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        validationAddDetail();
+                      },
+                    },
+                  },
+                  {
+                    element: ".swal2-confirm",
+                    popover: {
+                      title: "Confirm Add",
+                      description: "Confirm add new service.",
+                      onPrevClick: () => {
+                        Swal.close();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.swal2-confirm').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-item:first-child",
+                    popover: {
+                      title: "Service data detail",
+                      description: "Show Service data detail section.",
+                      onPrevClick: () => {
+                        openAddServiceDetailModal()
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.accordion-button').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".accordion-collapse",
+                    popover: {
+                      title: "Divice data section",
+                      description: "Show device data section.",
+                      onPrevClick: () => {
+                        driverObj.movePrevious();
+                        $('.accordion-collapse').removeClass('show');
+                        $('.accordion-button').addClass('collapsed');
+                      },
+                    },
+                  },
+                  {
+                    element: ".btn-add",
+                    popover: {
+                      title: "Edit button",
+                      description: "Show Edit button.",
+                      onNextClick:()=>{
+                        $('.driver-active-element').click();
+                      }
+                    },
+                  },
+                  {
+                    element: ".accordion-collapse",
+                    popover: {
+                      title: "Service edit data",
+                      description: "Show Service edit data section.",
+                      onPrevClick: () => {
+                        driverObj.drive(21);
+                        $('.accordion-collapse').removeClass('show');
+                        $('.accordion-button').addClass('collapsed');
+                        $('.accordion-button').click();
+                        driverObj.moveNext();
+                      },
+                    },
+                  },
+                  {
+                    element: ".btn-add",
+                    popover: {
+                      title: "Edit button",
+                      description: "Show Edit button.",
+                      onNextClick:()=>{
+                        $('.driver-active-element').click();
+                      }
+                    },
+                  },
+                  {
+                    element: ".swal2-confirm",
+                    popover: {
+                      title: "Confirm Edit",
+                      description: "Confirm edit service detail.",
+                      onPrevClick: () => {
+                        Swal.close();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick: () => {
+                        $('.swal2-confirm').click();
+                      },
+                    },
+                  },
+                  {
+                    element: ".btn-cancel",
+                    popover: {
+                      title: "Delete button",
+                      description: "Show delete button.",
+                      onPrevClick:()=>{
+                        driverObj.movePrevious();
+                        driverObj.movePrevious();
+                        $('.btn-add').click();
+                        driverObj.movePrevious();
+                      },
+                      onNextClick:()=>{
+                        $('.driver-active-element').click();
+                      }
+                    },
+                  },
+                  {
+                    element: ".filter-btn",
+                    popover: {
+                      title: "Filter section",
+                      description: "show filter page.",
+                      onNextClick:()=>{
+                        $('.driver-active-element').click();
+                      }
+                    },
+                  },
+                  //filter
+                  {
+                    element: ".container",
+                    popover: {
+                      title: "Filter section",
+                      description: "show filter page.",
+                      onPrevClick: () => {
+                        window.location.href =
+                          "/service/service_page?service_id=0&to=29";
+                      },
+                    },
+                  },
+                  {
+                    element: ".btn-analysis",
+                    popover: {
+                      title: "Analysis section",
+                      description: "show analysis page.",
+                      onNextClick: () => {
+                        $(".driver-active-element").click();
+                      },
+                    },
+                  },
+                  //analysis
+                  {
+                    element: ".container",
+                    popover: {
+                      title: "Analysis graph",
+                      description: "show analysis graph.",
+                      onPrevClick: () => {
+                        window.location.href = "/filter/show_data?to=32";
                       },
                     },
                   },
