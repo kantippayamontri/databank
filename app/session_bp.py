@@ -40,7 +40,6 @@ def clear():
 def clear_service():
     if "services" in session.keys():
         del session["services"]
-    
     return "clear services success"
 
 # @bp.route("/clear_device", methods=["GET"])
