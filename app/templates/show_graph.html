@@ -467,6 +467,14 @@
                 onPrevClick: () => {
                   window.location.href = "/filter/show_data?to=31";
                 },
+                onNextClick: () => {
+                  $.ajax({ url: "/session/setDone", method: "POST" }).then(
+                    (doc) => {
+                      window.location.reload();
+                      driverObj.moveNext();
+                    }
+                  );
+                },
               },
             },
           ],

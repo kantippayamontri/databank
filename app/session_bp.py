@@ -20,7 +20,17 @@ def get():
     resp.status_code = 200
 
     return resp
+@bp.route("/setDone", methods=["POST"])
+def setDone():
+    resp = {}
+    for key in session.keys():
+        if(key=="tour"):
+            session[key] = 0
+        resp[key] = session[key]
+    resp = jsonify(resp)
+    resp.status_code = 200
 
+    return resp
 @bp.route("/clear", methods=["GET"])
 def clear():
     session.clear()
