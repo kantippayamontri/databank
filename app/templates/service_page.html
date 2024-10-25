@@ -41,22 +41,22 @@
           </a>
         </div>
           <div class="card-body">
-            {% if not session.get("services") %}
+            {% if not session[name].get("services") %}
             <div class="text-center">You have 0 service.</div>
           {% else %}
             <div class="data-content">
               {# loop service key show in table#}
-              {% if session.get("services") %}
-                {% for service_id in session.get("services").keys() %}
-                  <div class="card card-width card-item" data-service-id="{{service_id}}" onclick='showDataDetail(this,"{{ session.get("services")[service_id] }}","{{service_id}}")'>
+              {% if session[name].get("services") %}
+                {% for service_id in session[name].get("services").keys() %}
+                  <div class="card card-width card-item" data-service-id="{{service_id}}" onclick='showDataDetail(this,"{{ session[name].get("services")[service_id] }}","{{service_id}}")'>
                     <div class="card-body body-height position-relative">
-                      <div class="text-margin-top">Service Name: {{ session.get("services")[service_id] ["service_name"] }}</div>
-                      <div>Service Type: {{ session.get("services")[service_id] ["service_type"] }}</div>
+                      <div class="text-margin-top">Service Name: {{ session[name].get("services")[service_id] ["service_name"] }}</div>
+                      <div>Service Type: {{ session[name].get("services")[service_id] ["service_type"] }}</div>
                       <img
                         src="{{ url_for('static', filename='icon/edit-icon.png' ) }}"
                         alt="edit icon"
                         class="edit-icon"
-                        onclick='showEditModal("{{service_id}}","{{session.get("services")[service_id]}}")'
+                        onclick='showEditModal("{{service_id}}","{{session[name].get("services")[service_id]}}")'
                       />
                       <a href="javascript:void(0)" onclick="closeAlert('{{service_id}}')">
                         <div class="box-animation">
@@ -793,6 +793,21 @@
                 description: "show analysis graph.",
                 onPrevClick: () => {
                   window.location.href = "/filter/show_data?to=32";
+                },
+              },
+            },
+            {
+              element: ".show-log-out",
+              popover: {
+                title: "Logout",
+                description: "show Logout button.",
+                onNextClick: () => {
+                  $.ajax({ url: "/session/setDone", method: "POST" }).then(
+                    (doc) => {
+                      window.location.reload();
+                      driverObj.moveNext();
+                    }
+                  );
                 },
               },
             },

@@ -14,7 +14,10 @@ bp = Blueprint("device", __name__, url_prefix="/device")
 
 @bp.route("/device_page", methods=["GET"])
 def device_page():
-    if "devices" not in session.keys():
+    cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
+    if "devices" not in session[cookie_value].keys():
         return render_template(
             "device_page.html",
             form_utils={
@@ -23,6 +26,7 @@ def device_page():
                     "unprocessed_data": enumerate(unprocessed_data),
                 },
                 "new_device": True,
+                "name":cookie_value
             },
         )
     else:
@@ -34,6 +38,7 @@ def device_page():
                     "unprocessed_data": enumerate(unprocessed_data),
                 },
                 "new_device": False,
+                "name":cookie_value
             },
         )
     # return render_template("device_page.html")
@@ -109,27 +114,27 @@ def update_with_id(device_id):
     # device_type = _device["device_type"]
     # device_unprocessed = _device["device_unprocessed"]
     new_device = _device["new_device"]
-
+    cookie_value = request.cookies.get('user')
     if not new_device:
         del _device["new_device"]
-        session["devices"][str(device_id)]["device_name"]= _device["device_name"]
-        session["devices"][str(device_id)]["device_type"]= _device["device_type"]
+        session[cookie_value]["devices"][str(device_id)]["device_name"]= _device["device_name"]
+        session[cookie_value]["devices"][str(device_id)]["device_type"]= _device["device_type"]
         # check unprocessed data 
-        old_un = session["devices"][str(device_id)]["device_unprocessed"]
+        old_un = session[cookie_value]["devices"][str(device_id)]["device_unprocessed"]
         new_un = _device["device_unprocessed"]
 
         for _o in old_un:
             if _o not in new_un:
                 # check _o in raw_data
-                if "raw_data" in session["devices"][str(device_id)].keys():
-                    del session["devices"][str(device_id)]["raw_data"][_o]
+                if "raw_data" in session[cookie_value]["devices"][str(device_id)].keys():
+                    del session[cookie_value]["devices"][str(device_id)]["raw_data"][_o]
                     
-                    if session["devices"][str(device_id)]["raw_data"] == {}:
-                        del session["devices"][str(device_id)]["raw_data"] 
+                    if session[cookie_value]["devices"][str(device_id)]["raw_data"] == {}:
+                        del session[cookie_value]["devices"][str(device_id)]["raw_data"] 
         
         
         
-        session["devices"][str(device_id)]["device_unprocessed"]= _device["device_unprocessed"]
+        session[cookie_value]["devices"][str(device_id)]["device_unprocessed"]= _device["device_unprocessed"]
         
     
     return jsonify(success=True)
@@ -137,7 +142,7 @@ def update_with_id(device_id):
 @bp.route("/add", methods=["POST"])
 def add():
     _device = request.get_json()
-    # print(f"_device: {_device}")
+    cookie_value = request.cookies.get('user')
     device_name = _device["device_name"]
     device_type = _device["device_type"]
     device_unprocessed = _device["device_unprocessed"]
@@ -145,20 +150,20 @@ def add():
 
     # session["device"] = _device
     # record the device data
-    if "devices" not in session.keys():
+    if "devices" not in session[cookie_value].keys():
         del _device["new_device"]
-        session["devices"] = {"0": _device}
+        session[cookie_value]["devices"] = {"0": _device}
     else:
 
         if new_device:
             # add new device
             print("add new device")
             device_id_new_device = (
-                max(list([int(device_id) for device_id in session["devices"].keys()]))
+                max(list([int(device_id) for device_id in session[cookie_value]["devices"].keys()]))
                 + 1
             )
             del _device["new_device"]
-            session["devices"][str(device_id_new_device)] = _device
+            session[cookie_value]["devices"][str(device_id_new_device)] = _device
 
     return jsonify(success=True)
 
@@ -194,12 +199,13 @@ def get_with_id(device_id):
 @bp.route("/delete/<int:device_id>", methods=["GET"])
 def delete(device_id):
     device_id = str(device_id)
-    if "devices" in session.keys():
-        if str(device_id) in session["devices"].keys():
-            del session["devices"][str(device_id)]
+    cookie_value = request.cookies.get('user')
+    if "devices" in session[cookie_value].keys():
+        if str(device_id) in session[cookie_value]["devices"].keys():
+            del session[cookie_value]["devices"][str(device_id)]
     
-        if session["devices"] == {}:
-            del session["devices"]
+        if session[cookie_value]["devices"] == {}:
+            del session[cookie_value]["devices"]
 
     # check device in services and delete
     if "services" in session.keys():

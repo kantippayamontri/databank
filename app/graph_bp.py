@@ -142,8 +142,8 @@ def create():
     #         }
     #     }
     # }
-
-    data = session
+    cookie_value = request.cookies.get('user')
+    data = session[cookie_value]
 
     # data = {
     #     "devices": {

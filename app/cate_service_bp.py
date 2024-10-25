@@ -83,10 +83,11 @@ def ajax(service_id: int, device_id: int):
 
 @bp.route("/ajaxEdit/<int:service_id>/<int:device_id>", methods=["post"])
 def ajaxEdit(service_id: int, device_id: int):
+    cookie_value = request.cookies.get('user')
     service_id = str(service_id)
     device_id = str(device_id)
     cat_data = request.form['cat_data']
-    data = session["services"][service_id]['cate_service'][device_id][cat_data]
+    data = session[cookie_value]["services"][service_id]['cate_service'][device_id][cat_data]
     data['action'] = request.form['action']
     data['frequency'] = request.form['frequency']
     data['category'] = request.form['category']
@@ -101,27 +102,29 @@ def ajaxData():
     }
 @bp.route("/ajaxGetData/<string:service_id>/<string:device_id>", methods=["post"])
 def ajaxGetData(service_id,device_id):
+    cookie_value = request.cookies.get('user')
     return{
-        "data":session["services"][service_id]["cate_service"][device_id][request.form["cat_data"]],
+        "data":session[cookie_value]["services"][service_id]["cate_service"][device_id][request.form["cat_data"]],
         "frequency":frequency,
         "action":service_action,
         "cate_service":cate_service
     }
 @bp.route("/form_edit_data/<string:service_id>/<string:device_id>", methods=["POST"])
 def form_edit_data(service_id, device_id):
+    cookie_value = request.cookies.get('user')
     _unprocessed = request.form["cate_service_unprocessed"]
     _frequency = request.form["cate_service_frequency"]
     _action = request.form["cate_service_action"]
     _cate = request.form["cate_service_cate"]
 
     # record the cate_service data
-    if "cate_service" not in session["services"][service_id].keys():
-        session["services"][service_id]["cate_service"] = {}
+    if "cate_service" not in session[cookie_value]["services"][service_id].keys():
+        session[cookie_value]["services"][service_id]["cate_service"] = {}
 
-    if device_id not in session["services"][service_id]["cate_service"].keys():
-        session["services"][service_id]["cate_service"][device_id] = {}
+    if device_id not in session[cookie_value]["services"][service_id]["cate_service"].keys():
+        session[cookie_value]["services"][service_id]["cate_service"][device_id] = {}
 
-    session["services"][service_id]["cate_service"][device_id][_unprocessed] = {
+    session[cookie_value]["services"][service_id]["cate_service"][device_id][_unprocessed] = {
         "action": _action,
         "frequency": _frequency,
         "category": _cate,
@@ -161,8 +164,9 @@ def form_edit(service_id, device_id, unprocessed):
 
 @bp.route("/delete", methods=["GET"])
 def delete():
-    if "cate_service" in session.keys():
-        del session["cate_service"]
+    cookie_value = request.cookies.get('user')
+    if "cate_service" in session[cookie_value].keys():
+        del session[cookie_value]["cate_service"]
 
     return redirect(url_for("service.service_page"))
 
@@ -170,17 +174,18 @@ def delete():
 @bp.route("/delete_unprocessed/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET"])
 def delete_unprocessed(service_id, device_id, unprocessed):
     # return {"service_id": service_id, "device_id": device_id, "un_data": unprocessed}
-    if "cate_service" in session.keys():
-        if unprocessed in session["cate_service"].keys():
-            del session["cate_service"][unprocessed]
+    cookie_value = request.cookies.get('user')
+    if "cate_service" in session[cookie_value].keys():
+        if unprocessed in session[cookie_value]["cate_service"].keys():
+            del session[cookie_value]["cate_service"][unprocessed]
     try:
-        del session["services"][service_id]["cate_service"][device_id][unprocessed]
+        del session[cookie_value]["services"][service_id]["cate_service"][device_id][unprocessed]
 
-        if session["services"][service_id]["cate_service"][device_id] == {}:
-            del session["services"][service_id]["cate_service"][device_id] 
+        if session[cookie_value]["services"][service_id]["cate_service"][device_id] == {}:
+            del session[cookie_value]["services"][service_id]["cate_service"][device_id] 
         
-        if session["services"][service_id]["cate_service"] == {}:
-            del session["services"][service_id]["cate_service"]
+        if session[cookie_value]["services"][service_id]["cate_service"] == {}:
+            del session[cookie_value]["services"][service_id]["cate_service"]
             
     except Exception as e:
         return {"error": "can not find this data",

@@ -71,12 +71,13 @@
       >
         Clear Session
       </button>
-      {% if request.path != "/" %}
-      <a href="/">
+      {% if "users" not in request.path %}
+      <a href="javascript:void(0)" onclick="logout()">
         <img
           src="{{ url_for('static', filename='icon/backtomain.png' ) }}"
           alt="Uploaded Image"
           style="margin-right: 20px; width: 40px; height: 40px"
+          class="show-log-out"
         />
       </a>
       {% endif %}

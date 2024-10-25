@@ -41,29 +41,29 @@
         </a>
       </div>
         <div class="card-body">
-          {% if not session.get("devices") %}
+          {% if not session.get(form_utils["name"]).get("devices") %}
             <div class="text-center">You have 0 device.</div>
           {% else %}
             <div class="data-content">
               {# loop device key show in table#}
-              {% if session.get("devices") %}
-                {% for device_id in session.get("devices").keys() %}
-                  <div class="card card-width card-item" data-device-id="{{device_id}}" onclick='showDataDetail(this,"{{ session.get("devices")[device_id] }}","{{device_id}}")'>
+              {% if session.get(form_utils["name"]).get("devices") %}
+                {% for device_id in session.get(form_utils["name"]).get("devices").keys() %}
+                  <div class="card card-width card-item" data-device-id="{{device_id}}" onclick='showDataDetail(this,"{{ session.get(form_utils["name"]).get("devices")[device_id] }}","{{device_id}}")'>
                     <div class="card-body body-height position-relative">
-                      <div class="text-margin-top">Device Name: {{ session.get("devices")[device_id] ["device_name"] }}</div>
-                      <div>Device Type: {{ session.get("devices")[device_id] ["device_type"] }}</div>
+                      <div class="text-margin-top">Device Name: {{ session.get(form_utils["name"]).get("devices")[device_id] ["device_name"] }}</div>
+                      <div>Device Type: {{ session.get(form_utils["name"]).get("devices")[device_id] ["device_type"] }}</div>
                       <div class="show-unprocess-data">
                         Unprocessed Data:
-                        {% for un_data in  session.get("devices")[device_id]["device_unprocessed"][:-1] %}
+                        {% for un_data in  session.get(form_utils["name"]).get("devices")[device_id]["device_unprocessed"][:-1] %}
                           {{ un_data }},
                         {% endfor %}
-                        {{ session.get("devices")[device_id] ["device_unprocessed"] [-1] }}
+                        {{ session.get(form_utils["name"]).get("devices")[device_id] ["device_unprocessed"] [-1] }}
                       </div>
                       <img
                         src="{{ url_for('static', filename='icon/edit-icon.png' ) }}"
                         alt="edit icon"
                         class="edit-icon"
-                        onclick='showEditModal("{{device_id}}","{{session.get("devices")[device_id]}}")'
+                        onclick='showEditModal("{{device_id}}","{{session.get(form_utils["name"]).get("devices")[device_id]}}")'
                       />
                       <a href="javascript:void(0)" onclick="closeAlert('{{device_id}}')">
                         <div class="box-animation">
@@ -739,6 +739,21 @@
                 },
               },
             },
+            {
+              element: ".show-log-out",
+              popover: {
+                title: "Logout",
+                description: "show Logout button.",
+                onNextClick: () => {
+                  $.ajax({ url: "/session/setDone", method: "POST" }).then(
+                    (doc) => {
+                      window.location.reload();
+                      driverObj.moveNext();
+                    }
+                  );
+                },
+              },
+            },
           ],
         });
         const url = window.location.href;
@@ -1344,6 +1359,21 @@
                       description: "show analysis graph.",
                       onPrevClick: () => {
                         window.location.href = "/filter/show_data?to=32";
+                      },
+                    },
+                  },
+                  {
+                    element: ".show-log-out",
+                    popover: {
+                      title: "Logout",
+                      description: "show Logout button.",
+                      onNextClick: () => {
+                        $.ajax({ url: "/session/setDone", method: "POST" }).then(
+                          (doc) => {
+                            window.location.reload();
+                            driverObj.moveNext();
+                          }
+                        );
                       },
                     },
                   },

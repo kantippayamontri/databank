@@ -70,11 +70,12 @@ def form(device_id):
 @bp.route("/ajax/<int:device_id>", methods=["POST"])
 def ajax(device_id):
     print(f"data from form : {request.form}")
+    cookie_value = request.cookies.get('user')
     raw_data = request.form['raw_data']
-    if "raw_data" in session["devices"][str(device_id)]:
-        data = session["devices"][str(device_id)]["raw_data"]
+    if "raw_data" in session[cookie_value]["devices"][str(device_id)]:
+        data = session[cookie_value]["devices"][str(device_id)]["raw_data"]
     else:
-        data = session["devices"][str(device_id)]["raw_data"] = []
+        data = session[cookie_value]["devices"][str(device_id)]["raw_data"] = []
     if data == []:
         data = {}
     data[raw_data] = {"action": "" , "frequency" : "", "sensitivity" : ""}
@@ -82,17 +83,18 @@ def ajax(device_id):
     data[raw_data]["frequency"] = request.form["frequency"]
     data[raw_data]["sensitivity"] = request.form["sensitivity"]
 
-    session["devices"][str(device_id)]["raw_data"] = data
+    session[cookie_value]["devices"][str(device_id)]["raw_data"] = data
 
-    return session["devices"][str(device_id)]["raw_data"]
+    return session[cookie_value]["devices"][str(device_id)]["raw_data"]
 
 @bp.route("/getData/<int:device_id>", methods=["GET"])
 def getData(device_id):
     isData = 1
-    if "raw_data" in session["devices"][str(device_id)]:
-        rawData = session["devices"][str(device_id)]["raw_data"]
+    cookie_value = request.cookies.get('user')
+    if "raw_data" in session[cookie_value]["devices"][str(device_id)]:
+        rawData = session[cookie_value]["devices"][str(device_id)]["raw_data"]
     else:
-        rawData = session["devices"][str(device_id)]
+        rawData = session[cookie_value]["devices"][str(device_id)]
         isData = 0
 
     data = {
@@ -110,8 +112,9 @@ def getAll():
     #     rawData = session["devices"][str(device_id)]["raw_data"]
     # else:
     #     rawData = session["devices"][str(device_id)]
-    if "devices" in session:
-        return session["devices"]
+    cookie_value = request.cookies.get('user')
+    if "devices" in session[cookie_value].keys():
+        return session[cookie_value]["devices"]
     else:
         return ''
 
@@ -119,6 +122,7 @@ def getAll():
 
 @bp.route("/delete", methods=["GET"])
 def delete():
-    if "raw_data" in session.keys():
-        del session["raw_data"]
+    cookie_value = request.cookies.get('user')
+    if "raw_data" in session[cookie_value].keys():
+        del session[cookie_value]["raw_data"]
     return redirect(url_for("device.device_page"))

@@ -468,6 +468,16 @@
                   window.location.href = "/filter/show_data?to=31";
                 },
                 onNextClick: () => {
+                  driverObj.moveNext();
+                },
+              },
+            },
+            {
+              element: ".show-log-out",
+              popover: {
+                title: "Logout",
+                description: "show Logout button.",
+                onNextClick: () => {
                   $.ajax({ url: "/session/setDone", method: "POST" }).then(
                     (doc) => {
                       window.location.reload();

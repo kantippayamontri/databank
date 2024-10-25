@@ -47,6 +47,9 @@ def create_app():
 
     from . import filter_data_bp
     app.register_blueprint(filter_data_bp.bp) # register filter blueprint
+
+    from . import user_select_bp
+    app.register_blueprint(user_select_bp.bp) # register filter blueprint
     # # Bootstrap-Flask requires this line
     # bootstrap = Bootstrap5(app)
     # # Flask-WTF requires this line
@@ -54,15 +57,16 @@ def create_app():
 
     @app.route("/", methods=["POST", "GET"])
     def main_page():
-        print('1')
         if request.method == "GET":
-            if 'tour' not in session.keys():
-                session['tour']=1
+            cookie_value = request.cookies.get('user')
+            if cookie_value == None:
+                return redirect('/users')
+            if 'tour' not in session[cookie_value].keys():
+                session[cookie_value]['tour']=1
             if "graph_filename" in request.args.keys():
-                return render_template("index.html", graph_filename=request.args.get("graph_filename"))
-
+                return render_template("index.html", graph_filename=request.args.get("graph_filename"),name=cookie_value)
             return render_template(
                 "index.html",
+                name=cookie_value
             )
-    
     return app

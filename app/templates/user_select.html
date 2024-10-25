@@ -1,0 +1,104 @@
+{% extends "base.html" %} {% block main %}
+<div class="show-user">
+  <div class="profile-selection">
+    <h1>Select Your Profile</h1>
+    <div class="profiles">
+      <div class="profile" data-user="User1">
+        <img
+          src="{{ url_for('static', filename='image-profile/Dad.png' ) }}"
+          alt="User 1"
+        />
+        <p>User 1</p>
+      </div>
+      <div class="profile" data-user="User2">
+        <img
+          src="{{ url_for('static', filename='image-profile/Mom.png' ) }}"
+          alt="User 2"
+        />
+        <p>User 2</p>
+      </div>
+      <div class="profile" data-user="User3">
+        <img
+          src="{{ url_for('static', filename='image-profile/sister.png' ) }}"
+          alt="User 3"
+        />
+        <p>User 3</p>
+      </div>
+      <div class="profile" data-user="User4">
+        <img
+          src="{{ url_for('static', filename='image-profile/big-sister.png' ) }}"
+          alt="User 3"
+        />
+        <p>User 4</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main %} {% block js %}
+<script>
+  $(document).ready(async function () {
+    document.querySelectorAll(".profile").forEach((profile, key) => {
+      profile.addEventListener("click", function () {
+        const userName = this.getAttribute("data-user");
+        Cookies.set("user", userName, { expires: 1000 / 1440 });
+        window.location.href = "/users/get";
+        // alert(`You selected ${userName}`);
+        // Here you can add code to navigate or load the user's profile.
+      });
+    });
+  });
+</script>
+{% endblock js %} {% block css %}
+<style>
+  .show-user {
+    font-family: Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+    text-align: center;
+    height: 100vh;
+  }
+  .profile-selection {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .profile-selection h1 {
+    padding-top: 50px;
+    background-color: #141414;
+  }
+
+  .profiles {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 80px;
+  }
+
+  .profile {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .profile img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    border: 2px solid #fff;
+    transition: border 0.3s ease;
+  }
+
+  .profile p {
+    margin-top: 10px;
+    font-size: 18px;
+  }
+
+  .profile:hover {
+    transform: scale(1.1);
+  }
+
+  .profile img:hover {
+    border-color: #e50914;
+  }
+</style>
+{% endblock css %}

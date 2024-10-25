@@ -14,29 +14,31 @@
         </a>
       </div>
       <div class="card-body">
-        {% if not session.get("devices") %}
+        {% if not session.get(name).get("devices") %}
         <div class="text-center">You have 0 device.</div>
         {% else %}
         <div class="data-content">
-          {# loop device key show in table#} {% if session.get("devices") %} {%
-          for device_id in session.get("devices").keys() %}
+          {# loop device key show in table#} {% if
+          session.get(name).get("devices") %} {% for device_id in
+          session.get(name).get("devices").keys() %}
           <div
             class="card card-width card-item"
             onclick='showDataDetail("{{device_id}}","device")'
           >
             <div class="card-body body-height position-relative">
               <div class="text-margin-top">
-                Device Name: {{ session.get("devices")[device_id]
+                Device Name: {{ session.get(name).get("devices")[device_id]
                 ["device_name"] }}
               </div>
               <div>
-                Device Type: {{ session.get("devices")[device_id]
+                Device Type: {{ session.get(name).get("devices")[device_id]
                 ["device_type"] }}
               </div>
               <div class="show-unprocess-data">
                 Unprocessed Data: {% for un_data in
-                session.get("devices")[device_id]["device_unprocessed"][:-1] %}
-                {{ un_data }}, {% endfor %} {{ session.get("devices")[device_id]
+                session.get(name).get("devices")[device_id]["device_unprocessed"][:-1]
+                %} {{ un_data }}, {% endfor %} {{
+                session.get(name).get("devices")[device_id]
                 ["device_unprocessed"] [-1] }}
               </div>
             </div>
@@ -58,23 +60,24 @@
         </a>
       </div>
       <div class="card-body">
-        {% if not session.get("services") %}
+        {% if not session.get(name).get("services") %}
         <div class="text-center">You have 0 service.</div>
         {% else %}
         <div class="data-content">
-          {# loop service key show in table#} {% if session.get("services") %}
-          {% for service_id in session.get("services").keys() %}
+          {# loop service key show in table#} {% if
+          session.get(name).get("services") %} {% for service_id in
+          session.get(name).get("services").keys() %}
           <div
             class="card card-width card-item"
             onclick='showDataDetail("{{service_id}}","service")'
           >
             <div class="card-body body-height position-relative">
               <div class="text-margin-top">
-                Device Name: {{ session.get("services")[service_id]
+                Device Name: {{ session.get(name).get("services")[service_id]
                 ["service_name"] }}
               </div>
               <div>
-                Device Type: {{ session.get("services")[service_id]
+                Device Type: {{ session.get(name).get("services")[service_id]
                 ["service_type"] }}
               </div>
             </div>
@@ -89,6 +92,39 @@
 {% endblock main %} {% block js %}
 <script>
   $(document).ready(async function () {
+    $.ajax("/session/alert/toturial").then((res) => {
+      if (res == "") {
+        showToturial();
+      } else if (res == "1") {
+        Swal.fire({
+          title: "Skip toturial?",
+          // text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#4B8B4C",
+          cancelButtonColor: "#B41A1A",
+          confirmButtonText: "Confirm",
+          backdrop: false,
+          allowOutsideClick: false,
+          backdrop: `
+            rgba(0, 0, 0, 0.5)
+            no-repeat
+            center
+            fixed
+          `,
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            $.ajax({ url: "/session/setDone", method: "POST" }).then((doc) => {
+              window.location.reload();
+            });
+          } else {
+            showToturial();
+          }
+        });
+      }
+    });
+  });
+  function showToturial() {
     $.ajax("/session/get").then((doc) => {
       if (doc.tour == 1) {
         const driver = window.driver.js.driver;
@@ -271,31 +307,43 @@
                     var html = '<div class="accordion" id="accordionExample">';
                     device["device_unprocessed"].forEach((doc, key) => {
                       html += `
-                          <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading${
-                              doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                            }">
-                              <button onclick="showRawDataList(${id},'show_add_data${
+                              <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading${
+                                  doc.replaceAll(" ", "_") +
+                                  "_" +
+                                  key +
+                                  "_" +
+                                  id
+                                }">
+                                  <button onclick="showRawDataList(${id},'show_add_data${
                         doc.replaceAll(" ", "_") + "_" + key + "_" + id
                       }','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${
                         doc.replaceAll(" ", "_") + "_" + key + "_" + id
                       }" aria-expanded="false" aria-controls="collapse${
                         doc.replaceAll(" ", "_") + "_" + key + "_" + id
                       }">
-                                ${doc}
-                              </button>
-                            </h2>
-                            <div id="collapse${
-                              doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                            }" class="accordion-collapse collapse" aria-labelledby="heading${
+                                    ${doc}
+                                  </button>
+                                </h2>
+                                <div id="collapse${
+                                  doc.replaceAll(" ", "_") +
+                                  "_" +
+                                  key +
+                                  "_" +
+                                  id
+                                }" class="accordion-collapse collapse" aria-labelledby="heading${
                         doc.replaceAll(" ", "_") + "_" + key + "_" + id
                       }" data-bs-parent="#accordionExample">
-                              <div class="accordion-body" id="show_add_data${
-                                doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                              }">
-                              </div>
-                            </div>
-                          </div>`;
+                                  <div class="accordion-body" id="show_add_data${
+                                    doc.replaceAll(" ", "_") +
+                                    "_" +
+                                    key +
+                                    "_" +
+                                    id
+                                  }">
+                                  </div>
+                                </div>
+                              </div>`;
                     });
                     html += "</div>";
                     $("#show_detail_list").append(html);
@@ -584,6 +632,21 @@
                 },
               },
             },
+            {
+              element: ".show-log-out",
+              popover: {
+                title: "Logout",
+                description: "show Logout button.",
+                onNextClick: () => {
+                  $.ajax({ url: "/session/setDone", method: "POST" }).then(
+                    (doc) => {
+                      window.location.reload();
+                      driverObj.moveNext();
+                    }
+                  );
+                },
+              },
+            },
           ],
         });
         const url = window.location.href;
@@ -604,8 +667,7 @@
         }
       }
     });
-  });
-
+  }
   function showDataDetail(id, type) {
     window.location.href = `/${type}/${type}_page?${type}_id=` + id;
   }

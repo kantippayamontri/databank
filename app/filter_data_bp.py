@@ -85,8 +85,9 @@ def form():
 
 @bp.route("/filter", methods=["GET"])
 def filter():
+    cookie_value = request.cookies.get('user')
     type = request.args.get('type')
-    data = session
+    data = session[cookie_value]
     match type:
         case 'devices':
             if "devices" in data:
