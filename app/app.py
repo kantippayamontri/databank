@@ -43,7 +43,7 @@ def create_app():
     from . import service_bp
     app.register_blueprint(service_bp.bp) # register service blueprint
 
-    from .templates.graph import graph_bp
+    from .templates import graph_bp
     app.register_blueprint(graph_bp.bp) # register graph blueprint
 
     from . import filter_data_bp
