@@ -19,12 +19,12 @@ from PIL import Image
 from icecream import ic
 
 # TODO: making graph
-from dash import Dash, html, Input, Output, callback, no_update
-import dash_cytoscape as cyto
+# from dash import Dash, html, Input, Output, callback, no_update
+# import dash_cytoscape as cyto
 
 bp = Blueprint("graph", __name__, url_prefix="/graph")
-app_dash = Dash(__name__)
-app_dash.layout = html.Div("Hello from Dash!")
+# app_dash = Dash(__name__)
+# app_dash.layout = html.Div("Hello from Dash!")
 
 @bp.route("/show_graph", methods=["GET"])
 def show_graph():
@@ -34,12 +34,12 @@ def show_graph():
     if "devices" in session[cookie_value].keys():
         return render_template("show_graph.html",devices=session[cookie_value]["devices"])
     return render_template("show_graph.html",devices=[])
-@bp.route("/show_graph/iframe")
-def iframe():
-    return '1'
-@bp.route('/dash')
-def dash_app():
-    return app_dash.index()
+# @bp.route("/show_graph/iframe")
+# def iframe():
+#     return '1'
+# @bp.route('/dash')
+# def dash_app():
+#     return app_dash.index()
 
 
 # def resize_image(image_path, new_width=None, new_height=None):
