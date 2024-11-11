@@ -18,7 +18,7 @@
   <!-- Embed the Dash app using an iframe -->
   <iframe
     id="show_iframe"
-    src="https://88.222.244.91:8050/"
+    src="http://88.222.244.91:8050/"
     style="width: 100vw; height: 50vw; border: none"
   ></iframe>
   <!-- <div class="form-group" style="margin-bottom:50px">
@@ -44,10 +44,10 @@
     var driverObj;
     var isTour = 0;
     $(document).ready(function () {
-      const iframe = document.getElementById('show_iframe');
-      if (iframe.src.startsWith('https://')) {
-        iframe.src = iframe.src.replace('https://', 'http://');
-      }
+      // const iframe = document.getElementById('show_iframe');
+      // if (iframe.src.startsWith('https://')) {
+      //   iframe.src = iframe.src.replace('https://', 'http://');
+      // }
       $.ajax("/session/get").then((doc) => {
         isTour = doc.tour;
         if (doc.tour == 1) {
