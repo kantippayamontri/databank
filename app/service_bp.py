@@ -12,39 +12,41 @@ def service_page():
     choose_service_type = ""
     service_id = 0
     service_name_all = []
-    if(cookie_value == None):
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "services" in session[cookie_value].keys():
+            service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
+            service_id = service_id_max + 1
+
+            # check service name is redundant
+            service_name_all = list(
+                [
+                    session[cookie_value]["services"][_service_id]["service_name"]
+                    for _service_id in session[cookie_value]["services"].keys()
+                    if _service_id != service_id
+                ]
+            )
+        if "devices" in session[cookie_value].keys():
+            return render_template("service_page.html",
+                service_name_all=service_name_all,
+                service_id=str(service_id),
+                service_type=service_type,
+                device=session[cookie_value]["devices"],
+                choose_service_name=choose_service_name,
+                choose_service_type=choose_service_type,
+                name=cookie_value)
+        else:
+            return render_template("service_page.html",
+                service_name_all=service_name_all,
+                service_id=str(service_id),
+                service_type=service_type,
+                device=[],
+                choose_service_name=choose_service_name,
+                choose_service_type=choose_service_type,
+                name=cookie_value)
+    except Exception as e:
         return render_template("user_select.html",user="not-show-path")
-    if "services" in session[cookie_value].keys():
-        service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
-        service_id = service_id_max + 1
-
-        # check service name is redundant
-        service_name_all = list(
-            [
-                session[cookie_value]["services"][_service_id]["service_name"]
-                for _service_id in session[cookie_value]["services"].keys()
-                if _service_id != service_id
-            ]
-        )
-    if "devices" in session[cookie_value].keys():
-        return render_template("service_page.html",
-            service_name_all=service_name_all,
-            service_id=str(service_id),
-            service_type=service_type,
-            device=session[cookie_value]["devices"],
-            choose_service_name=choose_service_name,
-            choose_service_type=choose_service_type,
-            name=cookie_value)
-    else:
-        return render_template("service_page.html",
-            service_name_all=service_name_all,
-            service_id=str(service_id),
-            service_type=service_type,
-            device=[],
-            choose_service_name=choose_service_name,
-            choose_service_type=choose_service_type,
-            name=cookie_value)
-
 # @bp.route("/get_data", methods=["GET"])
 # def get_data():
 
@@ -113,21 +115,24 @@ def form_add():
     cookie_value = request.cookies.get('user')
     _service_name = request.form["service_name"]
     _service_type = request.form["service_type"]
-    if(cookie_value == None):
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "services" not in session[cookie_value].keys():
+            session[cookie_value]["services"] = {"0": {"service_name":_service_name,"service_type":_service_type}}
+        else:
+            # add new service
+            service_id_new_service = (
+                max(list([int(service_id) for service_id in session[cookie_value]["services"].keys()]))
+                + 1
+            )
+            session[cookie_value]["services"][str(service_id_new_service)] = {"service_name":_service_name,"service_type":_service_type}
+        if(request.form["isTour"]== "1"):
+            return redirect(url_for("service.service_page")+"?to=18")
+        else:
+            return redirect(url_for("service.service_page"))
+    except Exception as e:
         return render_template("user_select.html",user="not-show-path")
-    if "services" not in session[cookie_value].keys():
-        session[cookie_value]["services"] = {"0": {"service_name":_service_name,"service_type":_service_type}}
-    else:
-        # add new service
-        service_id_new_service = (
-            max(list([int(service_id) for service_id in session[cookie_value]["services"].keys()]))
-            + 1
-        )
-        session[cookie_value]["services"][str(service_id_new_service)] = {"service_name":_service_name,"service_type":_service_type}
-    if(request.form["isTour"]== "1"):
-        return redirect(url_for("service.service_page")+"?to=18")
-    else:
-        return redirect(url_for("service.service_page"))
 
 @bp.route("/form_page_new", methods=["GET"])
 def form_page_new():
@@ -136,30 +141,33 @@ def form_page_new():
     choose_service_type = ""
     service_id = 0
     service_name_all = []
-    if(cookie_value == None):
-        return render_template("user_select.html",user="not-show-path")
-    if "services" in session[cookie_value].keys():
-        service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
-        service_id = service_id_max + 1
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "services" in session[cookie_value].keys():
+            service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
+            service_id = service_id_max + 1
 
-        # check service name is redundant
-        service_name_all = list(
-            [
-                session[cookie_value]["services"][_service_id]["service_name"]
-                for _service_id in session[cookie_value]["services"].keys()
-                if _service_id != service_id
-            ]
+            # check service name is redundant
+            service_name_all = list(
+                [
+                    session[cookie_value]["services"][_service_id]["service_name"]
+                    for _service_id in session[cookie_value]["services"].keys()
+                    if _service_id != service_id
+                ]
+            )
+
+        return render_template(
+            "forms/service_form.html",
+            service_name_all=service_name_all,
+            service_id=str(service_id),
+            service_type=service_type,
+            choose_service_name=choose_service_name,
+            choose_service_type=choose_service_type,
         )
 
-    return render_template(
-        "forms/service_form.html",
-        service_name_all=service_name_all,
-        service_id=str(service_id),
-        service_type=service_type,
-        choose_service_name=choose_service_name,
-        choose_service_type=choose_service_type,
-    )
-
+    except Exception as e:
+        return render_template("user_select.html",user="not-show-path")
 
 @bp.route("/form_page/<int:service_id>", methods=["GET"])
 def form_page(service_id):
@@ -170,34 +178,41 @@ def form_page(service_id):
 
     choose_service_type = ""
     choose_service_name = ""
-    if(cookie_value == None):
-        return render_template("user_select.html",user="not-show-path")
-    if "services" in session[cookie_value].keys():
-        if str(service_id) in session[cookie_value]["services"].keys():
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "services" in session[cookie_value].keys():
+            if str(service_id) in session[cookie_value]["services"].keys():
 
-            choose_service_type = session[cookie_value]["services"][str(service_id)]["service_type"]
-            choose_service_name = session[cookie_value]["services"][str(service_id)]["service_name"]
+                choose_service_type = session[cookie_value]["services"][str(service_id)]["service_type"]
+                choose_service_name = session[cookie_value]["services"][str(service_id)]["service_name"]
 
-            return render_template(
-                "forms/service_form.html",
-                service_id=str(service_id),
-                service_type=service_type,
-                choose_service_name=choose_service_name,
-                choose_service_type=choose_service_type,
-            )
-    else:
-        return redirect(url_for("service.service_page"))
+                return render_template(
+                    "forms/service_form.html",
+                    service_id=str(service_id),
+                    service_type=service_type,
+                    choose_service_name=choose_service_name,
+                    choose_service_type=choose_service_type,
+                )
+        else:
+            return redirect(url_for("service.service_page"))
+        
+    except Exception as e:
+            return render_template("user_select.html",user="not-show-path")
 
 
 @bp.route("/delete/<string:service_id>", methods=["GET"])
 def delete(service_id: str):
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "services" in session[cookie_value].keys():
+            del session[cookie_value]["services"][service_id]
+
+            if session[cookie_value]["services"] == {}:
+                del session[cookie_value]["services"]
+
+        return redirect(url_for("service.service_page"))
+    except Exception as e:
         return render_template("user_select.html",user="not-show-path")
-    if "services" in session[cookie_value].keys():
-        del session[cookie_value]["services"][service_id]
-
-        if session[cookie_value]["services"] == {}:
-            del session[cookie_value]["services"]
-
-    return redirect(url_for("service.service_page"))

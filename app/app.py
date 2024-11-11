@@ -60,14 +60,17 @@ def create_app():
     def main_page():
         if request.method == "GET":
             cookie_value = request.cookies.get('user')
-            if cookie_value == None:
+            try:
+                if cookie_value == None:
+                    return render_template("user_select.html",user="not-show-path")
+                if 'tour' not in session[cookie_value].keys():
+                    session[cookie_value]['tour']=1
+                if "graph_filename" in request.args.keys():
+                    return render_template("index.html", graph_filename=request.args.get("graph_filename"),name=cookie_value)
+                return render_template(
+                    "index.html",
+                    name=cookie_value
+                )
+            except Exception as e:
                 return render_template("user_select.html",user="not-show-path")
-            if 'tour' not in session[cookie_value].keys():
-                session[cookie_value]['tour']=1
-            if "graph_filename" in request.args.keys():
-                return render_template("index.html", graph_filename=request.args.get("graph_filename"),name=cookie_value)
-            return render_template(
-                "index.html",
-                name=cookie_value
-            )
     return app

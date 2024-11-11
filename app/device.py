@@ -15,32 +15,35 @@ bp = Blueprint("device", __name__, url_prefix="/device")
 @bp.route("/device_page", methods=["GET"])
 def device_page():
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
-        return render_template("user_select.html",user="not-show-path")
-    if "devices" not in session[cookie_value].keys():
-        return render_template(
-            "device_page.html",
-            form_utils={
-                "device": {
-                    "type_device": enumerate(type_device),
-                    "unprocessed_data": enumerate(unprocessed_data),
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "devices" not in session[cookie_value].keys():
+            return render_template(
+                "device_page.html",
+                form_utils={
+                    "device": {
+                        "type_device": enumerate(type_device),
+                        "unprocessed_data": enumerate(unprocessed_data),
+                    },
+                    "new_device": True,
+                    "name":cookie_value
                 },
-                "new_device": True,
-                "name":cookie_value
-            },
-        )
-    else:
-        return render_template(
-            "device_page.html",
-            form_utils={
-                "device": {
-                    "type_device": enumerate(type_device),
-                    "unprocessed_data": enumerate(unprocessed_data),
+            )
+        else:
+            return render_template(
+                "device_page.html",
+                form_utils={
+                    "device": {
+                        "type_device": enumerate(type_device),
+                        "unprocessed_data": enumerate(unprocessed_data),
+                    },
+                    "new_device": False,
+                    "name":cookie_value
                 },
-                "new_device": False,
-                "name":cookie_value
-            },
-        )
+            )
+    except Exception as e:
+            return render_template("user_select.html",user="not-show-path")
     # return render_template("device_page.html")
 
 @bp.route("/form", methods=["GET"])
@@ -200,35 +203,38 @@ def get_with_id(device_id):
 def delete(device_id):
     device_id = str(device_id)
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
-        return render_template("user_select.html",user="not-show-path")
-    if "devices" in session[cookie_value].keys():
-        if str(device_id) in session[cookie_value]["devices"].keys():
-            del session[cookie_value]["devices"][str(device_id)]
-    
-        if session[cookie_value]["devices"] == {}:
-            del session[cookie_value]["devices"]
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "devices" in session[cookie_value].keys():
+            if str(device_id) in session[cookie_value]["devices"].keys():
+                del session[cookie_value]["devices"][str(device_id)]
+        
+            if session[cookie_value]["devices"] == {}:
+                del session[cookie_value]["devices"]
 
-    # check device in services and delete
-    if "services" in session.keys():
-        for _service_id in session.get("services").keys():
-            if "cate_service" in session["services"][_service_id]:
-                for _device_id in session.get("services")[_service_id]["cate_service"].keys():
-                    if device_id == _device_id:
-                        del session["services"][_service_id]["cate_service"][device_id]
-                    
-                    if session["services"][_service_id]["cate_service"] == {}:
-                        del session["services"][_service_id]["cate_service"]
-    
-    # # also raw data
-    # if "raw_data" in session.keys():
-    #     del session["raw_data"]
+        # check device in services and delete
+        if "services" in session.keys():
+            for _service_id in session.get("services").keys():
+                if "cate_service" in session["services"][_service_id]:
+                    for _device_id in session.get("services")[_service_id]["cate_service"].keys():
+                        if device_id == _device_id:
+                            del session["services"][_service_id]["cate_service"][device_id]
+                        
+                        if session["services"][_service_id]["cate_service"] == {}:
+                            del session["services"][_service_id]["cate_service"]
+        
+        # # also raw data
+        # if "raw_data" in session.keys():
+        #     del session["raw_data"]
 
-    # # also cate service
-    # if "cate_service" in session.keys():
-    #     del session["cate_service"]
+        # # also cate service
+        # if "cate_service" in session.keys():
+        #     del session["cate_service"]
 
-    return redirect(url_for("device.device_page"))  # back to homepage
+        return redirect(url_for("device.device_page"))  # back to homepage
+    except Exception as e:
+            return render_template("user_select.html",user="not-show-path")
 
 
 @bp.route("/get_details", methods=["POST"])

@@ -20,10 +20,13 @@ def form():
 @bp.route("/get", methods=["GET"])
 def get():
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if cookie_value not in session.keys():
+            session[cookie_value] = {}
+        return redirect('/')
+    except Exception as e:
         return render_template("user_select.html",user="not-show-path")
-    if cookie_value not in session.keys():
-        session[cookie_value] = {}
-    return redirect('/')
 
 

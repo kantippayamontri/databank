@@ -5,6 +5,7 @@ from flask import (
     redirect,
     url_for,
     request,
+    render_template
 )
 import socket
 
@@ -58,14 +59,16 @@ def clear_service():
 @bp.route("/clear_session", methods=["GET"])
 def clear_session():
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        _session_key = list(session[cookie_value].keys())
+        for k in _session_key:
+            if k != "tour":
+                del session[cookie_value][k]
+        return redirect('/')
+    except Exception as e:
         return render_template("user_select.html",user="not-show-path")
-    _session_key = list(session[cookie_value].keys())
-    for k in _session_key:
-        if k != "tour":
-            del session[cookie_value][k]
-    return redirect('/')
-    
 @bp.route("/hostname", methods=["GET"])
 def hostname():
     return {"hostname": socket.gethostname()}

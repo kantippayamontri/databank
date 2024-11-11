@@ -165,12 +165,15 @@ def form_edit(service_id, device_id, unprocessed):
 @bp.route("/delete", methods=["GET"])
 def delete():
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
-        return render_template("user_select.html",user="not-show-path")
-    if "cate_service" in session[cookie_value].keys():
-        del session[cookie_value]["cate_service"]
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "cate_service" in session[cookie_value].keys():
+            del session[cookie_value]["cate_service"]
 
-    return redirect(url_for("service.service_page"))
+        return redirect(url_for("service.service_page"))
+    except Exception as e:
+        return render_template("user_select.html",user="not-show-path")
 
 
 @bp.route("/delete_unprocessed/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET"])
@@ -179,20 +182,20 @@ def delete_unprocessed(service_id, device_id, unprocessed):
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
         return render_template("user_select.html",user="not-show-path")
-    if "cate_service" in session[cookie_value].keys():
-        if unprocessed in session[cookie_value]["cate_service"].keys():
-            del session[cookie_value]["cate_service"][unprocessed]
     try:
-        del session[cookie_value]["services"][service_id]["cate_service"][device_id][unprocessed]
+        if "cate_service" in session[cookie_value].keys():
+            if unprocessed in session[cookie_value]["cate_service"].keys():
+                del session[cookie_value]["cate_service"][unprocessed]
+                
+            del session[cookie_value]["services"][service_id]["cate_service"][device_id][unprocessed]
 
-        if session[cookie_value]["services"][service_id]["cate_service"][device_id] == {}:
-            del session[cookie_value]["services"][service_id]["cate_service"][device_id] 
-        
-        if session[cookie_value]["services"][service_id]["cate_service"] == {}:
-            del session[cookie_value]["services"][service_id]["cate_service"]
+            if session[cookie_value]["services"][service_id]["cate_service"][device_id] == {}:
+                del session[cookie_value]["services"][service_id]["cate_service"][device_id] 
+            
+            if session[cookie_value]["services"][service_id]["cate_service"] == {}:
+                del session[cookie_value]["services"][service_id]["cate_service"]
             
     except Exception as e:
-        return {"error": "can not find this data",
-                "e": e}
+        return render_template("user_select.html",user="not-show-path")
 
     return redirect(url_for("service.service_page"))

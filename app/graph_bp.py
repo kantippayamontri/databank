@@ -29,11 +29,14 @@ bp = Blueprint("graph", __name__, url_prefix="/graph")
 @bp.route("/show_graph", methods=["GET"])
 def show_graph():
     cookie_value = request.cookies.get('user')
-    if(cookie_value == None):
+    try:
+        if(cookie_value == None):
+            return render_template("user_select.html",user="not-show-path")
+        if "devices" in session[cookie_value].keys():
+            return render_template("show_graph.html",devices=session[cookie_value]["devices"])
+        return render_template("show_graph.html",devices=[])
+    except Exception as e:
         return render_template("user_select.html",user="not-show-path")
-    if "devices" in session[cookie_value].keys():
-        return render_template("show_graph.html",devices=session[cookie_value]["devices"])
-    return render_template("show_graph.html",devices=[])
 # @bp.route("/show_graph/iframe")
 # def iframe():
 #     return '1'
