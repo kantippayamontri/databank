@@ -14,7 +14,7 @@ RUN apt-get install -y graphviz
 RUN pip install --upgrade pip
 RUN pip install dash
 RUN pip install dash-bootstrap-components
-
+RUN pip install dash_cytoscape
 
 # Install pip requirements
 COPY requirements.txt .

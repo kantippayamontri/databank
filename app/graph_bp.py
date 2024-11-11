@@ -17,10 +17,6 @@ import plotly.graph_objs as go
 import plotly.io as pio
 from PIL import Image
 from icecream import ic
-from app.templates.graph.graph_constants import *
-from app.templates.graph.graph_utils import create_elements, create_home_tree, create_company_tree, create_relation_service_device
-from app.templates.graph.graph_style import stylesheet   
-from app.templates.graph.mock_data import data
 
 # TODO: making graph
 from dash import Dash, html, Input, Output, callback, no_update
