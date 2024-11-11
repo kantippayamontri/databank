@@ -165,6 +165,8 @@ def form_edit(service_id, device_id, unprocessed):
 @bp.route("/delete", methods=["GET"])
 def delete():
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if "cate_service" in session[cookie_value].keys():
         del session[cookie_value]["cate_service"]
 
@@ -175,6 +177,8 @@ def delete():
 def delete_unprocessed(service_id, device_id, unprocessed):
     # return {"service_id": service_id, "device_id": device_id, "un_data": unprocessed}
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if "cate_service" in session[cookie_value].keys():
         if unprocessed in session[cookie_value]["cate_service"].keys():
             del session[cookie_value]["cate_service"][unprocessed]
