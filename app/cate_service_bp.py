@@ -166,7 +166,9 @@ def form_edit(service_id, device_id, unprocessed):
 def delete():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "cate_service" in session[cookie_value].keys():
         del session[cookie_value]["cate_service"]
 
@@ -178,7 +180,9 @@ def delete_unprocessed(service_id, device_id, unprocessed):
     # return {"service_id": service_id, "device_id": device_id, "un_data": unprocessed}
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "cate_service" in session[cookie_value].keys():
         if unprocessed in session[cookie_value]["cate_service"].keys():
             del session[cookie_value]["cate_service"][unprocessed]

@@ -16,7 +16,9 @@ bp = Blueprint("device", __name__, url_prefix="/device")
 def device_page():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "devices" not in session[cookie_value].keys():
         return render_template(
             "device_page.html",
@@ -201,7 +203,9 @@ def delete(device_id):
     device_id = str(device_id)
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "devices" in session[cookie_value].keys():
         if str(device_id) in session[cookie_value]["devices"].keys():
             del session[cookie_value]["devices"][str(device_id)]

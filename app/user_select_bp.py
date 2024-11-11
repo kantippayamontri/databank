@@ -21,7 +21,9 @@ def form():
 def get():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if cookie_value not in session.keys():
         session[cookie_value] = {}
     return redirect('/')

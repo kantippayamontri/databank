@@ -61,7 +61,9 @@ def create_app():
         if request.method == "GET":
             cookie_value = request.cookies.get('user')
             if cookie_value == None:
-                return redirect(url_for('user_select.form'))
+                custom_port = 80  # Replace with your desired port
+                new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+                return redirect(new_url)
             if 'tour' not in session[cookie_value].keys():
                 session[cookie_value]['tour']=1
             if "graph_filename" in request.args.keys():

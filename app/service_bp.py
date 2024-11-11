@@ -13,7 +13,9 @@ def service_page():
     service_id = 0
     service_name_all = []
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "services" in session[cookie_value].keys():
         service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
         service_id = service_id_max + 1
@@ -114,7 +116,9 @@ def form_add():
     _service_name = request.form["service_name"]
     _service_type = request.form["service_type"]
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "services" not in session[cookie_value].keys():
         session[cookie_value]["services"] = {"0": {"service_name":_service_name,"service_type":_service_type}}
     else:
@@ -137,7 +141,9 @@ def form_page_new():
     service_id = 0
     service_name_all = []
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "services" in session[cookie_value].keys():
         service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
         service_id = service_id_max + 1
@@ -171,7 +177,9 @@ def form_page(service_id):
     choose_service_type = ""
     choose_service_name = ""
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "services" in session[cookie_value].keys():
         if str(service_id) in session[cookie_value]["services"].keys():
 
@@ -193,7 +201,9 @@ def form_page(service_id):
 def delete(service_id: str):
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "services" in session[cookie_value].keys():
         del session[cookie_value]["services"][service_id]
 

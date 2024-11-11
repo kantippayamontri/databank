@@ -59,7 +59,9 @@ def clear_service():
 def clear_session():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     _session_key = list(session[cookie_value].keys())
     for k in _session_key:
         if k != "tour":

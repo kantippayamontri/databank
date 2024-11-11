@@ -30,7 +30,9 @@ bp = Blueprint("graph", __name__, url_prefix="/graph")
 def show_graph():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect(url_for('user_select.form'))
+        custom_port = 80  # Replace with your desired port
+        new_url = f"{request.scheme}://{request.host.split(':')[0]}:{custom_port}{request.path}"
+        return redirect(new_url)
     if "devices" in session[cookie_value].keys():
         return render_template("show_graph.html",devices=session[cookie_value]["devices"])
     return render_template("show_graph.html",devices=[])
