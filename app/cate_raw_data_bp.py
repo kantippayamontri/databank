@@ -124,7 +124,7 @@ def getAll():
 def delete():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect('/users')
+        return redirect(url_for('user_select.form'))
     if "raw_data" in session[cookie_value].keys():
         del session[cookie_value]["raw_data"]
     return redirect(url_for("device.device_page"))

@@ -21,7 +21,7 @@ def form():
 def get():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect('/users')
+        return redirect(url_for('user_select.form'))
     if cookie_value not in session.keys():
         session[cookie_value] = {}
     return redirect('/')

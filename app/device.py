@@ -16,7 +16,7 @@ bp = Blueprint("device", __name__, url_prefix="/device")
 def device_page():
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect('/users')
+        return redirect(url_for('user_select.form'))
     if "devices" not in session[cookie_value].keys():
         return render_template(
             "device_page.html",
@@ -201,7 +201,7 @@ def delete(device_id):
     device_id = str(device_id)
     cookie_value = request.cookies.get('user')
     if(cookie_value == None):
-        return redirect('/users')
+        return redirect(url_for('user_select.form'))
     if "devices" in session[cookie_value].keys():
         if str(device_id) in session[cookie_value]["devices"].keys():
             del session[cookie_value]["devices"][str(device_id)]
