@@ -46,6 +46,7 @@ MANIFEST
 !app/static/icon/**
 !app/static/image-profile/**
 !app/static/web_img/**
+!app/static/graph
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
