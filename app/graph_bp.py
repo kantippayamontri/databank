@@ -29,6 +29,8 @@ app_dash.layout = html.Div("Hello from Dash!")
 @bp.route("/show_graph", methods=["GET"])
 def show_graph():
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if "devices" in session[cookie_value].keys():
         return render_template("show_graph.html",devices=session[cookie_value]["devices"])
     return render_template("show_graph.html",devices=[])

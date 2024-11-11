@@ -200,6 +200,8 @@ def get_with_id(device_id):
 def delete(device_id):
     device_id = str(device_id)
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if "devices" in session[cookie_value].keys():
         if str(device_id) in session[cookie_value]["devices"].keys():
             del session[cookie_value]["devices"][str(device_id)]

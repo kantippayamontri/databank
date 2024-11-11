@@ -123,6 +123,8 @@ def getAll():
 @bp.route("/delete", methods=["GET"])
 def delete():
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if "raw_data" in session[cookie_value].keys():
         del session[cookie_value]["raw_data"]
     return redirect(url_for("device.device_page"))

@@ -58,6 +58,8 @@ def clear_service():
 @bp.route("/clear_session", methods=["GET"])
 def clear_session():
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     _session_key = list(session[cookie_value].keys())
     for k in _session_key:
         if k != "tour":

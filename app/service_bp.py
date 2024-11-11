@@ -12,7 +12,8 @@ def service_page():
     choose_service_type = ""
     service_id = 0
     service_name_all = []
-    
+    if(cookie_value == None):
+        return redirect('/users')
     if "services" in session[cookie_value].keys():
         service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
         service_id = service_id_max + 1
@@ -112,7 +113,8 @@ def form_add():
     cookie_value = request.cookies.get('user')
     _service_name = request.form["service_name"]
     _service_type = request.form["service_type"]
-
+    if(cookie_value == None):
+        return redirect('/users')
     if "services" not in session[cookie_value].keys():
         session[cookie_value]["services"] = {"0": {"service_name":_service_name,"service_type":_service_type}}
     else:
@@ -134,7 +136,8 @@ def form_page_new():
     choose_service_type = ""
     service_id = 0
     service_name_all = []
-
+    if(cookie_value == None):
+        return redirect('/users')
     if "services" in session[cookie_value].keys():
         service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
         service_id = service_id_max + 1
@@ -167,7 +170,8 @@ def form_page(service_id):
 
     choose_service_type = ""
     choose_service_name = ""
-
+    if(cookie_value == None):
+        return redirect('/users')
     if "services" in session[cookie_value].keys():
         if str(service_id) in session[cookie_value]["services"].keys():
 
@@ -188,6 +192,8 @@ def form_page(service_id):
 @bp.route("/delete/<string:service_id>", methods=["GET"])
 def delete(service_id: str):
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if "services" in session[cookie_value].keys():
         del session[cookie_value]["services"][service_id]
 

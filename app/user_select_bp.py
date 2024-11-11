@@ -20,6 +20,8 @@ def form():
 @bp.route("/get", methods=["GET"])
 def get():
     cookie_value = request.cookies.get('user')
+    if(cookie_value == None):
+        return redirect('/users')
     if cookie_value not in session.keys():
         session[cookie_value] = {}
     return redirect('/')
