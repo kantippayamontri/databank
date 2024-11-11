@@ -60,9 +60,9 @@ def clear_session():
     cookie_value = request.cookies.get('user')
     _session_key = list(session[cookie_value].keys())
     for k in _session_key:
-        del session[cookie_value][k]
-    
-    return redirect(url_for("main_page"))
+        if k != "tour":
+            del session[cookie_value][k]
+    return redirect('/')
     
 @bp.route("/hostname", methods=["GET"])
 def hostname():
