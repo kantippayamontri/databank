@@ -24,6 +24,7 @@
     <p class="navbar-brand mb-0 h1 main-logo">Databank</p>
   </a>
   <div class="show-border d-flex justify-content-between w-100">
+    {% if "users" not in request.path %}
     <div class="d-flex">
       <a href="{{ url_for('device.device_page') }}">
         <button
@@ -71,7 +72,7 @@
       >
         Clear Session
       </button>
-      {% if "users" not in request.path %}
+
       <a href="javascript:void(0)" onclick="logout()">
         <img
           src="{{ url_for('static', filename='icon/backtomain.png' ) }}"
@@ -80,8 +81,8 @@
           class="show-log-out"
         />
       </a>
-      {% endif %}
     </div>
+    {% endif %}
   </div>
   <!-- {% if session.get("devices") %}
   <a href="{{ url_for('device.device_page') }}">

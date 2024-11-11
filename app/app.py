@@ -10,6 +10,7 @@ from flask_session import Session
 from flask import (
     session,
 )
+from dash import Dash, html
 import socket
 
 from .forms import DeviceForm
@@ -42,7 +43,7 @@ def create_app():
     from . import service_bp
     app.register_blueprint(service_bp.bp) # register service blueprint
 
-    from . import graph_bp
+    from .templates.graph import graph_bp
     app.register_blueprint(graph_bp.bp) # register graph blueprint
 
     from . import filter_data_bp
