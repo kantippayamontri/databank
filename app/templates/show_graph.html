@@ -1,25 +1,37 @@
 {% extends "base.html" %} {% block css %}
 <style>
   .container {
-    max-width: 100vw; /* Ensure the container doesn't exceed the screen width */
-    overflow-x: auto; /* Enable horizontal scroll if needed */
-    overflow-y: hidden; /* Prevent vertical scroll */
-    white-space: nowrap; /* Prevent image from wrapping */
+    width: 100vw;
+    height: 100vh;
+    overflow-x: auto; 
+    overflow-y: hidden; 
+    /* white-space: nowrap;  */
     padding-left: 0px !important;
+    margin:0px;
   }
-  .container img {
-    max-width: 100%;
+  /* .container img {
+    max-width: 100vw;
     height: auto;
+  } */
+  #show_iframe{
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 80vh;
+    border: none;
   }
 </style>
 {% endblock %} {% block main %}
 <!-- <div class="container d-flex align-items-center justify-content-center overflow-x"> -->
-<div class="container">
   <!-- Embed the Dash app using an iframe -->
-  <iframe
+  <!-- <iframe
     id="show_iframe"
     src="https://88.222.244.91:8050/"
     style="width: 100vw; height: 50vw; border: none"
+  ></iframe> -->
+  <iframe
+    id="show_iframe"
+    src="http://127.0.0.1:8050/"
   ></iframe>
   <!-- <div class="form-group" style="margin-bottom:50px">
     <label for="device_name">Type</label>
@@ -37,17 +49,27 @@
       </select>
     </div>
   </div> -->
-</div>
   {% endblock main %} {% block js %}
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script>
     var driverObj;
     var isTour = 0;
+    var windowWidth = window.innerWidth;
+    var data = {
+          "data":JSON.parse('{{session}}'.replaceAll("&#39;","\"")),
+          "screenWidth": windowWidth
+        };
+    console.log(data);
+    $.ajax({
+        // url: 'http://127.0.0.1:8050/webhook',
+        url: 'http://88.222.244.91:8050/',
+        method: 'POST',
+        data:JSON.stringify(data),
+        contentType: 'application/json',
+      }).then((res)=>{
+        console.log(res);
+      });
     $(document).ready(function () {
-      // const iframe = document.getElementById('show_iframe');
-      // if (iframe.src.startsWith('https://')) {
-      //   iframe.src = iframe.src.replace('https://', 'http://');
-      // }
       $.ajax("/session/get").then((doc) => {
         isTour = doc.tour;
         if (doc.tour == 1) {

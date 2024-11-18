@@ -33,7 +33,7 @@ def show_graph():
         if(cookie_value == None):
             return render_template("user_select.html",user="not-show-path")
         if "devices" in session[cookie_value].keys():
-            return render_template("show_graph.html",devices=session[cookie_value]["devices"])
+            return render_template("show_graph.html",devices=session[cookie_value]["devices"],session=session[cookie_value])
         return render_template("show_graph.html",devices=[])
     except Exception as e:
         return render_template("user_select.html",user="not-show-path")
