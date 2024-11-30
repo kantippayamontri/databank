@@ -17,7 +17,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 80vh;
+    height: 92vh;
     border: none;
   }
 </style>
@@ -26,12 +26,11 @@
   <!-- Embed the Dash app using an iframe -->
   <!-- <iframe
     id="show_iframe"
-    src="https://88.222.244.91:8050/"
-    style="width: 100vw; height: 50vw; border: none"
+    src="http://88.222.244.91:8050/"
   ></iframe> -->
   <iframe
     id="show_iframe"
-    src="http://88.222.244.91:8050/"
+    src="http://127.0.0.1:8050/"
   ></iframe>
   <!-- <div class="form-group" style="margin-bottom:50px">
     <label for="device_name">Type</label>
@@ -55,14 +54,15 @@
     var driverObj;
     var isTour = 0;
     var windowWidth = window.innerWidth;
+    var windowHeight = window.innerHeight;
     var data = {
           "data":JSON.parse('{{session}}'.replaceAll("&#39;","\"")),
-          "screenWidth": windowWidth
+          "screenWidth": windowWidth,
+          "screenHeight": 800
         };
-    console.log(data);
     $.ajax({
-        // url: 'http://127.0.0.1:8050/webhook',
-        url: 'http://88.222.244.91:8050/webhook',
+        url: 'http://127.0.0.1:8050/webhook',
+        // url: 'http://88.222.244.91:8050/webhook',
         method: 'POST',
         data:JSON.stringify(data),
         contentType: 'application/json',
@@ -662,14 +662,14 @@
         },
         "tour": 0,
     };
-      console.log('12121212');
-      $.ajax({
-        url: 'http://127.0.0.1:8050/webhook',
-        method: 'POST',
-        data:data,
-      }).then((res)=>{
-        print(res);
-      });
+      // console.log('12121212');
+      // $.ajax({
+      //   url: 'http://127.0.0.1:8050/webhook',
+      //   method: 'POST',
+      //   data:data,
+      // }).then((res)=>{
+      //   print(res);
+      // });
     }
   </script>
   {% endblock js %}
