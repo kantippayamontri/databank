@@ -12,7 +12,7 @@ cate_raw_data = ["Low", "Medium", "High"]
 
 cate_service = ["Low", "Medium", "High"]
 
-raw_data_action = ["Average", "Anonymise", "Transfer", "Upload", "Download"]
+raw_data_action = ["Average", "Anonymise", "Encrtpt", "Upload", "Blur"]
 
 service_action = ["View Data","Read Data", "Report Data", "Send Notification",]
 
@@ -24,6 +24,10 @@ service_type = [
     "Insurance",
     "Social Network Platform",
     "Tech Company",
+    "Family Member",
+    "Authority",
+    "Energy Suplier",
+    "Product Provider"
 ]
 
 frequency = [

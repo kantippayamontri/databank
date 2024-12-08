@@ -294,6 +294,27 @@
                 </select>
               </div>
             </div>
+            <div class="row mt-3">
+              <h6>Condition</h6>
+              <div class="col-md-4 col-12">
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="holidayCheckbox">
+                    <label class="form-check-label" for="holidayCheckbox">Holiday</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-12">
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="nightTimeCheckbox">
+                    <label class="form-check-label" for="nightTimeCheckbox">Night Time</label>
+                </div>
+              </div>
+              <div class="col-md-4 col-12">
+                <div class="form-group form-check">
+                    <input type="checkbox" class="form-check-input" id="atHomeCheckbox">
+                    <label class="form-check-label" for="atHomeCheckbox">At Home</label>
+                </div>
+              </div>
+            </div>
             <div class="text-center mt-2">
               <button type="button" id="modal_add_btn" onclick="validationAddDetail()" class="btn btn-add ms-2">
                 Add Service Detail
@@ -885,7 +906,12 @@
               "cate_service_action":$('#cate_service_action').val(),
               "cate_service_frequency":$('#cate_service_frequency').val(),
               "cate_service_cate":$('#cate_service_cate').val(),
-              "cate_service_unprocessed":$('#cate_service_unprocessed').val()
+              "cate_service_unprocessed":$('#cate_service_unprocessed').val(),
+              "holiday_checkbox":$('#holidayCheckbox')[0].checked,
+              'night_time_checkbox':$('#nightTimeCheckbox')[0].checked,
+              "at_home_checkbock":$('#atHomeCheckbox')[0].checked
+
+
             }
           }).then((doc)=>{
             window.location.href="/service/service_page?service_id="+service_id+"&to=22";
@@ -1230,10 +1256,14 @@
             </td>
           </tr>
           <tr>
-            <td style="padding: 8px;" class="text-center">Category</td>
+            <td style="padding: 8px;" class="text-center">Trust Level</td>
             <td style="padding: 8px;" class="text-center">
               ${showData.category}
             </td>
+          </tr>
+          <tr>
+            <td style="padding: 8px;" class="text-center">Condition</td>
+            <td style="padding: 8px;" class="text-center">${showData['holiday']=="true"?"Holiday":""}${showData['holiday']=="true"&&(showData['night']=="true"||showData['home']=="true")?',':''} ${showData['night']=="true"?"Night Time":""}${(showData['holiday']=="true"||showData['night']=="true")&&showData['home']=="true"?',':''} ${showData['home']=="true"?"At Home":""}</td>
           </tr>
         </table>
         <div class="col-12">
@@ -1282,7 +1312,7 @@
       //frequency
       html +=`
         <div class="col-12">
-        <label class="ms-2" for="cat_data_cate_service_${ cat_data.replaceAll(' ','_') }">Category</label>
+        <label class="ms-2" for="cat_data_cate_service_${ cat_data.replaceAll(' ','_') }">Trust Level</label>
         <select class="form-select custom-select" id="cat_data_cate_service_${ cat_data.replaceAll(' ','_') }" name="cate_service_${ cat_data.replaceAll(' ','_') }">
       `;
       res['cate_service'].forEach((doc)=>{
@@ -1293,7 +1323,29 @@
         `;
       })
       html += `</select>`;
-      
+      html +=`
+        <div class="row mt-3">
+          <h6>Condition</h6>
+          <div class="col-md-4 col-12">
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" ${showData['holiday']=="true"?"checked":""} id="holidayCheckboxEdit">
+                <label class="form-check-label" for="holidayCheckboxEdit">Holiday</label>
+            </div>
+          </div>
+          <div class="col-md-4 col-12">
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" ${showData['night']=="true"?"checked":""} id="nightTimeCheckboxEdit">
+                <label class="form-check-label" for="nightTimeCheckboxEdit">Night Time</label>
+            </div>
+          </div>
+          <div class="col-md-4 col-12">
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" ${showData['home']=="true"?"checked":""} id="atHomeCheckboxEdit">
+                <label class="form-check-label" for="atHomeCheckboxEdit">At Home</label>
+            </div>
+          </div>
+        </div>
+      `;
       html += `<div class="col-12">
           <div class="text-center mt-3">
             <button type="button" onclick="validationData('${cat_data}','${id}','${ser_id}','${device_id}')" class="btn btn-add ms-2">
@@ -1301,6 +1353,7 @@
             </button>
           </div>
         </div>`;
+      
       html += `</div>`;
       html += `</div>`;
       $('#'+id).empty().append(html);
@@ -1344,6 +1397,9 @@
             "action":$(`#cat_data_action_${ cat_data.replaceAll(' ','_') }`).val(),
             "frequency":$(`#cat_data_frequency_${ cat_data.replaceAll(' ','_') }`).val(),
             "category":$(`#cat_data_cate_service_${ cat_data.replaceAll(' ','_') }`).val(),
+            "holiday_checkbox":$('#holidayCheckboxEdit')[0].checked,
+            "night_time_checkbox":$('#nightTimeCheckboxEdit')[0].checked,
+            "at_home_checkbock":$('#atHomeCheckboxEdit')[0].checked
           }
         })
         showRawDataList(device_id,id,cat_data,type='add');
@@ -1428,6 +1484,9 @@
 </script>
 {% endblock js %} {% block css %}
 <style>
+  .form-check-label{
+    cursor: pointer;
+  }
   /* animation */
   .box-animation{
     width: 0vw;

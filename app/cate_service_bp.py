@@ -91,6 +91,9 @@ def ajaxEdit(service_id: int, device_id: int):
     data['action'] = request.form['action']
     data['frequency'] = request.form['frequency']
     data['category'] = request.form['category']
+    data['holiday'] = request.form['holiday_checkbox']
+    data['night'] = request.form['night_time_checkbox']
+    data['home'] = request.form['at_home_checkbock']
     return jsonify(success=True)
 
 @bp.route("/ajaxData", methods=["GET"])
@@ -128,6 +131,9 @@ def form_edit_data(service_id, device_id):
         "action": _action,
         "frequency": _frequency,
         "category": _cate,
+        "holiday" : request.form["holiday_checkbox"],
+        "night" : request.form["night_time_checkbox"],
+        "home" : request.form["at_home_checkbock"]
     }
     return jsonify(success=True)
 @bp.route("/form_edit/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET", "POST"])
@@ -175,7 +181,6 @@ def delete():
     except Exception as e:
         return render_template("user_select.html",user="not-show-path")
 
-
 @bp.route("/delete_unprocessed/<string:service_id>/<string:device_id>/<string:unprocessed>", methods=["GET"])
 def delete_unprocessed(service_id, device_id, unprocessed):
     # return {"service_id": service_id, "device_id": device_id, "un_data": unprocessed}
@@ -183,19 +188,12 @@ def delete_unprocessed(service_id, device_id, unprocessed):
     if(cookie_value == None):
         return render_template("user_select.html",user="not-show-path")
     try:
-        if "cate_service" in session[cookie_value].keys():
-            if unprocessed in session[cookie_value]["cate_service"].keys():
-                del session[cookie_value]["cate_service"][unprocessed]
-                
             del session[cookie_value]["services"][service_id]["cate_service"][device_id][unprocessed]
-
             if session[cookie_value]["services"][service_id]["cate_service"][device_id] == {}:
                 del session[cookie_value]["services"][service_id]["cate_service"][device_id] 
-            
             if session[cookie_value]["services"][service_id]["cate_service"] == {}:
                 del session[cookie_value]["services"][service_id]["cate_service"]
-            
     except Exception as e:
-        return render_template("user_select.html",user="not-show-path")
+        return 'error'
 
-    return redirect(url_for("service.service_page"))
+    return 'success'

@@ -1660,19 +1660,19 @@
               <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
             </tr>
             <tr>
-              <td style="padding: 8px;" class="text-center">Action</td>
+              <td style="padding: 8px;" class="text-center">Sensitivity</td>
               <td style="padding: 8px;" class="text-center">
                 ${showData.sensitivity}
               </td>
             </tr>
             <tr>
-              <td style="padding: 8px;" class="text-center">Frequency</td>
+              <td style="padding: 8px;" class="text-center">Action</td>
               <td style="padding: 8px;" class="text-center">
                 ${showData.action}
               </td>
             </tr>
             <tr>
-              <td style="padding: 8px;" class="text-center">Sensitivity</td>
+              <td style="padding: 8px;" class="text-center">Frequency</td>
               <td style="padding: 8px;" class="text-center">
                 ${showData.frequency}
               </td>
@@ -1701,7 +1701,7 @@
       html +=`
         <div class="col-12">
         <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
-        <select class="form-select custom-select" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
+        <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
       `;
       res['sensitivity'].forEach((doc)=>{
         html +=`
@@ -1764,6 +1764,41 @@
         minimumResultsForSearch:-1,
       });
     }
+  }
+  function showAfterAction(e,id){
+    raw_data_action = ["Average", "Anonymise", "Encrtpt", "Upload", "Blur"]
+    $('#'+id).empty();
+    let html = "";
+    if($(e).val()=="Low"){
+      raw_data_action.forEach((doc)=>{
+        html +=`
+          <option value="${doc}">
+            ${doc}
+          </option>
+        `;
+      })
+    }else if($(e).val()=="Medium"){
+      raw_data_action.forEach((doc)=>{
+        if(doc !='Upload'){
+          html +=`
+            <option value="${doc}">
+              ${doc}
+            </option>
+          `;
+        }
+      })
+    }else if($(e).val()=="High"){
+      raw_data_action.forEach((doc)=>{
+        if(doc !='Upload' && doc != 'Average'){
+          html +=`
+            <option value="${doc}">
+              ${doc}
+            </option>
+          `;
+        }
+      })
+    }
+    $('#'+id).append(html)
   }
   async function validationData(raw_data,id,device_id){
     Swal.fire({
