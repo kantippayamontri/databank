@@ -481,7 +481,7 @@
             {
               element: ".card-item",
               popover: {
-                title: "Divice section",
+                title: "Device section",
                 description: "Show device section.",
                 onNextClick: () => {
                   $('.card-item:first-child').click();
@@ -491,7 +491,7 @@
             {
               element: ".accordion-item:first-child",
               popover: {
-                title: "Divice data detail",
+                title: "Device data detail",
                 description: "Show device data detail section.",
                 onPrevClick: () => {
                   $('.card-item:first-child').click();
@@ -506,7 +506,7 @@
             {
               element: ".accordion-collapse",
               popover: {
-                title: "Divice data section",
+                title: "Device data section",
                 description: "Show device data section.",
                 onPrevClick: () => {
                   driverObj.movePrevious();
@@ -518,7 +518,7 @@
             {
               element: ".accordion-item:first-child .btn-add",
               popover: {
-                title: "Add/Edit divice data ",
+                title: "Add/Edit device data ",
                 description: "Click to add/edit device data.",
                 onNextClick: () => {
                   if($('.accordion-item:first-child .show-edit-accon').length>0){
@@ -532,7 +532,7 @@
             {
               element: ".accordion-collapse",
               popover: {
-                title: "Divice data section",
+                title: "Device data section",
                 description: "Show device data section.",
                 onNextClick: () => {
                   $('.accordion-item:first-child .btn-add').click();
@@ -696,7 +696,7 @@
             {
               element: ".accordion-collapse",
               popover: {
-                title: "Divice data section",
+                title: "Device data section",
                 description: "Show device data section.",
                 onPrevClick: () => {
                   driverObj.movePrevious();
@@ -1317,7 +1317,7 @@
       `;
       res['cate_service'].forEach((doc)=>{
         html +=`
-          <option value="${doc}" ${showData['cate_service']==doc? 'selected':''}>
+          <option value="${doc}" ${showData['category']==doc? 'selected':''}>
             ${doc}
           </option>
         `;

@@ -82,10 +82,9 @@ def ajax(device_id):
     data[raw_data]["action"] = request.form["action"]
     data[raw_data]["frequency"] = request.form["frequency"]
     data[raw_data]["sensitivity"] = request.form["sensitivity"]
-
     session[cookie_value]["devices"][str(device_id)]["raw_data"] = data
-
     return session[cookie_value]["devices"][str(device_id)]["raw_data"]
+
 
 @bp.route("/getData/<int:device_id>", methods=["GET"])
 def getData(device_id):
