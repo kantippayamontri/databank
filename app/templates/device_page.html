@@ -1537,11 +1537,19 @@
       let device = JSON.parse(data.replaceAll("'",'"'));
       $("#addModal").modal("show");
       $('#device_name').val(device['device_name']);
+      type_device = ["Security Camera", "Smartmetre", "Light"]
+      if(!type_device.includes(device['device_type'])){
+        $('#device_type').prepend(`<option value="${device['device_type']}">${device['device_type']}</option>`)
+      }
       $('#device_type').val(device['device_type']).trigger('change');
       firstOptionValue = $('#unprocessed_data option:first').val();
+      unprocessed_data = ["Footage", "Energy usage", "Light status", "Colour", "Notification", "Temperature", "Activity period"]
       $('#unprocessed_data').val(firstOptionValue).trigger('change');
       $('.show-unprocess-data-list').empty();
       device['device_unprocessed'].forEach((doc,key)=>{
+        if(!unprocessed_data.includes(doc)){
+          $('#unprocessed_data').prepend(`<option value="${doc}">${doc}</option>`)
+        }
         $('.show-unprocess-data-list').append(`
           <span class="badge badge-device mb-2" id="unprocessed_data_${doc.replaceAll(" ","_")}">
             <input type="hidden" name="unprocessData[]" value="${doc}">
@@ -1579,12 +1587,14 @@
     if($('#'+id)[0].innerHTML.trim()=='' || type=="new"){
       let res = await $.ajax("/raw_data/getData/"+device_id);
       let showData = "";
-      Object.keys(res.raw_data).forEach((key)=>{
-        if(key == raw_data){
-          showData = res.raw_data[key];
-        }
-      })
-      if(!showData){
+      if(res.raw_data){
+        Object.keys(res.raw_data).forEach((key)=>{
+          if(key == raw_data){
+            showData = res.raw_data[key];
+          }
+        })
+      }
+      if(!res.raw_data || res.raw_data.length==0){
         let html = `<div class="row">`;
         //sensitivity
         html +=`
@@ -1654,51 +1664,55 @@
           minimumResultsForSearch:-1,
         });
       }else{
-        html = `
-          <div class="row">
-            <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-              <tr>
-                <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
-                <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
-              </tr>
-              <tr>
-                <td style="padding: 8px;" class="text-center">Sensitivity</td>
-                <td style="padding: 8px;" class="text-center">
-                  ${showData.sensitivity}
-                </td>
-              </tr>
-              <tr>
-                <td style="padding: 8px;" class="text-center">Action</td>
-                <td style="padding: 8px;" class="text-center">
-                  ${showData.action}
-                </td>
-              </tr>
-              <tr>
-                <td style="padding: 8px;" class="text-center">Frequency</td>
-                <td style="padding: 8px;" class="text-center">
-                  ${showData.frequency}
-                </td>
-              </tr>
-            </table>
-            <div class="col-12 position-relative">
-              <div class="text-center mt-3">
-                <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add show-edit-accon ms-2">
-                  Edit Data
-                </button>
-              </div>
-              <div class="position-absolute show-add-new-action">
-                <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','new_data')" class="btn btn-add ms-2">
-                  <img
-                    src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
-                    alt="Uploaded Image"
-                    class="icon-service-left"
-                  />
-                </button>
+        $('#'+id).empty();
+        html =[]
+        showData.forEach((data)=>{
+          html += `
+            <div class="row">
+              <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+                <tr>
+                  <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+                  <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+                </tr>
+                <tr>
+                  <td style="padding: 8px;" class="text-center">Sensitivity</td>
+                  <td style="padding: 8px;" class="text-center">
+                    ${data.sensitivity}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px;" class="text-center">Action</td>
+                  <td style="padding: 8px;" class="text-center">
+                    ${data.action}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px;" class="text-center">Frequency</td>
+                  <td style="padding: 8px;" class="text-center">
+                    ${data.frequency}
+                  </td>
+                </tr>
+              </table>
+              <div class="col-12 position-relative">
+                <div class="text-center mt-3">
+                  <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add show-edit-accon ms-2">
+                    Edit Data
+                  </button>
+                </div>
+                <div class="position-absolute show-add-new-action">
+                  <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','new_data')" class="btn btn-add ms-2">
+                    <img
+                      src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
+                      alt="Uploaded Image"
+                      class="icon-service-left"
+                    />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        `;
-        $('#'+id).empty().append(html);
+          `;
+        })
+        $('#'+id).append(html);
       }
     }else if(type=="edit"){
       let res = await $.ajax("/raw_data/getData/"+device_id);
@@ -2227,7 +2241,7 @@
   .select2-container{
     pointer-events: auto !important;
   }
-  .card-show-right{
+  .card-show-right .card-body{
     overflow-y:auto
   }
 </style>

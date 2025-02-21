@@ -7,12 +7,316 @@ from flask import (
     session,
     url_for,
 )
-
 from .utils import frequency, raw_data_action, cate_raw_data
 
 bp = Blueprint("raw_data", __name__, url_prefix="/raw_data")
 
-
+@bp.route("/dump/data", methods=["GET"])
+def dump():
+    session['User1'] = {
+        "tour": 0,
+        "devices": {
+        "0": {
+            "device_name": "Smart TV",
+            "device_type": "TV",
+            "device_unprocessed": [
+            "Viewing Habits",
+            "Location Data",
+            "Device Usage",
+            "Voice and Interaction Data"
+            ],
+            "raw_data": {
+            "Viewing Habits": [
+                {
+                "action": "Average",
+                "frequency": "Daily",
+                "sensitivity": "Low"
+                }
+            ],
+            "Location Data": [
+                {
+                "action": "Anonymise",
+                "frequency": "Weekly",
+                "sensitivity": "High"
+                }
+            ],
+            "Device Usage": [
+                {
+                "action": "Download",
+                "frequency": "Yearly",
+                "sensitivity": "Medium"
+                }
+            ],
+            "Voice and Interaction Data": [
+                {
+                "action": "Transfer",
+                "frequency": "No fix time",
+                "sensitivity": "High"
+                }
+            ]
+            }
+        },
+        "1": {
+            "device_name": "Security Camera",
+            "device_type": "Security Camera",
+            "device_unprocessed": [
+            "Footage",
+            "Audio Data",
+            "Motion and Activity Data"
+            ],
+            "raw_data": {
+            "Footage": [
+                {
+                "action": "Anonymise",
+                "frequency": "Daily",
+                "sensitivity": "High"
+                }
+            ],
+            "Audio Data": [
+                {
+                "action": "Download",
+                "frequency": "Weekly",
+                "sensitivity": "Low"
+                }
+            ],
+            "Motion and Activity Data": [
+                {
+                "action": "Anonymise",
+                "frequency": "Daily",
+                "sensitivity": "High"
+                }
+            ]
+            }
+        },
+        "2": {
+            "device_name": "Smart Door Lock",
+            "device_type": "Door lock",
+            "device_unprocessed": [
+            "User Credentials",
+            "Access Logs",
+            "Device Information",
+            "Lock Status"
+            ],
+            "raw_data": {
+            "User Credentials": [
+                {
+                "action": "Anonymise",
+                "frequency": "Weekly",
+                "sensitivity": "High"
+                }
+            ],
+            "Access Logs": [
+                {
+                "action": "Anonymise",
+                "frequency": "Weekly",
+                "sensitivity": "Medium"
+                }
+            ],
+            "Device Information": [
+                {
+                "action": "Average",
+                "frequency": "Daily",
+                "sensitivity": "Low"
+                }
+            ]
+            }
+        },
+        "3": {
+            "device_name": "Smart Electricity Metre",
+            "device_type": "Smartmetre",
+            "device_unprocessed": [
+            "Historical Data",
+            "Operational Data",
+            " Consumption Data",
+            "Location Data"
+            ],
+            "raw_data": {
+            "Historical Data": [
+                {
+                "action": "Anonymise",
+                "frequency": "Weekly",
+                "sensitivity": "Low"
+                }
+            ],
+            "Operational Data": [
+                {
+                "action": "Transfer",
+                "frequency": "No fix time",
+                "sensitivity": "High"
+                }
+            ],
+            " Consumption Data": [
+                {
+                "action": "Average",
+                "frequency": "Daily",
+                "sensitivity": "Medium"
+                }
+            ],
+            "Location Data": [
+                {
+                "action": "Anonymise",
+                "frequency": "Daily",
+                "sensitivity": "High"
+                }
+            ]
+            }
+        }
+        },
+        "services": {
+        "0": {
+            "service_name": "Mary",
+            "service_type": "User",
+            "cate_service": {
+            "0": {
+                "Viewing Habits": {
+                "action": "Read Data",
+                "frequency": "Daily",
+                "category": "Low",
+                "holiday": "true",
+                "night": "true",
+                "home": "true"
+                },
+                "Voice and Interaction Data": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "Low",
+                "holiday": "true",
+                "night": "false",
+                "home": "false"
+                }
+            },
+            "2": {
+                "Access Logs": {
+                "action": "Read Data",
+                "frequency": "Daily",
+                "category": "High"
+                }
+            }
+            }
+        },
+        "1": {
+            "service_name": "Michael",
+            "service_type": "User",
+            "cate_service": {
+            "0": {
+                "Device Usage": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "High"
+                },
+                "Location Data": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "High"
+                }
+            },
+            "3": {
+                "Historical Data": {
+                "action": "Report Data",
+                "frequency": "No fix time",
+                "category": "Low"
+                }
+            },
+            "2": {
+                "User Credentials": {
+                "action": "View Data",
+                "frequency": "No fix time",
+                "category": "High"
+                }
+            }
+            }
+        },
+        "2": {
+            "service_name": "Police officer",
+            "service_type": "Authority",
+            "cate_service": {
+            "1": {
+                "Footage": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "Medium",
+                "holiday": "false",
+                "night": "false",
+                "home": "false"
+                },
+                "Motion and Activity Data": {
+                "action": "Send Notification",
+                "frequency": "Daily",
+                "category": "High",
+                "holiday": "false",
+                "night": "false",
+                "home": "false"
+                },
+                "Audio Data": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "High",
+                "holiday": "false",
+                "night": "false",
+                "home": "false"
+                }
+            },
+            "2": {
+                "Device Information": {
+                "action": "Read Data",
+                "frequency": "Daily",
+                "category": "Medium",
+                "holiday": "false",
+                "night": "false",
+                "home": "false"
+                }
+            }
+            }
+        },
+        "3": {
+            "service_name": "British Gas",
+            "service_type": "Energy Suplier",
+            "cate_service": {
+            "3": {
+                " Consumption Data": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "Medium"
+                },
+                "Location Data": {
+                "action": "Read Data",
+                "frequency": "Daily",
+                "category": "High"
+                },
+                "Historical Data": {
+                "action": "View Data",
+                "frequency": "Weekly",
+                "category": "Low"
+                },
+                "Operational Data": {
+                "action": "Report Data",
+                "frequency": "Daily",
+                "category": "Low"
+                }
+            }
+            }
+        },
+        "4": {
+            "service_name": "LG",
+            "service_type": "Product Provider",
+            "cate_service": {
+            "0": {
+                "Device Usage": {
+                "action": "Read Data",
+                "frequency": "Weekly",
+                "category": "Low"
+                },
+                "Viewing Habits": {
+                "action": "View Data",
+                "frequency": "Daily",
+                "category": "High"
+                }
+            }
+            }
+        }
+        }
+    }
+    return redirect('/')
 @bp.route("/get", methods=["GET"])
 def get():
     return "get raw_data"
@@ -70,19 +374,20 @@ def form(device_id):
 @bp.route("/ajax/<int:device_id>", methods=["POST"])
 def ajax(device_id):
     print(f"data from form : {request.form}")
+    
     cookie_value = request.cookies.get('user')
     raw_data = request.form['raw_data']
-    if "raw_data" in session[cookie_value]["devices"][str(device_id)]:
-        data = session[cookie_value]["devices"][str(device_id)]["raw_data"]
-    else:
-        data = session[cookie_value]["devices"][str(device_id)]["raw_data"] = []
-    if data == []:
-        data = {}
-    data[raw_data] = {"action": "" , "frequency" : "", "sensitivity" : ""}
-    data[raw_data]["action"] = request.form["action"]
-    data[raw_data]["frequency"] = request.form["frequency"]
-    data[raw_data]["sensitivity"] = request.form["sensitivity"]
-    session[cookie_value]["devices"][str(device_id)]["raw_data"] = data
+    # if "raw_data" not in session[cookie_value]["devices"][str(device_id)]:
+    #     session[cookie_value]["devices"][str(device_id)]["raw_data"] = list([])
+    # else:
+    #     session[cookie_value]["devices"][str(device_id)]["raw_data"] =[session[cookie_value]["devices"][str(device_id)]["raw_data"]]
+    prepareData = {"action": "" , "frequency" : "", "sensitivity" : ""}
+    prepareData["action"] = request.form["action"]
+    prepareData["frequency"] = request.form["frequency"]
+    prepareData["sensitivity"] = request.form["sensitivity"]
+    if 'raw_data' not in session[cookie_value]["devices"][str(device_id)]:
+        session[cookie_value]["devices"][str(device_id)]["raw_data"]={raw_data:list([])}
+    session[cookie_value]["devices"][str(device_id)]["raw_data"][raw_data].append(prepareData)
     return session[cookie_value]["devices"][str(device_id)]["raw_data"]
 
 
@@ -93,7 +398,7 @@ def getData(device_id):
     if "raw_data" in session[cookie_value]["devices"][str(device_id)]:
         rawData = session[cookie_value]["devices"][str(device_id)]["raw_data"]
     else:
-        rawData = session[cookie_value]["devices"][str(device_id)]
+        rawData = None
         isData = 0
 
     data = {

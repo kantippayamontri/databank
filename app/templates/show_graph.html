@@ -22,32 +22,22 @@
   }
 </style>
 {% endblock %} {% block main %}
-<!-- <div class="container d-flex align-items-center justify-content-center overflow-x"> -->
-  <!-- Embed the Dash app using an iframe -->
+  <!-- server -->
   <!-- <iframe
     id="show_iframe"
     src="http://147.79.70.44:8050/"
   ></iframe> -->
+  <!-- docker -->
+  <!-- <iframe
+    id="show_iframe"
+    src="http://0.0.0.0:8050/"
+  ></iframe> -->
+  <!-- local -->
   <iframe
     id="show_iframe"
     src="http://127.0.0.1:8050/"
   ></iframe>
-  <!-- <div class="form-group" style="margin-bottom:50px">
-    <label for="device_name">Type</label>
-    <div class="d-flex show-select">
-      <select
-        class="form-select custom-select"
-        id="type_show"
-        onchange="showSelectDevice()"
-      >
-        <option value="" selected disabled>Select Device</option>
-        <option value="1">All</option>
-        <option value="guage">guage</option>
-        <option value="smart_tv_haha">Smart TV haha</option>
-        <option value="apple_watch">apple watch</option>
-      </select>
-    </div>
-  </div> -->
+  
   {% endblock main %} {% block js %}
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script>
@@ -62,7 +52,9 @@
         };
     $.ajax({
         url: 'http://127.0.0.1:8050/webhook',
+        // url: 'http://0.0.0.0:8050/webhook',
         // url: 'http://147.79.70.44:8050/webhook',
+
         method: 'POST',
         data:JSON.stringify(data),
         contentType: 'application/json',
