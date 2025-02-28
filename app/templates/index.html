@@ -3,7 +3,10 @@
 <div class="screen position-relative">
   <div class="d-flex to-center">
     <div class="card card-show device">
-      <div class="card-header position-relative">
+      <div
+        class="card-header position-relative"
+        style="height: 109.5px !important; flex-shrink: 0"
+      >
         <div class="show-title">Device</div>
         <a href='{{ url_for("device.device_page") }}'>
           <img
@@ -14,36 +17,29 @@
         </a>
       </div>
       <div class="card-body">
-        {% if not session.get(name).get("devices") %}
+        {% if device_count==0 %}
         <div class="text-center">You have 0 device.</div>
-        {% else %}
-        <div class="data-content">
-          {# loop device key show in table#} {% if
-          session.get(name).get("devices") %} {% for device_id in
-          session.get(name).get("devices").keys() %}
-          <div
-            class="card card-width card-item"
-            onclick='showDataDetail("{{device_id}}","device")'
-          >
-            <div class="card-body body-height position-relative">
-              <div class="text-margin-top">
-                Device Name: {{ session.get(name).get("devices")[device_id]
-                ["device_name"] }}
-              </div>
-              <div>
-                Device Type: {{ session.get(name).get("devices")[device_id]
-                ["device_type"] }}
-              </div>
-              <div class="show-unprocess-data">
-                Unprocessed Data: {% for un_data in
-                session.get(name).get("devices")[device_id]["device_unprocessed"][:-1]
-                %} {{ un_data }}, {% endfor %} {{
-                session.get(name).get("devices")[device_id]
-                ["device_unprocessed"] [-1] }}
+        {% elif device_count>0 %}
+        <div class="show-list">
+          <div class="width-list">
+            {% for index,device in devices %}
+            <div
+              class="card card-width card-item"
+              data-device-id="{{device.id}}"
+              onclick='showDataDetail("{{device.id}}","device")'
+            >
+              <div class="card-body body-height position-relative">
+                <div class="text-margin-top">Device Name: {{device.name}}</div>
+                <div>Device Type: {{ device.type_name }}</div>
+                <div>Sensitivity: {{ device.sensitivity }}</div>
+                <div class="show-unprocess-data">
+                  Unprocessed Data: {% for data in unprocessed_data[device.id]%}
+                  {{ data[3] }}{% if not loop.last %}, {% endif %} {% endfor%}
+                </div>
               </div>
             </div>
+            {% endfor %}
           </div>
-          {% endfor %} {% endif %}
         </div>
         {% endif %}
       </div>
@@ -125,548 +121,548 @@
     });
   });
   function showToturial() {
-    $.ajax("/session/get").then((doc) => {
-      if (doc.tour == 1) {
-        const driver = window.driver.js.driver;
-        const driverObj = driver({
-          showProgress: true,
-          allowClose: false,
-          allowKeyboardControl: false,
-          steps: [
-            {
-              element: ".device",
-              popover: { title: "Device", description: "device section." },
-            },
-            {
-              element: ".device .card-header img",
-              popover: {
-                title: "Device page",
-                description: "go to device page.",
-                onNextClick: () => {
-                  window.location.href = "/device/device_page";
-                  driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".to-center .icon-header",
-              popover: {
-                title: "Add device",
-                description: "open add device modal.",
-                onNextClick: () => {
-                  $("#addModal").modal("show");
-                  driverObj.moveNext();
-                },
-                onPrevClick: () => {
-                  window.location.href = "/?back=1";
-                  driverObj.movePrevious();
-                },
-              },
-            },
-            {
-              element: "#addModal .modal-dialog",
-              popover: {
-                title: "Device Modal",
-                description: "Show add modal.",
-                onPrevClick: () => {
-                  $("#addModal").modal("hide");
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  validation();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add",
-                description: "Confirm add new data.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".swal2-confirm").click();
-                },
-              },
-            },
-            {
-              element: ".icon-header-left",
-              popover: {
-                title: "Delete section",
-                description: "Show delete section.",
-                onPrevClick: () => {
-                  driverObj.drive(2);
-                  $("#addModal").modal("show");
-                  driverObj.moveNext();
-                  validation();
-                },
-                onNextClick: () => {
-                  showDelete();
-                },
-              },
-            },
-            {
-              element: ".box-animation",
-              popover: {
-                title: "Delete section",
-                description: "Show delete section.",
-                side: "right",
-                onPrevClick: () => {
-                  closeDelete();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  closeDelete();
-                  driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".edit-icon",
-              popover: {
-                title: "Edit button",
-                description: "Click to show edit Modal.",
-                onPrevClick: () => {
-                  showDelete();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-              },
-            },
-            {
-              element: ".card-item",
-              popover: {
-                title: "Device section",
-                description: "Show device section.",
-                onNextClick: () => {
-                  $(".card-item:first-child").click();
-                },
-              },
-            },
-            {
-              element: ".accordion-item:first-child",
-              popover: {
-                title: "Device data detial",
-                description: "Show device data detail section.",
-                onPrevClick: () => {
-                  $(".card-item:first-child").click();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".accordion-item:first-child .accordion-button").click();
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Device data section",
-                description: "Show device data section.",
-                onPrevClick: () => {
-                  driverObj.movePrevious();
-                  $(".accordion-collapse").removeClass("show");
-                  $(".accordion-button").addClass("collapsed");
-                },
-              },
-            },
-            {
-              element: ".accordion-item:first-child .btn-add",
-              popover: {
-                title: "Add/Edit device data ",
-                description: "Click to add/edit device data.",
-                onNextClick: () => {
-                  if (
-                    $(".accordion-item:first-child .show-edit-accon").length > 0
-                  ) {
-                    $(
-                      ".accordion-item:first-child .driver-active-element"
-                    ).click();
-                  } else {
-                    $(
-                      ".accordion-item:first-child .driver-active-element"
-                    ).click();
-                  }
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Device data section",
-                description: "Show device data section.",
-                onPrevClick: () => {
-                  console.log("show");
-                  if ($(".add-section").length == 0) {
-                    let data = '{{session.get("devices")["0"]}}';
-                    let device = JSON.parse(data.replaceAll("&#39;", '"'));
-                    let id = "0";
-                    $("#show_detail_list").empty();
-                    var html = '<div class="accordion" id="accordionExample">';
-                    device["device_unprocessed"].forEach((doc, key) => {
-                      html += `
-                              <div class="accordion-item">
-                                <h2 class="accordion-header" id="heading${
-                                  doc.replaceAll(" ", "_") +
-                                  "_" +
-                                  key +
-                                  "_" +
-                                  id
-                                }">
-                                  <button onclick="showRawDataList(${id},'show_add_data${
-                        doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                      }','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${
-                        doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                      }" aria-expanded="false" aria-controls="collapse${
-                        doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                      }">
-                                    ${doc}
-                                  </button>
-                                </h2>
-                                <div id="collapse${
-                                  doc.replaceAll(" ", "_") +
-                                  "_" +
-                                  key +
-                                  "_" +
-                                  id
-                                }" class="accordion-collapse collapse" aria-labelledby="heading${
-                        doc.replaceAll(" ", "_") + "_" + key + "_" + id
-                      }" data-bs-parent="#accordionExample">
-                                  <div class="accordion-body" id="show_add_data${
-                                    doc.replaceAll(" ", "_") +
-                                    "_" +
-                                    key +
-                                    "_" +
-                                    id
-                                  }">
-                                  </div>
-                                </div>
-                              </div>`;
-                    });
-                    html += "</div>";
-                    $("#show_detail_list").append(html);
-                    $(".accordion-item:first-child .accordion-button").click();
-                  }
-                  setTimeout(function () {
-                    driverObj.movePrevious();
-                  }, 100);
-                },
-                onNextClick: () => {
-                  $(".accordion-item:first-child .btn-add").click();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add/Edit",
-                description: "Confirm add/edit new data.",
-                onPrevClick: () => {
-                  Swal.close();
-                  if ($(".add-section").length > 0) {
-                    driverObj.movePrevious();
-                    driverObj.movePrevious();
-                  } else {
-                    driverObj.movePrevious();
-                  }
-                },
-                onNextClick: () => {
-                  $(".swal2-confirm").click();
-                  // driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".service-navigator",
-              popover: {
-                title: "Service page",
-                description: "Show Service page button.",
-                onPrevClick: () => {
-                  $(".accordion-item:first-child .btn-add").click();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  window.location.href =
-                    "{{ url_for('service.service_page') }}";
-                  driverObj.moveNext();
-                },
-              },
-            },
-            //service
-            {
-              element: ".to-center .icon-header",
-              popover: {
-                title: "Add service",
-                description: "open add service modal.",
-                onNextClick: () => {
-                  $("#addModal").modal("show");
-                  driverObj.moveNext();
-                },
-                onPrevClick: () => {
-                  window.location.href = "/device/device_page?to=14";
-                  driverObj.movePrevious();
-                },
-              },
-            },
-            {
-              element: "#addModal .modal-dialog",
-              popover: {
-                title: "Service Modal",
-                description: "Show add service modal.",
-                onPrevClick: () => {
-                  $("#addModal").modal("hide");
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  validation();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add",
-                description: "Confirm add new service.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".swal2-confirm").click();
-                },
-              },
-            },
-            {
-              element: ".card-item",
-              popover: {
-                title: "Service section",
-                description: "Show Service section.",
-                onPrevClick: () => {
-                  $("#addModal").modal("show");
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".card-item:first-child").click();
-                },
-              },
-            },
-            {
-              element: ".icon-service-left",
-              popover: {
-                title: "Service data",
-                description: "Show Service data section.",
-                onPrevClick: () => {
-                  $(".card-item:first-child").click();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  openAddServiceDetailModal();
-                },
-              },
-            },
-            {
-              element: "#service_detail_modal .modal-dialog",
-              popover: {
-                title: "Service data Modal",
-                description: "Show add service data modal.",
-                onPrevClick: () => {
-                  $("#service_detail_modal").modal("hide");
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  validationAddDetail();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add",
-                description: "Confirm add new service.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".swal2-confirm").click();
-                },
-              },
-            },
-            {
-              element: ".accordion-item:first-child",
-              popover: {
-                title: "Service data detail",
-                description: "Show Service data detail section.",
-                onPrevClick: () => {
-                  openAddServiceDetailModal();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".accordion-button").click();
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Device data section",
-                description: "Show device data section.",
-                onPrevClick: () => {
-                  driverObj.movePrevious();
-                  $(".accordion-collapse").removeClass("show");
-                  $(".accordion-button").addClass("collapsed");
-                },
-              },
-            },
-            {
-              element: ".btn-add",
-              popover: {
-                title: "Edit button",
-                description: "Show Edit button.",
-                onNextClick: () => {
-                  $(".driver-active-element").click();
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Service edit data",
-                description: "Show Service edit data section.",
-                onPrevClick: () => {
-                  driverObj.drive(21);
-                  $(".accordion-collapse").removeClass("show");
-                  $(".accordion-button").addClass("collapsed");
-                  $(".accordion-button").click();
-                  driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".btn-add",
-              popover: {
-                title: "Edit button",
-                description: "Show Edit button.",
-                onNextClick: () => {
-                  $(".driver-active-element").click();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Edit",
-                description: "Confirm edit service detail.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".swal2-confirm").click();
-                },
-              },
-            },
-            {
-              element: ".btn-cancel",
-              popover: {
-                title: "Delete button",
-                description: "Show delete button.",
-                onPrevClick: () => {
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                  $(".btn-add").click();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $(".driver-active-element").click();
-                },
-              },
-            },
-            {
-              element: ".filter-btn",
-              popover: {
-                title: "Filter section",
-                description: "show filter page.",
-                onNextClick: () => {
-                  $(".driver-active-element").click();
-                },
-              },
-            },
-            //filter
-            {
-              element: ".container",
-              popover: {
-                title: "Filter section",
-                description: "show filter page.",
-                onPrevClick: () => {
-                  window.location.href =
-                    "/service/service_page?service_id=0&to=29";
-                },
-              },
-            },
-            {
-              element: ".btn-analysis",
-              popover: {
-                title: "Analysis section",
-                description: "show analysis page.",
-                onNextClick: () => {
-                  $(".driver-active-element").click();
-                },
-              },
-            },
-            //analysis
-            {
-              element: ".container",
-              popover: {
-                title: "Analysis graph",
-                description: "show analysis graph.",
-                onPrevClick: () => {
-                  window.location.href = "/filter/show_data?to=32";
-                },
-              },
-            },
-            {
-              element: ".show-log-out",
-              popover: {
-                title: "Logout",
-                description: "show Logout button.",
-                onNextClick: () => {
-                  $.ajax({ url: "/session/setDone", method: "POST" }).then(
-                    (doc) => {
-                      window.location.reload();
-                      driverObj.moveNext();
-                    }
-                  );
-                },
-              },
-            },
-          ],
-        });
-        const url = window.location.href;
-        const params = new URLSearchParams(window.location.search);
-        $(".card-item").each((index, doc) => {
-          if (
-            $(doc).attr("data-device-id") == params.get("device_id") &&
-            params.get("device_id")
-          ) {
-            $(doc).click();
-          }
-        });
-        if (params.get("back") == "1") {
-          window.history.pushState({}, "", `${url.split("?")[0]}`);
-          driverObj.drive(1);
-        } else {
-          driverObj.drive();
-        }
-      }
-    });
+    // $.ajax("/session/get").then((doc) => {
+    //   if (doc.tour == 1) {
+    //     const driver = window.driver.js.driver;
+    //     const driverObj = driver({
+    //       showProgress: true,
+    //       allowClose: false,
+    //       allowKeyboardControl: false,
+    //       steps: [
+    //         {
+    //           element: ".device",
+    //           popover: { title: "Device", description: "device section." },
+    //         },
+    //         {
+    //           element: ".device .card-header img",
+    //           popover: {
+    //             title: "Device page",
+    //             description: "go to device page.",
+    //             onNextClick: () => {
+    //               window.location.href = "/device/device_page";
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".to-center .icon-header",
+    //           popover: {
+    //             title: "Add device",
+    //             description: "open add device modal.",
+    //             onNextClick: () => {
+    //               $("#addModal").modal("show");
+    //               driverObj.moveNext();
+    //             },
+    //             onPrevClick: () => {
+    //               window.location.href = "/?back=1";
+    //               driverObj.movePrevious();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: "#addModal .modal-dialog",
+    //           popover: {
+    //             title: "Device Modal",
+    //             description: "Show add modal.",
+    //             onPrevClick: () => {
+    //               $("#addModal").modal("hide");
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               validation();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add",
+    //             description: "Confirm add new data.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".swal2-confirm").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".icon-header-left",
+    //           popover: {
+    //             title: "Delete section",
+    //             description: "Show delete section.",
+    //             onPrevClick: () => {
+    //               driverObj.drive(2);
+    //               $("#addModal").modal("show");
+    //               driverObj.moveNext();
+    //               validation();
+    //             },
+    //             onNextClick: () => {
+    //               showDelete();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".box-animation",
+    //           popover: {
+    //             title: "Delete section",
+    //             description: "Show delete section.",
+    //             side: "right",
+    //             onPrevClick: () => {
+    //               closeDelete();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               closeDelete();
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".edit-icon",
+    //           popover: {
+    //             title: "Edit button",
+    //             description: "Click to show edit Modal.",
+    //             onPrevClick: () => {
+    //               showDelete();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".card-item",
+    //           popover: {
+    //             title: "Device section",
+    //             description: "Show device section.",
+    //             onNextClick: () => {
+    //               $(".card-item:first-child").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-item:first-child",
+    //           popover: {
+    //             title: "Device data detial",
+    //             description: "Show device data detail section.",
+    //             onPrevClick: () => {
+    //               $(".card-item:first-child").click();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".accordion-item:first-child .accordion-button").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Device data section",
+    //             description: "Show device data section.",
+    //             onPrevClick: () => {
+    //               driverObj.movePrevious();
+    //               $(".accordion-collapse").removeClass("show");
+    //               $(".accordion-button").addClass("collapsed");
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-item:first-child .btn-add",
+    //           popover: {
+    //             title: "Add/Edit device data ",
+    //             description: "Click to add/edit device data.",
+    //             onNextClick: () => {
+    //               if (
+    //                 $(".accordion-item:first-child .show-edit-accon").length > 0
+    //               ) {
+    //                 $(
+    //                   ".accordion-item:first-child .driver-active-element"
+    //                 ).click();
+    //               } else {
+    //                 $(
+    //                   ".accordion-item:first-child .driver-active-element"
+    //                 ).click();
+    //               }
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Device data section",
+    //             description: "Show device data section.",
+    //             onPrevClick: () => {
+    //               console.log("show");
+    //               if ($(".add-section").length == 0) {
+    //                 let data = '{{session.get("devices")["0"]}}';
+    //                 let device = JSON.parse(data.replaceAll("&#39;", '"'));
+    //                 let id = "0";
+    //                 $("#show_detail_list").empty();
+    //                 var html = '<div class="accordion" id="accordionExample">';
+    //                 device["device_unprocessed"].forEach((doc, key) => {
+    //                   html += `
+    //                           <div class="accordion-item">
+    //                             <h2 class="accordion-header" id="heading${
+    //                               doc.replaceAll(" ", "_") +
+    //                               "_" +
+    //                               key +
+    //                               "_" +
+    //                               id
+    //                             }">
+    //                               <button onclick="showRawDataList(${id},'show_add_data${
+    //                     doc.replaceAll(" ", "_") + "_" + key + "_" + id
+    //                   }','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${
+    //                     doc.replaceAll(" ", "_") + "_" + key + "_" + id
+    //                   }" aria-expanded="false" aria-controls="collapse${
+    //                     doc.replaceAll(" ", "_") + "_" + key + "_" + id
+    //                   }">
+    //                                 ${doc}
+    //                               </button>
+    //                             </h2>
+    //                             <div id="collapse${
+    //                               doc.replaceAll(" ", "_") +
+    //                               "_" +
+    //                               key +
+    //                               "_" +
+    //                               id
+    //                             }" class="accordion-collapse collapse" aria-labelledby="heading${
+    //                     doc.replaceAll(" ", "_") + "_" + key + "_" + id
+    //                   }" data-bs-parent="#accordionExample">
+    //                               <div class="accordion-body" id="show_add_data${
+    //                                 doc.replaceAll(" ", "_") +
+    //                                 "_" +
+    //                                 key +
+    //                                 "_" +
+    //                                 id
+    //                               }">
+    //                               </div>
+    //                             </div>
+    //                           </div>`;
+    //                 });
+    //                 html += "</div>";
+    //                 $("#show_detail_list").append(html);
+    //                 $(".accordion-item:first-child .accordion-button").click();
+    //               }
+    //               setTimeout(function () {
+    //                 driverObj.movePrevious();
+    //               }, 100);
+    //             },
+    //             onNextClick: () => {
+    //               $(".accordion-item:first-child .btn-add").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add/Edit",
+    //             description: "Confirm add/edit new data.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               if ($(".add-section").length > 0) {
+    //                 driverObj.movePrevious();
+    //                 driverObj.movePrevious();
+    //               } else {
+    //                 driverObj.movePrevious();
+    //               }
+    //             },
+    //             onNextClick: () => {
+    //               $(".swal2-confirm").click();
+    //               // driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".service-navigator",
+    //           popover: {
+    //             title: "Service page",
+    //             description: "Show Service page button.",
+    //             onPrevClick: () => {
+    //               $(".accordion-item:first-child .btn-add").click();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               window.location.href =
+    //                 "{{ url_for('service.service_page') }}";
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         //service
+    //         {
+    //           element: ".to-center .icon-header",
+    //           popover: {
+    //             title: "Add service",
+    //             description: "open add service modal.",
+    //             onNextClick: () => {
+    //               $("#addModal").modal("show");
+    //               driverObj.moveNext();
+    //             },
+    //             onPrevClick: () => {
+    //               window.location.href = "/device/device_page?to=14";
+    //               driverObj.movePrevious();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: "#addModal .modal-dialog",
+    //           popover: {
+    //             title: "Service Modal",
+    //             description: "Show add service modal.",
+    //             onPrevClick: () => {
+    //               $("#addModal").modal("hide");
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               validation();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add",
+    //             description: "Confirm add new service.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".swal2-confirm").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".card-item",
+    //           popover: {
+    //             title: "Service section",
+    //             description: "Show Service section.",
+    //             onPrevClick: () => {
+    //               $("#addModal").modal("show");
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".card-item:first-child").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".icon-service-left",
+    //           popover: {
+    //             title: "Service data",
+    //             description: "Show Service data section.",
+    //             onPrevClick: () => {
+    //               $(".card-item:first-child").click();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               openAddServiceDetailModal();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: "#service_detail_modal .modal-dialog",
+    //           popover: {
+    //             title: "Service data Modal",
+    //             description: "Show add service data modal.",
+    //             onPrevClick: () => {
+    //               $("#service_detail_modal").modal("hide");
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               validationAddDetail();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add",
+    //             description: "Confirm add new service.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".swal2-confirm").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-item:first-child",
+    //           popover: {
+    //             title: "Service data detail",
+    //             description: "Show Service data detail section.",
+    //             onPrevClick: () => {
+    //               openAddServiceDetailModal();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".accordion-button").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Device data section",
+    //             description: "Show device data section.",
+    //             onPrevClick: () => {
+    //               driverObj.movePrevious();
+    //               $(".accordion-collapse").removeClass("show");
+    //               $(".accordion-button").addClass("collapsed");
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-add",
+    //           popover: {
+    //             title: "Edit button",
+    //             description: "Show Edit button.",
+    //             onNextClick: () => {
+    //               $(".driver-active-element").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Service edit data",
+    //             description: "Show Service edit data section.",
+    //             onPrevClick: () => {
+    //               driverObj.drive(21);
+    //               $(".accordion-collapse").removeClass("show");
+    //               $(".accordion-button").addClass("collapsed");
+    //               $(".accordion-button").click();
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-add",
+    //           popover: {
+    //             title: "Edit button",
+    //             description: "Show Edit button.",
+    //             onNextClick: () => {
+    //               $(".driver-active-element").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Edit",
+    //             description: "Confirm edit service detail.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".swal2-confirm").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-cancel",
+    //           popover: {
+    //             title: "Delete button",
+    //             description: "Show delete button.",
+    //             onPrevClick: () => {
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //               $(".btn-add").click();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $(".driver-active-element").click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".filter-btn",
+    //           popover: {
+    //             title: "Filter section",
+    //             description: "show filter page.",
+    //             onNextClick: () => {
+    //               $(".driver-active-element").click();
+    //             },
+    //           },
+    //         },
+    //         //filter
+    //         {
+    //           element: ".container",
+    //           popover: {
+    //             title: "Filter section",
+    //             description: "show filter page.",
+    //             onPrevClick: () => {
+    //               window.location.href =
+    //                 "/service/service_page?service_id=0&to=29";
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-analysis",
+    //           popover: {
+    //             title: "Analysis section",
+    //             description: "show analysis page.",
+    //             onNextClick: () => {
+    //               $(".driver-active-element").click();
+    //             },
+    //           },
+    //         },
+    //         //analysis
+    //         {
+    //           element: ".container",
+    //           popover: {
+    //             title: "Analysis graph",
+    //             description: "show analysis graph.",
+    //             onPrevClick: () => {
+    //               window.location.href = "/filter/show_data?to=32";
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".show-log-out",
+    //           popover: {
+    //             title: "Logout",
+    //             description: "show Logout button.",
+    //             onNextClick: () => {
+    //               $.ajax({ url: "/session/setDone", method: "POST" }).then(
+    //                 (doc) => {
+    //                   window.location.reload();
+    //                   driverObj.moveNext();
+    //                 }
+    //               );
+    //             },
+    //           },
+    //         },
+    //       ],
+    //     });
+    //     const url = window.location.href;
+    //     const params = new URLSearchParams(window.location.search);
+    //     $(".card-item").each((index, doc) => {
+    //       if (
+    //         $(doc).attr("data-device-id") == params.get("device_id") &&
+    //         params.get("device_id")
+    //       ) {
+    //         $(doc).click();
+    //       }
+    //     });
+    //     if (params.get("back") == "1") {
+    //       window.history.pushState({}, "", `${url.split("?")[0]}`);
+    //       driverObj.drive(1);
+    //     } else {
+    //       driverObj.drive();
+    //     }
+    //   }
+    // });
   }
   function showDataDetail(id, type) {
     window.location.href = `/${type}/${type}_page?${type}_id=` + id;
@@ -695,7 +691,7 @@
   }
   .card-show {
     width: 36.5vw;
-    height: 39.2vw;
+    /* height: 39.2vw; */
   }
   .card-show:first-child {
     margin-right: 3%;
@@ -735,7 +731,7 @@
   }
 
   .device .body-height {
-    height: 4.8vw;
+    height: 110px;
     width: 100%;
     border-left: 1.21vw solid var(--device-color);
   }
@@ -772,6 +768,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .show-list {
+    display: flex;
+    justify-content: center;
+  }
+  .show-list .width-list {
+    width: 90%;
+  }
+  .show-list .width-list .card-item {
+    width: 100%;
   }
 </style>
 {% endblock css %}

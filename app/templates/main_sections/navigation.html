@@ -44,6 +44,24 @@
           Service
         </button>
       </a>
+      <a href="{{ url_for('category.show') }}" class="service-navigator">
+        <button
+          type="button"
+          class="btn btn-outline-light"
+          style="margin-left: 20px"
+        >
+          Category
+        </button>
+      </a>
+      <a href="{{ url_for('category.service') }}" class="service-navigator">
+        <button
+          type="button"
+          class="btn btn-outline-light"
+          style="margin-left: 20px"
+        >
+          Service Category
+        </button>
+      </a>
       <a href="{{ url_for('filter.form') }}">
         <button
           type="button"

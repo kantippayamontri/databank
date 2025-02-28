@@ -16,7 +16,7 @@
 <div class="screen">
   <div class="to-center" id="to_center">
     <div class="card card-show device">
-      <div class="card-header position-relative">
+      <div class="card-header position-relative" style="height: 80px !important;flex-shrink: 0;">
         <div class="show-title">Device</div>
         <a href="javascript:void(0)" onclick="openAddModal()">
           <img
@@ -43,6 +43,43 @@
         <div class="card-body">
           {% if not session.get(form_utils["name"]).get("devices") %}
             <div class="text-center">You have 0 device.</div>
+          {% elif device_count==0 %}
+            <div class="text-center">You have 0 device.</div>
+          {% elif device_count>0 %}
+            <div class="show-list">
+              <div class="width-list">
+                {% for index,device in devices %}
+                  <div class="card card-width card-item" data-device-id="{{device.id}}" onclick='showDataDetail(this,"{{ device }}","{{device.id}}")'>
+                    <div class="card-body body-height position-relative" >
+                      <div class="text-margin-top">Device Name: {{device.name}}</div>
+                      <div>Device Type: {{ device.type_name }}</div>
+                      <div>Sensitivity: {{ device.sensitivity }}</div>
+                      <div class="show-unprocess-data">
+                        Unprocessed Data: 
+                        {% for data in form_utils["device"]["unprocessed_data"][device.id] %}
+                          {{ data[3] }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                      </div>
+                      <img
+                        src="{{ url_for('static', filename='icon/edit-icon.png' ) }}"
+                        alt="edit icon"
+                        class="edit-icon"
+                        onclick='showEditModal("{{device.id}}","{{ device }}")'
+                      />
+                      <a href="javascript:void(0)" onclick="closeAlert('{{device.id}}')">
+                        <div class="box-animation">
+                          <img
+                            src="{{ url_for('static', filename='icon/delete-icon.png' ) }}"
+                            alt="edit icon"
+                            class="delete-icon d-none"
+                          />
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
           {% else %}
             <div class="data-content">
               {# loop device key show in table#}
@@ -185,10 +222,10 @@
               >
               <div class="select2-select">
                 <select id="device_type" onchange="deviceTypeOther()" name="deviceType" class="form-control">
-                  <!-- <option value="" selected disabled>Device Type</option> -->
+                  <option value="" selected disabled>Select Device Type</option>
                   {% for (index , _type_device) in
                   form_utils["device"]["type_device"]%}
-                  <option value="{{ _type_device }}">{{ _type_device }}</option>
+                  <option value="{{ _type_device[0] }}">{{ _type_device[1] }}</option>
                   {% endfor %}
                   <option value="other">Other</option>
                 </select>
@@ -207,33 +244,32 @@
               </div>
             </div>
             <div class="col-md-12 mt-1"></div>
+              <div class="col-md-12 mt-1">
+                <label for="sensitivity" class="d-flex"
+                  ><div class="text-label">Sentibility</div>
+                  <span class="text-danger">*</span></label
+                >
+                <div class="select2-select">
+                  <select id="sensitivity" onchange="deviceTypeOther()" name="sensitivity" class="form-control">
+                    <option value="" selected disabled>Select Sentibility</option>
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </div>
+                <div class="d-none text-danger" id="type_duplicate">New device type is duplicate.</div>
+              </div>
+            </div>
+            <div class="col-md-12 mt-1"></div>
               <label for="unprocessed_data" class="d-flex"
                 ><div class="text-label">Unprocessed Data</div>
                 <span class="text-danger">*</span></label
               >
               <div class="show-unprocess-data-list">
-                <!-- <span class="badge badge-device mb-2">
-                  <input type="hidden" name="unprocessData[]" id="unprocess_data_{}">
-                  <span class="text-show">Color</span>
-                  <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
-                </span>
-                <span class="badge badge-device mb-2">
-                  <input type="hidden" name="unprocessData[]" id="unprocess_data_{}">
-                  <span class="text-show">Temperature</span>
-                  <button type="button" class="btn-close btn-close-white" aria-label="Close"></button>
-                </span> -->
               </div>
               <div class="select2-select mt-2 me-2 d-flex">
-                <select id="unprocessed_data" onchange="unprocessedDataOther()" class="form-control">
-                  <!-- <option value="" selected disabled>Unprocessed Data</option> -->
-                  {% for (index , _unprocessed_data) in
-                  form_utils["device"]["unprocessed_data"]%}
-                  <option value="{{ _unprocessed_data }}">
-                    {{ _unprocessed_data }}
-                  </option>
-                  {% endfor %}
-                  <option value="other">Other</option>
-                </select>
+                <input type="text" id="unprocessed_data" class="form-control"></text>
                 <button type="button" onclick="showAddUnprocessedData()" class="btn btn-device ms-2">
                   Add
                 </button>
@@ -268,518 +304,527 @@
   var driverObj;
   var isTour = 0;
   $(document).ready(function(){
-    $.ajax("/session/get").then((doc) => {
-      isTour = doc.tour;
-      if (doc.tour == 1) {
-        const driver = window.driver.js.driver;
-        driverObj = driver({
-          allowClose: false,
-          showProgress: true,
-          allowKeyboardControl:false,
-          steps: [
-            {
-              element: ".device",
-              popover: { title: "Device", description: "device section." },
-            },
-            {
-              element: ".device .card-header img",
-              popover: {
-                title: "Device page",
-                description: "go to device page.",
-              },
-            },
-            {
-              element: ".to-center .icon-header",
-              popover: { 
-                title: "Add device", 
-                description: "open add device modal.",
-                onNextClick: () => {
-                  $('#addModal').modal('show')
-                  driverObj.moveNext();
-                },
-                onPrevClick:()=>{
-                  window.location.href = "/?back=1";
-                  driverObj.movePrevious();
-                }
-              },
-            },
-            {
-              element: "#addModal .modal-dialog",
-              popover: {
-                title: "Device Modal",
-                description: "Show add modal.",
-                onPrevClick:()=>{
-                  $('#addModal').modal('hide')
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  validation();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add",
-                description: "Confirm add new data.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.swal2-confirm').click();
-                },
-              },
-            },
-            {
-              element: ".icon-header-left",
-              popover: {
-                title: "Delete section",
-                description: "Show delete section.",
-                onPrevClick: () => {
-                  driverObj.drive(2);
-                  $('#addModal').modal('show')
-                  driverObj.moveNext();
-                  validation();
-                },
-                onNextClick: () => {
-                  showDelete();
-                },
-              },
-            },
-            {
-              element: ".box-animation",
-              popover: {
-                title: "Delete section",
-                description: "Show delete section.",
-                side:"right",
-                onPrevClick: () => {
-                  closeDelete();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  closeDelete();
-                  driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".edit-icon",
-              popover: {
-                title: "Edit button",
-                description: "Click to show edit Modal.",
-                onPrevClick: () => {
-                  showDelete();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-              },
-            },
-            {
-              element: ".card-item",
-              popover: {
-                title: "Device section",
-                description: "Show device section.",
-                onNextClick: () => {
-                  $('.card-item:first-child').click();
-                },
-              },
-            },
-            {
-              element: ".accordion-item:first-child",
-              popover: {
-                title: "Device data detial",
-                description: "Show device data detail section.",
-                onPrevClick: () => {
-                  $('.card-item:first-child').click();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.accordion-item:first-child .accordion-button').click();
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Device data section",
-                description: "Show device data section.",
-                onPrevClick: () => {
-                  driverObj.movePrevious();
-                  $('.accordion-collapse').removeClass('show');
-                  $('.accordion-button').addClass('collapsed');
-                },
-              },
-            },
-            {
-              element: ".accordion-item:first-child .btn-add",
-              popover: {
-                title: "Add/Edit device data ",
-                description: "Click to add/edit device data.",
-                onNextClick: () => {
-                  if($('.accordion-item:first-child .show-edit-accon').length>0){
-                    $('.accordion-item:first-child .driver-active-element').click();
-                  }else{
-                    $('.accordion-item:first-child .driver-active-element').click();
-                  }
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Device data section",
-                description: "Show device data section.",
-                onPrevClick: () => {
-                  console.log("show");
-                  if($('.add-section').length == 0) {
-                    let data = '{{session.get("devices")["0"]}}';
-                    let device = JSON.parse(data.replaceAll("&#39;",'"'));
-                    let id = "0";
-                    $('#show_detail_list').empty();
-                    var html = '<div class="accordion" id="accordionExample">';
-                    device['device_unprocessed'].forEach((doc,key)=>{
-                      html += `
-                          <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-                              <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-                                ${doc}
-                              </button>
-                            </h2>
-                            <div id="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
-                              <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-                              </div>
-                            </div>
-                          </div>`;
-                    })
-                    html += "</div>";
-                    $('#show_detail_list').append(html);
-                    $('.accordion-item:first-child .accordion-button').click();
-                  }
-                  setTimeout(function(){
-                    driverObj.movePrevious();
-                  },100)
-                },
-                onNextClick: () => {
-                  $('.accordion-item:first-child .btn-add').click();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add/Edit",
-                description: "Confirm add/edit new data.",
-                onPrevClick: () => {
-                  Swal.close();
-                  if($('.add-section').length > 0) {
-                    driverObj.movePrevious();
-                    driverObj.movePrevious();
-                  }else{
-                    driverObj.movePrevious();
-                  }
-                },
-                onNextClick: () => {
-                  $('.swal2-confirm').click();
-                  // driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".service-navigator",
-              popover: {
-                title: "Service page",
-                description: "Show Service page button.",
-                onPrevClick: () => {
-                  $('.accordion-item:first-child .btn-add').click();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  window.location.href = "{{ url_for('service.service_page') }}";
-                  driverObj.moveNext();
-                },
-              },
-            },
-            //service
-            {
-              element: ".to-center .icon-header",
-              popover: { 
-                title: "Add service", 
-                description: "open add service modal.",
-                onNextClick: () => {
-                  $('#addModal').modal('show')
-                  driverObj.moveNext();
-                },
-                onPrevClick:()=>{
-                  window.location.href = "/device/device_page?to=14";
-                  driverObj.movePrevious();
-                }
-              },
-            },
-            {
-              element: "#addModal .modal-dialog",
-              popover: {
-                title: "Service Modal",
-                description: "Show add service modal.",
-                onPrevClick:()=>{
-                  $('#addModal').modal('hide')
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  validation();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add",
-                description: "Confirm add new service.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.swal2-confirm').click();
-                },
-              },
-            },
-            {
-              element: ".card-item",
-              popover: {
-                title: "Service section",
-                description: "Show Service section.",
-                onPrevClick: () => {
-                  $('#addModal').modal('show')
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.card-item:first-child').click();
-                },
-              },
-            },
-            {
-              element: ".icon-service-left",
-              popover: {
-                title: "Service data",
-                description: "Show Service data section.",
-                onPrevClick: () => {
-                  $('.card-item:first-child').click();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  openAddServiceDetailModal()
-                },
-              },
-            },
-            {
-              element: "#service_detail_modal .modal-dialog",
-              popover: {
-                title: "Service data Modal",
-                description: "Show add service data modal.",
-                onPrevClick:()=>{
-                  $('#service_detail_modal').modal('hide')
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  validationAddDetail();
-                },
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Add",
-                description: "Confirm add new service.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.swal2-confirm').click();
-                },
-              },
-            },
-            {
-              element: ".accordion-item:first-child",
-              popover: {
-                title: "Service data detail",
-                description: "Show Service data detail section.",
-                onPrevClick: () => {
-                  openAddServiceDetailModal()
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.accordion-button').click();
-                },
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Device data section",
-                description: "Show device data section.",
-                onPrevClick: () => {
-                  driverObj.movePrevious();
-                  $('.accordion-collapse').removeClass('show');
-                  $('.accordion-button').addClass('collapsed');
-                },
-              },
-            },
-            {
-              element: ".btn-add",
-              popover: {
-                title: "Edit button",
-                description: "Show Edit button.",
-                onNextClick:()=>{
-                  $('.driver-active-element').click();
-                }
-              },
-            },
-            {
-              element: ".accordion-collapse",
-              popover: {
-                title: "Service edit data",
-                description: "Show Service edit data section.",
-                onPrevClick: () => {
-                  driverObj.drive(21);
-                  $('.accordion-collapse').removeClass('show');
-                  $('.accordion-button').addClass('collapsed');
-                  $('.accordion-button').click();
-                  driverObj.moveNext();
-                },
-              },
-            },
-            {
-              element: ".btn-add",
-              popover: {
-                title: "Edit button",
-                description: "Show Edit button.",
-                onNextClick:()=>{
-                  $('.driver-active-element').click();
-                }
-              },
-            },
-            {
-              element: ".swal2-confirm",
-              popover: {
-                title: "Confirm Edit",
-                description: "Confirm edit service detail.",
-                onPrevClick: () => {
-                  Swal.close();
-                  driverObj.movePrevious();
-                },
-                onNextClick: () => {
-                  $('.swal2-confirm').click();
-                },
-              },
-            },
-            {
-              element: ".btn-cancel",
-              popover: {
-                title: "Delete button",
-                description: "Show delete button.",
-                onPrevClick:()=>{
-                  driverObj.movePrevious();
-                  driverObj.movePrevious();
-                  $('.btn-add').click();
-                  driverObj.movePrevious();
-                },
-                onNextClick:()=>{
-                  $('.driver-active-element').click();
-                }
-              },
-            },
-            {
-              element: ".filter-btn",
-              popover: {
-                title: "Filter section",
-                description: "show filter page.",
-                onNextClick:()=>{
-                  $('.driver-active-element').click();
-                }
-              },
-            },
-            //filter
-            {
-              element: ".container",
-              popover: {
-                title: "Filter section",
-                description: "show filter page.",
-                onPrevClick: () => {
-                  window.location.href =
-                    "/service/service_page?service_id=0&to=29";
-                },
-              },
-            },
-            {
-              element: ".btn-analysis",
-              popover: {
-                title: "Analysis section",
-                description: "show analysis page.",
-                onNextClick: () => {
-                  $(".driver-active-element").click();
-                },
-              },
-            },
-            //analysis
-            {
-              element: ".container",
-              popover: {
-                title: "Analysis graph",
-                description: "show analysis graph.",
-                onPrevClick: () => {
-                  window.location.href = "/filter/show_data?to=32";
-                },
-              },
-            },
-            {
-              element: ".show-log-out",
-              popover: {
-                title: "Logout",
-                description: "show Logout button.",
-                onNextClick: () => {
-                  $.ajax({ url: "/session/setDone", method: "POST" }).then(
-                    (doc) => {
-                      window.location.reload();
-                      driverObj.moveNext();
-                    }
-                  );
-                },
-              },
-            },
-          ],
-        });
-        const url = window.location.href;
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("to")) {
-          // window.history.pushState({}, "", `${url.split("?")[0]}`);
-          if(params.get("to")==14){
-            if($('.card-selected').length==0){
-              $('.card-item:first-child').click();
-              $('.accordion-item:first-child .accordion-button').click();
-            }
-          }
-          driverObj.drive(parseInt(params.get("to")));
-        } else {
-          driverObj.drive(2);
-        }
-      }
-      $("#device_type").select2({
-        width: "100%",
-        dropdownParent: isTour?$("#addModal .modal-dialog"):$("#addModal"),
-      });
-      $("#unprocessed_data").select2({
-        width: "100%",
-        dropdownParent: isTour?$("#addModal .modal-dialog"):$("#addModal"),
-      });
-    });
+    $('#device_type').select2({
+      width:'100%',
+      dropdownParent: $('#addModal')
+    })
+    $('#sensitivity').select2({
+      width:'100%',
+      dropdownParent: $('#addModal'),
+      minimumResultsForSearch: Infinity
+    })
+    // $.ajax("/session/get").then((doc) => {
+    //   isTour = doc.tour;
+    //   if (doc.tour == 1) {
+    //     const driver = window.driver.js.driver;
+    //     driverObj = driver({
+    //       allowClose: false,
+    //       showProgress: true,
+    //       allowKeyboardControl:false,
+    //       steps: [
+    //         {
+    //           element: ".device",
+    //           popover: { title: "Device", description: "device section." },
+    //         },
+    //         {
+    //           element: ".device .card-header img",
+    //           popover: {
+    //             title: "Device page",
+    //             description: "go to device page.",
+    //           },
+    //         },
+    //         {
+    //           element: ".to-center .icon-header",
+    //           popover: { 
+    //             title: "Add device", 
+    //             description: "open add device modal.",
+    //             onNextClick: () => {
+    //               $('#addModal').modal('show')
+    //               driverObj.moveNext();
+    //             },
+    //             onPrevClick:()=>{
+    //               window.location.href = "/?back=1";
+    //               driverObj.movePrevious();
+    //             }
+    //           },
+    //         },
+    //         {
+    //           element: "#addModal .modal-dialog",
+    //           popover: {
+    //             title: "Device Modal",
+    //             description: "Show add modal.",
+    //             onPrevClick:()=>{
+    //               $('#addModal').modal('hide')
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               validation();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add",
+    //             description: "Confirm add new data.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.swal2-confirm').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".icon-header-left",
+    //           popover: {
+    //             title: "Delete section",
+    //             description: "Show delete section.",
+    //             onPrevClick: () => {
+    //               driverObj.drive(2);
+    //               $('#addModal').modal('show')
+    //               driverObj.moveNext();
+    //               validation();
+    //             },
+    //             onNextClick: () => {
+    //               showDelete();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".box-animation",
+    //           popover: {
+    //             title: "Delete section",
+    //             description: "Show delete section.",
+    //             side:"right",
+    //             onPrevClick: () => {
+    //               closeDelete();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               closeDelete();
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".edit-icon",
+    //           popover: {
+    //             title: "Edit button",
+    //             description: "Click to show edit Modal.",
+    //             onPrevClick: () => {
+    //               showDelete();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".card-item",
+    //           popover: {
+    //             title: "Device section",
+    //             description: "Show device section.",
+    //             onNextClick: () => {
+    //               $('.card-item:first-child').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-item:first-child",
+    //           popover: {
+    //             title: "Device data detial",
+    //             description: "Show device data detail section.",
+    //             onPrevClick: () => {
+    //               $('.card-item:first-child').click();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.accordion-item:first-child .accordion-button').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Device data section",
+    //             description: "Show device data section.",
+    //             onPrevClick: () => {
+    //               driverObj.movePrevious();
+    //               $('.accordion-collapse').removeClass('show');
+    //               $('.accordion-button').addClass('collapsed');
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-item:first-child .btn-add",
+    //           popover: {
+    //             title: "Add/Edit device data ",
+    //             description: "Click to add/edit device data.",
+    //             onNextClick: () => {
+    //               if($('.accordion-item:first-child .show-edit-accon').length>0){
+    //                 $('.accordion-item:first-child .driver-active-element').click();
+    //               }else{
+    //                 $('.accordion-item:first-child .driver-active-element').click();
+    //               }
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Device data section",
+    //             description: "Show device data section.",
+    //             onPrevClick: () => {
+    //               console.log("show");
+    //               if($('.add-section').length == 0) {
+    //                 let data = '{{session.get("devices")["0"]}}';
+    //                 let device = JSON.parse(data.replaceAll("&#39;",'"'));
+    //                 let id = "0";
+    //                 $('#show_detail_list').empty();
+    //                 var html = '<div class="accordion" id="accordionExample">';
+    //                 device['device_unprocessed'].forEach((doc,key)=>{
+    //                   html += `
+    //                       <div class="accordion-item">
+    //                         <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+    //                           <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+    //                             ${doc}
+    //                           </button>
+    //                         </h2>
+    //                         <div id="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
+    //                           <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+    //                           </div>
+    //                         </div>
+    //                       </div>`;
+    //                 })
+    //                 html += "</div>";
+    //                 $('#show_detail_list').append(html);
+    //                 $('.accordion-item:first-child .accordion-button').click();
+    //               }
+    //               setTimeout(function(){
+    //                 driverObj.movePrevious();
+    //               },100)
+    //             },
+    //             onNextClick: () => {
+    //               $('.accordion-item:first-child .btn-add').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add/Edit",
+    //             description: "Confirm add/edit new data.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               if($('.add-section').length > 0) {
+    //                 driverObj.movePrevious();
+    //                 driverObj.movePrevious();
+    //               }else{
+    //                 driverObj.movePrevious();
+    //               }
+    //             },
+    //             onNextClick: () => {
+    //               $('.swal2-confirm').click();
+    //               // driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".service-navigator",
+    //           popover: {
+    //             title: "Service page",
+    //             description: "Show Service page button.",
+    //             onPrevClick: () => {
+    //               $('.accordion-item:first-child .btn-add').click();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               window.location.href = "{{ url_for('service.service_page') }}";
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         //service
+    //         {
+    //           element: ".to-center .icon-header",
+    //           popover: { 
+    //             title: "Add service", 
+    //             description: "open add service modal.",
+    //             onNextClick: () => {
+    //               $('#addModal').modal('show')
+    //               driverObj.moveNext();
+    //             },
+    //             onPrevClick:()=>{
+    //               window.location.href = "/device/device_page?to=14";
+    //               driverObj.movePrevious();
+    //             }
+    //           },
+    //         },
+    //         {
+    //           element: "#addModal .modal-dialog",
+    //           popover: {
+    //             title: "Service Modal",
+    //             description: "Show add service modal.",
+    //             onPrevClick:()=>{
+    //               $('#addModal').modal('hide')
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               validation();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add",
+    //             description: "Confirm add new service.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.swal2-confirm').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".card-item",
+    //           popover: {
+    //             title: "Service section",
+    //             description: "Show Service section.",
+    //             onPrevClick: () => {
+    //               $('#addModal').modal('show')
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.card-item:first-child').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".icon-service-left",
+    //           popover: {
+    //             title: "Service data",
+    //             description: "Show Service data section.",
+    //             onPrevClick: () => {
+    //               $('.card-item:first-child').click();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               openAddServiceDetailModal()
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: "#service_detail_modal .modal-dialog",
+    //           popover: {
+    //             title: "Service data Modal",
+    //             description: "Show add service data modal.",
+    //             onPrevClick:()=>{
+    //               $('#service_detail_modal').modal('hide')
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               validationAddDetail();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Add",
+    //             description: "Confirm add new service.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.swal2-confirm').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-item:first-child",
+    //           popover: {
+    //             title: "Service data detail",
+    //             description: "Show Service data detail section.",
+    //             onPrevClick: () => {
+    //               openAddServiceDetailModal()
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.accordion-button').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Device data section",
+    //             description: "Show device data section.",
+    //             onPrevClick: () => {
+    //               driverObj.movePrevious();
+    //               $('.accordion-collapse').removeClass('show');
+    //               $('.accordion-button').addClass('collapsed');
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-add",
+    //           popover: {
+    //             title: "Edit button",
+    //             description: "Show Edit button.",
+    //             onNextClick:()=>{
+    //               $('.driver-active-element').click();
+    //             }
+    //           },
+    //         },
+    //         {
+    //           element: ".accordion-collapse",
+    //           popover: {
+    //             title: "Service edit data",
+    //             description: "Show Service edit data section.",
+    //             onPrevClick: () => {
+    //               driverObj.drive(21);
+    //               $('.accordion-collapse').removeClass('show');
+    //               $('.accordion-button').addClass('collapsed');
+    //               $('.accordion-button').click();
+    //               driverObj.moveNext();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-add",
+    //           popover: {
+    //             title: "Edit button",
+    //             description: "Show Edit button.",
+    //             onNextClick:()=>{
+    //               $('.driver-active-element').click();
+    //             }
+    //           },
+    //         },
+    //         {
+    //           element: ".swal2-confirm",
+    //           popover: {
+    //             title: "Confirm Edit",
+    //             description: "Confirm edit service detail.",
+    //             onPrevClick: () => {
+    //               Swal.close();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick: () => {
+    //               $('.swal2-confirm').click();
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-cancel",
+    //           popover: {
+    //             title: "Delete button",
+    //             description: "Show delete button.",
+    //             onPrevClick:()=>{
+    //               driverObj.movePrevious();
+    //               driverObj.movePrevious();
+    //               $('.btn-add').click();
+    //               driverObj.movePrevious();
+    //             },
+    //             onNextClick:()=>{
+    //               $('.driver-active-element').click();
+    //             }
+    //           },
+    //         },
+    //         {
+    //           element: ".filter-btn",
+    //           popover: {
+    //             title: "Filter section",
+    //             description: "show filter page.",
+    //             onNextClick:()=>{
+    //               $('.driver-active-element').click();
+    //             }
+    //           },
+    //         },
+    //         //filter
+    //         {
+    //           element: ".container",
+    //           popover: {
+    //             title: "Filter section",
+    //             description: "show filter page.",
+    //             onPrevClick: () => {
+    //               window.location.href =
+    //                 "/service/service_page?service_id=0&to=29";
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".btn-analysis",
+    //           popover: {
+    //             title: "Analysis section",
+    //             description: "show analysis page.",
+    //             onNextClick: () => {
+    //               $(".driver-active-element").click();
+    //             },
+    //           },
+    //         },
+    //         //analysis
+    //         {
+    //           element: ".container",
+    //           popover: {
+    //             title: "Analysis graph",
+    //             description: "show analysis graph.",
+    //             onPrevClick: () => {
+    //               window.location.href = "/filter/show_data?to=32";
+    //             },
+    //           },
+    //         },
+    //         {
+    //           element: ".show-log-out",
+    //           popover: {
+    //             title: "Logout",
+    //             description: "show Logout button.",
+    //             onNextClick: () => {
+    //               $.ajax({ url: "/session/setDone", method: "POST" }).then(
+    //                 (doc) => {
+    //                   window.location.reload();
+    //                   driverObj.moveNext();
+    //                 }
+    //               );
+    //             },
+    //           },
+    //         },
+    //       ],
+    //     });
+    //     const url = window.location.href;
+    //     const params = new URLSearchParams(window.location.search);
+    //     if (params.get("to")) {
+    //       // window.history.pushState({}, "", `${url.split("?")[0]}`);
+    //       if(params.get("to")==14){
+    //         if($('.card-selected').length==0){
+    //           $('.card-item:first-child').click();
+    //           $('.accordion-item:first-child .accordion-button').click();
+    //         }
+    //       }
+    //       driverObj.drive(parseInt(params.get("to")));
+    //     } else {
+    //       driverObj.drive(2);
+    //     }
+    //   }
+    //   $("#device_type").select2({
+    //     width: "100%",
+    //     dropdownParent: isTour?$("#addModal .modal-dialog"):$("#addModal"),
+    //   });
+    //   $("#unprocessed_data").select2({
+    //     width: "100%",
+    //     dropdownParent: isTour?$("#addModal .modal-dialog"):$("#addModal"),
+    //   });
+    // });
     const url = window.location.href;
     const params = new URLSearchParams(window.location.search);
     $('.card-item').each((index,doc)=>{
@@ -837,44 +882,26 @@
       valid = false;
       $('#device_name').addClass('is-invalid')
     }
-    if($('#device_type').val()== "other"){
+    if($('#device_type').val()){
+      $('#device_type').parent().find('span').removeClass('is-invalid');
+    }else{
       valid = false;
       $('#device_type').parent().find('span').addClass('is-invalid');
-      if($('#device_input_device_type').val()){
-        $('#device_input_device_type').removeClass('is-invalid');
-      }else{
-        valid = false;
-        $('#device_input_device_type').addClass('is-invalid');
-      }
-    }else{
-      $('#device_type').parent().find('span').removeClass('is-invalid');
     }
-    if($('#unprocessed_data').val() == "other"){
-      valid=false
-      $('#unprocessed_data').parent().find('span').addClass('is-invalid');
-      if($('#device_input_unprocessed').val()){
-        $('#device_input_unprocessed').removeClass('is-invalid');
-      }else{
-        valid = false;
-        $('#device_input_unprocessed').addClass('is-invalid');
-      }
+    if($('#sensitivity').val()){
+      $('#sensitivity').parent().find('span').removeClass('is-invalid');
     }else{
-      $('#unprocessed_data').parent().find('span').removeClass('is-invalid');
-      if($('input[name="unprocessData[]"]').length>0){
-        $('#no_data').addClass('d-none');
-        $('#unprocessed_data').parent().find('span').removeClass('is-invalid');
-      }else{
-        valid = false;
-        $('#no_data').removeClass('d-none');
-        $('#unprocessed_data').parent().find('span').addClass('is-invalid');
-      }
+      valid = false;
+      $('#sensitivity').parent().find('span').addClass('is-invalid');
     }
-    let session_all = await $.ajax({
-            url: "/session/get",
-            type: "get",
-            dataType: "json",
-            contentType: "application/json",
-    })
+    if($('input[name="unprocessData[]"]').length>0){
+      $('#no_data').addClass('d-none');
+      $('#unprocessed_data').removeClass('is-invalid');
+    }else{
+      valid = false;
+      $('#no_data').removeClass('d-none');
+      $('#unprocessed_data').addClass('is-invalid');
+    }
     let device_data = [];
     $('input[name="unprocessData[]"]').each((index,data)=>{
       device_data.push($(data).val());
@@ -882,16 +909,16 @@
     device = {
       device_name:$('#device_name').val(),
       device_type:$('#device_type').val(),
+      device_sensitivity:$('#sensitivity').val(),
       device_unprocessed: device_data,
       new_device: true
     }
+    var device_name = [];
+    device_all = JSON.parse("{{ device_name|safe }}".replaceAll('(','[').replaceAll(')',']').replaceAll("'","\""));
     if(type == 'edit'){
-      var device_name = [];
-      for (_device_id in session_all["devices"]) {
-        if (_device_id !== "{{form_utils['device_id']}}" && _device_id != id) {
-          device_name.push(
-            session_all["devices"][_device_id]["device_name"]
-          );
+      for (key in device_all) {
+        if(id != device_all[key][0]){
+          device_name.push(device_all[key][1]);
         }
       }
       if (device_name.includes(device["device_name"])) {
@@ -901,9 +928,8 @@
         $('#same_name').addClass('d-none');
       }
     }else{
-      var device_name = [];
-      for (_device_id in session_all["devices"]) {
-        device_name.push(session_all["devices"][_device_id]["device_name"]);
+      for (key in device_all) {
+        device_name.push(device_all[key][1]);
       }
       if (device_name.includes(device["device_name"])) {
         valid = false;
@@ -1420,13 +1446,6 @@
       $('#device_type_other_input').addClass('d-none');
     }
   }
-  function unprocessedDataOther(){
-    if($('#unprocessed_data').val()=="other"){
-      $('#device_unprocessed_other_input').removeClass('d-none');
-    }else{
-      $('#device_unprocessed_other_input').addClass('d-none');
-    }
-  }
   function checkDuplicate(selectId,data) {
     let select = document.getElementById(selectId);
     let optionValues = [];
@@ -1455,7 +1474,7 @@
         $('#device_input_device_type').removeClass('is-invalid');
         if(data){
           $('#device_input_device_type').removeClass('is-invalid');
-          $('#device_type').prepend(`<option value="${data}">${data}</option>`);
+          $('#device_type').append(`<option value="-1">${data}</option>`);
           $('#device_type').val(data).toggle('change');
           $('#device_input_device_type').val('');
           $('#device_type_other_input').addClass('d-none')
@@ -1525,7 +1544,8 @@
     }
     event.stopPropagation();
   }
-  function showEditModal(id,data){
+  async function showEditModal(id,data){
+    event.stopPropagation();
     if(isTour){
       var step = driverObj.getState().activeIndex;
       if(step !=8){
@@ -1534,26 +1554,25 @@
         $('.card-item:first-child').click();
       }
     }else{
-      let device = JSON.parse(data.replaceAll("'",'"'));
+      let device = JSON.parse(data.replaceAll("'",'"').replaceAll('(','[').replaceAll(')',']'));
       $("#addModal").modal("show");
-      $('#device_name').val(device['device_name']);
+      $('#device_name').val(device[1]);
       type_device = ["Security Camera", "Smartmetre", "Light"]
-      if(!type_device.includes(device['device_type'])){
-        $('#device_type').prepend(`<option value="${device['device_type']}">${device['device_type']}</option>`)
-      }
-      $('#device_type').val(device['device_type']).trigger('change');
+      $('#device_type').val(device[2]).trigger('change');
+      $('#sensitivity').val(device[3]).trigger('change');
       firstOptionValue = $('#unprocessed_data option:first').val();
       unprocessed_data = ["Footage", "Energy usage", "Light status", "Colour", "Notification", "Temperature", "Activity period"]
       $('#unprocessed_data').val(firstOptionValue).trigger('change');
       $('.show-unprocess-data-list').empty();
-      device['device_unprocessed'].forEach((doc,key)=>{
-        if(!unprocessed_data.includes(doc)){
-          $('#unprocessed_data').prepend(`<option value="${doc}">${doc}</option>`)
-        }
+      let res = await $.ajax({
+        contentType: 'application/json',
+        url:'/device/get-unprocessed-data/'+id
+      })
+      res.forEach((doc,key)=>{
         $('.show-unprocess-data-list').append(`
-          <span class="badge badge-device mb-2" id="unprocessed_data_${doc.replaceAll(" ","_")}">
-            <input type="hidden" name="unprocessData[]" value="${doc}">
-            <span class="text-show">${doc}</span>
+          <span class="badge badge-device mb-2" id="unprocessed_data_${doc.name.replaceAll(" ","_")}">
+            <input type="hidden" name="unprocessData[]" value="${doc.name}">
+            <span class="text-show">${doc.name}</span>
             <button type="button" onclick="deleteUnprocessedData(this)" class="btn-close btn-close-white" aria-label="Close"></button>
           </span>
         `);
@@ -1563,312 +1582,311 @@
       $('#modal_add_btn').attr('onclick','validation("edit",'+id+')');
       resetInvalid();
     }
-    event.stopPropagation();
   }
   async function showRawDataList(device_id,id,raw_data,type="add"){
-    if(isTour && type != 'new'){
-      var step = driverObj.getState().activeIndex
-      switch(step){
-        case 10: 
-          driverObj.moveNext();
-          if($('.show-edit-accon').length>0){
-            driverObj.moveNext();
-          }
-        break;
-        case 9:
-          driverObj.moveNext();
-        break;
-        case 11:
-          driverObj.moveNext();
-        break;
-      }
+    // if(isTour && type != 'new'){
+    //   var step = driverObj.getState().activeIndex
+    //   switch(step){
+    //     case 10: 
+    //       driverObj.moveNext();
+    //       if($('.show-edit-accon').length>0){
+    //         driverObj.moveNext();
+    //       }
+    //     break;
+    //     case 9:
+    //       driverObj.moveNext();
+    //     break;
+    //     case 11:
+    //       driverObj.moveNext();
+    //     break;
+    //   }
       
-    }
-    if($('#'+id)[0].innerHTML.trim()=='' || type=="new"){
-      let res = await $.ajax("/raw_data/getData/"+device_id);
-      let showData = "";
-      if(res.raw_data){
-        Object.keys(res.raw_data).forEach((key)=>{
-          if(key == raw_data){
-            showData = res.raw_data[key];
-          }
-        })
-      }
-      if(!res.raw_data || res.raw_data.length==0){
-        let html = `<div class="row">`;
-        //sensitivity
-        html +=`
-          <div class="col-12">
-          <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
-          <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
-        `;
+    // }
+    // if($('#'+id)[0].innerHTML.trim()=='' || type=="new"){
+    //   let res = await $.ajax("/raw_data/getData/"+device_id);
+    //   let showData = "";
+    //   if(res.raw_data){
+    //     Object.keys(res.raw_data).forEach((key)=>{
+    //       if(key == raw_data){
+    //         showData = res.raw_data[key];
+    //       }
+    //     })
+    //   }
+    //   if(!res.raw_data || res.raw_data.length==0){
+    //     let html = `<div class="row">`;
+    //     //sensitivity
+    //     html +=`
+    //       <div class="col-12">
+    //       <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
+    //       <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
+    //     `;
         
-        res['sensitivity'].forEach((doc)=>{
-          html +=`
-            <option value="${doc}">
-              ${doc}
-            </option>
-          `;
-        })
-        html += `</select>`;
-        //action
-        html +=`
-          <div class="col-12">
-          <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
-          <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
-        `;
-        res['action'].forEach((doc)=>{
-          html +=`
-            <option value="${doc}">
-              ${doc}
-            </option>
-          `;
-        })
-        html += `</select>`;
+    //     res['sensitivity'].forEach((doc)=>{
+    //       html +=`
+    //         <option value="${doc}">
+    //           ${doc}
+    //         </option>
+    //       `;
+    //     })
+    //     html += `</select>`;
+    //     //action
+    //     html +=`
+    //       <div class="col-12">
+    //       <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
+    //       <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
+    //     `;
+    //     res['action'].forEach((doc)=>{
+    //       html +=`
+    //         <option value="${doc}">
+    //           ${doc}
+    //         </option>
+    //       `;
+    //     })
+    //     html += `</select>`;
 
-        //frequency
-        html +=`
-          <div class="col-12">
-          <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
-          <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
-        `;
-        res['frequency'].forEach((doc)=>{
-          html +=`
-            <option value="${doc}">
-              ${doc}
-            </option>
-          `;
-        })
-        html += `</select>`;
+    //     //frequency
+    //     html +=`
+    //       <div class="col-12">
+    //       <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
+    //       <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
+    //     `;
+    //     res['frequency'].forEach((doc)=>{
+    //       html +=`
+    //         <option value="${doc}">
+    //           ${doc}
+    //         </option>
+    //       `;
+    //     })
+    //     html += `</select>`;
         
-        html += `<div class="col-12">
-            <div class="text-center mt-3">
-              <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add add-section ms-2">
-                Add Data
-              </button>
-            </div>
-          </div>`;
-        html += `</div>`;
-        html += `</div>`;
-        $('#'+id).empty().append(html);
-        $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
-          width: "100%",
-          minimumResultsForSearch:-1,
-        });
-        $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
-          width: "100%",
-          minimumResultsForSearch:-1,
-        });
-        $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
-          width: "100%",
-          minimumResultsForSearch:-1,
-        });
-      }else{
-        $('#'+id).empty();
-        html =[]
-        showData.forEach((data)=>{
-          html += `
-            <div class="row">
-              <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
-                <tr>
-                  <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
-                  <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
-                </tr>
-                <tr>
-                  <td style="padding: 8px;" class="text-center">Sensitivity</td>
-                  <td style="padding: 8px;" class="text-center">
-                    ${data.sensitivity}
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px;" class="text-center">Action</td>
-                  <td style="padding: 8px;" class="text-center">
-                    ${data.action}
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding: 8px;" class="text-center">Frequency</td>
-                  <td style="padding: 8px;" class="text-center">
-                    ${data.frequency}
-                  </td>
-                </tr>
-              </table>
-              <div class="col-12 position-relative">
-                <div class="text-center mt-3">
-                  <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add show-edit-accon ms-2">
-                    Edit Data
-                  </button>
-                </div>
-                <div class="position-absolute show-add-new-action">
-                  <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','new_data')" class="btn btn-add ms-2">
-                    <img
-                      src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
-                      alt="Uploaded Image"
-                      class="icon-service-left"
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        })
-        $('#'+id).append(html);
-      }
-    }else if(type=="edit"){
-      let res = await $.ajax("/raw_data/getData/"+device_id);
-      let showData = "";
-      Object.keys(res.raw_data).forEach((key)=>{
-        if(key == raw_data){
-          showData = res.raw_data[key];
-        }
-      })
-      let html = `<div class="row">`;
-      //sensitivity
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
-        <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
-      `;
-      res['sensitivity'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}" ${showData['sensitivity']==doc? 'selected':''}>
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
-      //action
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
-        <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
-      `;
-      res['action'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}" ${showData['action']==doc? 'selected':''}>
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
+    //     html += `<div class="col-12">
+    //         <div class="text-center mt-3">
+    //           <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add add-section ms-2">
+    //             Add Data
+    //           </button>
+    //         </div>
+    //       </div>`;
+    //     html += `</div>`;
+    //     html += `</div>`;
+    //     $('#'+id).empty().append(html);
+    //     $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
+    //       width: "100%",
+    //       minimumResultsForSearch:-1,
+    //     });
+    //     $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
+    //       width: "100%",
+    //       minimumResultsForSearch:-1,
+    //     });
+    //     $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
+    //       width: "100%",
+    //       minimumResultsForSearch:-1,
+    //     });
+    //   }else{
+    //     $('#'+id).empty();
+    //     html =[]
+    //     showData.forEach((data)=>{
+    //       html += `
+    //         <div class="row">
+    //           <table style="width: 80%; border-collapse: collapse; margin: 20px auto;">
+    //             <tr>
+    //               <th style="text-align: center; padding: 8px; background-color: lightblue">Label</th>
+    //               <th style="text-align: center; padding: 8px; background-color: lightblue">Value</th>
+    //             </tr>
+    //             <tr>
+    //               <td style="padding: 8px;" class="text-center">Sensitivity</td>
+    //               <td style="padding: 8px;" class="text-center">
+    //                 ${data.sensitivity}
+    //               </td>
+    //             </tr>
+    //             <tr>
+    //               <td style="padding: 8px;" class="text-center">Action</td>
+    //               <td style="padding: 8px;" class="text-center">
+    //                 ${data.action}
+    //               </td>
+    //             </tr>
+    //             <tr>
+    //               <td style="padding: 8px;" class="text-center">Frequency</td>
+    //               <td style="padding: 8px;" class="text-center">
+    //                 ${data.frequency}
+    //               </td>
+    //             </tr>
+    //           </table>
+    //           <div class="col-12 position-relative">
+    //             <div class="text-center mt-3">
+    //               <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','edit')" class="btn btn-add show-edit-accon ms-2">
+    //                 Edit Data
+    //               </button>
+    //             </div>
+    //             <div class="position-absolute show-add-new-action">
+    //               <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','new_data')" class="btn btn-add ms-2">
+    //                 <img
+    //                   src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
+    //                   alt="Uploaded Image"
+    //                   class="icon-service-left"
+    //                 />
+    //               </button>
+    //             </div>
+    //           </div>
+    //         </div>
+    //       `;
+    //     })
+    //     $('#'+id).append(html);
+    //   }
+    // }else if(type=="edit"){
+    //   let res = await $.ajax("/raw_data/getData/"+device_id);
+    //   let showData = "";
+    //   Object.keys(res.raw_data).forEach((key)=>{
+    //     if(key == raw_data){
+    //       showData = res.raw_data[key];
+    //     }
+    //   })
+    //   let html = `<div class="row">`;
+    //   //sensitivity
+    //   html +=`
+    //     <div class="col-12">
+    //     <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
+    //     <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
+    //   `;
+    //   res['sensitivity'].forEach((doc)=>{
+    //     html +=`
+    //       <option value="${doc}" ${showData['sensitivity']==doc? 'selected':''}>
+    //         ${doc}
+    //       </option>
+    //     `;
+    //   })
+    //   html += `</select>`;
+    //   //action
+    //   html +=`
+    //     <div class="col-12">
+    //     <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
+    //     <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
+    //   `;
+    //   res['action'].forEach((doc)=>{
+    //     html +=`
+    //       <option value="${doc}" ${showData['action']==doc? 'selected':''}>
+    //         ${doc}
+    //       </option>
+    //     `;
+    //   })
+    //   html += `</select>`;
 
-      //frequency
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
-        <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
-      `;
-      res['frequency'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}" ${showData['frequency']==doc? 'selected':''}>
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
+    //   //frequency
+    //   html +=`
+    //     <div class="col-12">
+    //     <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
+    //     <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
+    //   `;
+    //   res['frequency'].forEach((doc)=>{
+    //     html +=`
+    //       <option value="${doc}" ${showData['frequency']==doc? 'selected':''}>
+    //         ${doc}
+    //       </option>
+    //     `;
+    //   })
+    //   html += `</select>`;
       
-      html += `<div class="col-12">
-          <div class="text-center mt-3">
-            <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add ms-2">
-              Edit Data
-            </button>
-          </div>
-        </div>`;
-      html += `</div>`;
-      html += `</div>`;
-      $('#'+id).empty().append(html);
-      $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
-        width: "100%",
-        minimumResultsForSearch:-1,
-      });
-      $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
-        width: "100%",
-        minimumResultsForSearch:-1,
-      });
-      $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
-        width: "100%",
-        minimumResultsForSearch:-1,
-      });
-    }else if(type=="new_data"){
-      let res = await $.ajax("/raw_data/getData/"+device_id);
-      let html = `<div class="row">`;
-      //sensitivity
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
-        <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
-      `;
+    //   html += `<div class="col-12">
+    //       <div class="text-center mt-3">
+    //         <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add ms-2">
+    //           Edit Data
+    //         </button>
+    //       </div>
+    //     </div>`;
+    //   html += `</div>`;
+    //   html += `</div>`;
+    //   $('#'+id).empty().append(html);
+    //   $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
+    //     width: "100%",
+    //     minimumResultsForSearch:-1,
+    //   });
+    //   $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
+    //     width: "100%",
+    //     minimumResultsForSearch:-1,
+    //   });
+    //   $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
+    //     width: "100%",
+    //     minimumResultsForSearch:-1,
+    //   });
+    // }else if(type=="new_data"){
+    //   let res = await $.ajax("/raw_data/getData/"+device_id);
+    //   let html = `<div class="row">`;
+    //   //sensitivity
+    //   html +=`
+    //     <div class="col-12">
+    //     <label class="ms-2" for="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }">Sensitivity</label>
+    //     <select class="form-select custom-select" onchange="showAfterAction(this,'raw_data_action_${ raw_data.replaceAll(' ','_') }')" id="raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }" name="sensitivity_${ raw_data.replaceAll(' ','_') }">
+    //   `;
       
-      res['sensitivity'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}">
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
-      //action
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
-        <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
-      `;
-      res['action'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}">
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
+    //   res['sensitivity'].forEach((doc)=>{
+    //     html +=`
+    //       <option value="${doc}">
+    //         ${doc}
+    //       </option>
+    //     `;
+    //   })
+    //   html += `</select>`;
+    //   //action
+    //   html +=`
+    //     <div class="col-12">
+    //     <label class="ms-2" for="raw_data_action_${ raw_data.replaceAll(' ','_') }">Action</label>
+    //     <select class="form-select custom-select" id="raw_data_action_${ raw_data.replaceAll(' ','_') }" name="action_${ raw_data.replaceAll(' ','_') }">
+    //   `;
+    //   res['action'].forEach((doc)=>{
+    //     html +=`
+    //       <option value="${doc}">
+    //         ${doc}
+    //       </option>
+    //     `;
+    //   })
+    //   html += `</select>`;
 
-      //frequency
-      html +=`
-        <div class="col-12">
-        <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
-        <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
-      `;
-      res['frequency'].forEach((doc)=>{
-        html +=`
-          <option value="${doc}">
-            ${doc}
-          </option>
-        `;
-      })
-      html += `</select>`;
+    //   //frequency
+    //   html +=`
+    //     <div class="col-12">
+    //     <label class="ms-2" for="raw_data_frequency_${ raw_data.replaceAll(' ','_') }">frequency</label>
+    //     <select class="form-select custom-select" id="raw_data_frequency_${ raw_data.replaceAll(' ','_') }" name="frequency_${ raw_data.replaceAll(' ','_') }">
+    //   `;
+    //   res['frequency'].forEach((doc)=>{
+    //     html +=`
+    //       <option value="${doc}">
+    //         ${doc}
+    //       </option>
+    //     `;
+    //   })
+    //   html += `</select>`;
       
-      html += `<div class="col-12 position-relative">
-          <div class="text-center mt-3">
-            <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add add-section ms-2">
-              Add Data
-            </button>
-          </div>
-          <div class="position-absolute show-add-new-action">
-              <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','new_data')" class="btn btn-add ms-2">
-                <img
-                  src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
-                  alt="Uploaded Image"
-                  class="icon-service-left"
-                />
-              </button>
-            </div>
-        </div>`;
-      html += `</div>`;
-      html += `</div>`;
-      $('#'+id).append(html);
-      $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
-        width: "100%",
-        minimumResultsForSearch:-1,
-      });
-      $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
-        width: "100%",
-        minimumResultsForSearch:-1,
-      });
-      $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
-        width: "100%",
-        minimumResultsForSearch:-1,
-      });
-    }
+    //   html += `<div class="col-12 position-relative">
+    //       <div class="text-center mt-3">
+    //         <button type="button" onclick="validationData('${raw_data}','${id}','${device_id}')" class="btn btn-add add-section ms-2">
+    //           Add Data
+    //         </button>
+    //       </div>
+    //       <div class="position-absolute show-add-new-action">
+    //           <button type="button" onclick="showRawDataList('${device_id}','${id}','${raw_data}','new_data')" class="btn btn-add ms-2">
+    //             <img
+    //               src="{{ url_for('static', filename='icon/plus-icon.png' ) }}"
+    //               alt="Uploaded Image"
+    //               class="icon-service-left"
+    //             />
+    //           </button>
+    //         </div>
+    //     </div>`;
+    //   html += `</div>`;
+    //   html += `</div>`;
+    //   $('#'+id).append(html);
+    //   $(`#raw_data_sensitivity_${ raw_data.replaceAll(' ','_') }`).select2({
+    //     width: "100%",
+    //     minimumResultsForSearch:-1,
+    //   });
+    //   $(`#raw_data_action_${ raw_data.replaceAll(' ','_') }`).select2({
+    //     width: "100%",
+    //     minimumResultsForSearch:-1,
+    //   });
+    //   $(`#raw_data_frequency_${ raw_data.replaceAll(' ','_') }`).select2({
+    //     width: "100%",
+    //     minimumResultsForSearch:-1,
+    //   });
+    // }
   }
   function showAfterAction(e,id){
     raw_data_action = ["Average", "Anonymise", "Encrtpt", "Upload", "Blur"]
@@ -1949,7 +1967,7 @@
     }
   }
   function showDataDetail(e,data,id){
-    let device = JSON.parse(data.replaceAll("'",'"'));
+    let device = JSON.parse(data.replaceAll("'",'"').replaceAll('(','[').replaceAll(')',']'));
     $('.card-item').each(async (index,data)=>{
       if(data == e){
         if(!$(data).hasClass('card-selected')){
@@ -1958,28 +1976,25 @@
           $('#to_center').addClass('to-left');
           $(data).parent().parent().parent().addClass('card-show-left');
           $(data).parent().parent().parent().removeClass('card-show');
-          $('#name_title')[0].innerHTML = device['device_name'];
+          $('#name_title')[0].innerHTML = device[1];
           $('#show_data_detail').removeClass("d-none");
           $('#show_detail_list').empty();
+          let unprocessdata = await $.ajax('/device/get-unprocessed-data/'+device[0]);
           var html = '<div class="accordion" id="accordionExample">';
-          device['device_unprocessed'].forEach((doc,key)=>{
+          unprocessdata.forEach((doc,key)=>{
             html += `
                 <div class="accordion-item">
-                  <h2 class="accordion-header" id="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-                    <button onclick="showRawDataList(${id},'show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}','${doc}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
-                      ${doc}
+                  <h2 class="accordion-header" id="heading${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}">
+                    <button onclick="showRawDataList(${id},'show_add_data${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}','${doc.name}')" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}" aria-expanded="false" aria-controls="collapse${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}">
+                      ${doc.name}
                     </button>
                   </h2>
-                  <div id="collapse${doc.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
-                    <div class="accordion-body" id="show_add_data${doc.replaceAll(' ','_')+"_"+key+"_"+id}">
+                  <div id="collapse${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}" class="accordion-collapse collapse" aria-labelledby="heading${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}" data-bs-parent="#accordionExample">
+                    <div class="accordion-body" id="show_add_data${doc.name.replaceAll(' ','_')+"_"+key+"_"+id}">
                     </div>
                   </div>
                 </div>`;
           })
-          // <div class="row">
-          //   <div class="col-12">
-          //   </div>
-          // </div>
           html += "</div>";
           $('#show_detail_list').append(html);
         }else{
@@ -2027,6 +2042,13 @@
 </script>
 {% endblock js %} {% block css %}
 <style>
+  .show-list{
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    height:auto !important;
+  }
   .show-add-new-action{
     bottom:0px;
     right:0px;
@@ -2188,12 +2210,12 @@
     text-align: center;
   } */
   .device .body-height{
-    height: 4.8vw;
+    height: 110px;
     width:100%;
     border-left: 1.21vw solid var(--device-color);
   }
   .device .card-width{
-    width:90%;
+    width:100%;
   }
   .device .data-content{
     display: flex;
@@ -2243,6 +2265,25 @@
   }
   .card-show-right .card-body{
     overflow-y:auto
+  }
+  .to-left .card-show{
+    width: unset !important;
+  }
+  .to-left{
+    margin-left: 1vw !important;
+  }
+  .card-show-left{
+    height:auto !important; 
+  }
+  .to-left .show-list .width-list{
+    width:90%;
+  }
+  .show-list .width-list{
+    width:80%;
+  }
+  /* select2 */
+  .select2-selection.select2-selection--single{
+    border-color: #dee2e6 ;
   }
 </style>
 {% include "css/card-header.html" ignore missing %} {% endblock css %}
