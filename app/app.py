@@ -24,7 +24,7 @@ def create_app():
     app = Flask(
         __name__,
     )
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/databank'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://culprit_lab:-6?j2+M63h??@147.79.70.44/databank'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
@@ -74,8 +74,8 @@ def create_app():
             try:
                 if cookie_value == None:
                     return render_template("user_select.html",user="not-show-path")
-                if 'tour' not in session[cookie_value].keys():
-                    session[cookie_value]['tour']=1
+                # if 'tour' not in session[cookie_value].keys():
+                #     session[cookie_value]['tour']=1
                 if "graph_filename" in request.args.keys():
                     return render_template("index.html", graph_filename=request.args.get("graph_filename"),name=cookie_value)
                 result = db.session.execute(text("SELECT devices.*,device_types.name as type_name FROM devices left join device_types on device_types.id=devices.device_type_id order by id desc"))
@@ -87,6 +87,9 @@ def create_app():
                 grouped_data = defaultdict(list)
                 for item in device_data:
                     grouped_data[item[1]].append(item)
+
+                result = db.session.execute(text("SELECT services.* FROM services order by id desc"))
+                services = result.fetchall()
                 return render_template(
                     "index.html",
                     name=cookie_value,
@@ -94,8 +97,12 @@ def create_app():
                     unprocessed_data=grouped_data,
                     devices=enumerate(devices),
                     device_count=len(devices),
-                    device_name=devices
+                    device_name=devices,
+                    services=services,
+                    service_count=len(services)
                 )
             except Exception as e:
-                return render_template("user_select.html",user="not-show-path")
+                print(f"Error occurred: {e}")
+                return f"Error occurred: {e}"
+                # return render_template("user_select.html",user="not-show-path")
     return app

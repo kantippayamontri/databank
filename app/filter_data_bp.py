@@ -7,6 +7,9 @@ from flask import (
     session,
     url_for,
 )
+import json
+from app.app import db
+from sqlalchemy import text
 
 from .utils.constants import type_device, type_device_details, unprocessed_data
 
@@ -67,20 +70,8 @@ bp = Blueprint("filter", __name__, url_prefix="/filter")
 
 @bp.route("/show_data", methods=["GET"])
 def form():
-    # data_in_dropdown = []
-    # if session["device"]["device_type"] in type_device_details.keys():
-    #     data_in_dropdown = type_device_details[session["device"]["device_type"]]
-    # else:
-    #     data_in_dropdown = unprocessed_data
-    
     return render_template(
         "forms/filter_data_form.html",
-        # form_utils={
-        #     "device": {
-        #         "type_device": enumerate(type_device),
-        #         "unprocessed_data": enumerate(data_in_dropdown),
-        #     }
-        # },
     )
 
 @bp.route("/filter", methods=["GET"])
@@ -90,20 +81,26 @@ def filter():
     data = session[cookie_value]
     match type:
         case 'devices':
-            if "devices" in data:
-                if data["devices"]:
-                    return data["devices"]
-            return []
+            result = db.session.execute(text("SELECT devices.*,device_types.name as type_name FROM devices left join device_types on device_types.id=devices.device_type_id order by id desc"))
+            devices = result.fetchall()
+            column_names = result.keys()
+            devices_list = [dict(zip(column_names, row)) for row in devices]
+            json_data = json.dumps(devices_list, indent=4)
+            return json_data
         case 'services':
-            if "services" in data:
-                if data["services"]:
-                    return data["services"]
-            return []
+            result = db.session.execute(text("SELECT services.* FROM services order by id desc"))
+            services = result.fetchall()
+            column_names = result.keys()
+            devices_list = [dict(zip(column_names, row)) for row in services]
+            json_data = json.dumps(devices_list, indent=4)
+            return json_data
         case 'data_by_device':
-            if "devices" in data:
-                if data["devices"]:
-                    return data["devices"]
-            return []
+            result = db.session.execute(text("SELECT device_datas.*,devices.name as device_name FROM device_datas left join devices on devices.id = device_datas.device_id order by id desc"))
+            services = result.fetchall()
+            column_names = result.keys()
+            devices_list = [dict(zip(column_names, row)) for row in services]
+            json_data = json.dumps(devices_list, indent=4)
+            return json_data
         case 'data_by_service':
             devices = []
             if "devices" in data:

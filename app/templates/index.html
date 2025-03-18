@@ -23,10 +23,14 @@
         <div class="show-list">
           <div class="width-list">
             {% for index,device in devices %}
-            <div
+            <!-- <div
               class="card card-width card-item"
               data-device-id="{{device.id}}"
               onclick='showDataDetail("{{device.id}}","device")'
+            > -->
+            <div
+              class="card card-width card-item"
+              data-device-id="{{device.id}}"
             >
               <div class="card-body body-height position-relative">
                 <div class="text-margin-top">Device Name: {{device.name}}</div>
@@ -56,29 +60,30 @@
         </a>
       </div>
       <div class="card-body">
-        {% if not session.get(name).get("services") %}
+        {% if service_count==0 %}
         <div class="text-center">You have 0 service.</div>
         {% else %}
         <div class="data-content">
-          {# loop service key show in table#} {% if
-          session.get(name).get("services") %} {% for service_id in
-          session.get(name).get("services").keys() %}
+          {% for service in services %}
+          <!-- <div class="card card-width card-item" data-service-id="{{service.id}}" onclick='showDataDetail(this,"{{ service }}","{{service.id}}")'> -->
+          <!-- <div
+            class="card card-width card-item"
+            data-service-id="{{service.id}}"
+            onclick='showDataDetail("{{service.id}}","service")'
+          > -->
           <div
             class="card card-width card-item"
-            onclick='showDataDetail("{{service_id}}","service")'
+            data-service-id="{{service.id}}"
           >
             <div class="card-body body-height position-relative">
               <div class="text-margin-top">
-                Device Name: {{ session.get(name).get("services")[service_id]
-                ["service_name"] }}
+                Service Name: {{ service.name }}
               </div>
-              <div>
-                Device Type: {{ session.get(name).get("services")[service_id]
-                ["service_type"] }}
-              </div>
+              <div>Trust Level: {{service.trust_level}}</div>
+              <div>Party Level: {{service.party_level}}</div>
             </div>
           </div>
-          {% endfor %} {% endif %}
+          {% endfor %}
         </div>
         {% endif %}
       </div>
@@ -88,37 +93,37 @@
 {% endblock main %} {% block js %}
 <script>
   $(document).ready(async function () {
-    $.ajax("/session/alert/toturial").then((res) => {
-      if (res == "") {
-        showToturial();
-      } else if (res == "1") {
-        Swal.fire({
-          title: "Skip toturial?",
-          // text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#4B8B4C",
-          cancelButtonColor: "#B41A1A",
-          confirmButtonText: "Confirm",
-          backdrop: false,
-          allowOutsideClick: false,
-          backdrop: `
-            rgba(0, 0, 0, 0.5)
-            no-repeat
-            center
-            fixed
-          `,
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            $.ajax({ url: "/session/setDone", method: "POST" }).then((doc) => {
-              window.location.reload();
-            });
-          } else {
-            showToturial();
-          }
-        });
-      }
-    });
+    // $.ajax("/session/alert/toturial").then((res) => {
+    //   if (res == "") {
+    //     showToturial();
+    //   } else if (res == "1") {
+    //     Swal.fire({
+    //       title: "Skip toturial?",
+    //       // text: "You won't be able to revert this!",
+    //       icon: "warning",
+    //       showCancelButton: true,
+    //       confirmButtonColor: "#4B8B4C",
+    //       cancelButtonColor: "#B41A1A",
+    //       confirmButtonText: "Confirm",
+    //       backdrop: false,
+    //       allowOutsideClick: false,
+    //       backdrop: `
+    //         rgba(0, 0, 0, 0.5)
+    //         no-repeat
+    //         center
+    //         fixed
+    //       `,
+    //     }).then(async (result) => {
+    //       if (result.isConfirmed) {
+    //         $.ajax({ url: "/session/setDone", method: "POST" }).then((doc) => {
+    //           window.location.reload();
+    //         });
+    //       } else {
+    //         showToturial();
+    //       }
+    //     });
+    //   }
+    // });
   });
   function showToturial() {
     // $.ajax("/session/get").then((doc) => {
@@ -736,7 +741,7 @@
     border-left: 1.21vw solid var(--device-color);
   }
   .service .body-height {
-    height: 4.8vw;
+    /* height: 4.8vw; */
     width: 100%;
     border-left: 1.21vw solid var(--service-color);
   }

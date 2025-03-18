@@ -15,7 +15,8 @@ RUN pip install --upgrade pip
 RUN pip install dash
 RUN pip install dash-bootstrap-components
 RUN pip install dash_cytoscape
-
+RUN pip install flask_sqlalchemy
+RUN pip install pymysql
 # Install pip requirements
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt

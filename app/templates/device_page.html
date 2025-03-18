@@ -41,15 +41,14 @@
         </a>
       </div>
         <div class="card-body">
-          {% if not session.get(form_utils["name"]).get("devices") %}
-            <div class="text-center">You have 0 device.</div>
-          {% elif device_count==0 %}
+          {% if device_count==0 %}
             <div class="text-center">You have 0 device.</div>
           {% elif device_count>0 %}
             <div class="show-list">
               <div class="width-list">
                 {% for index,device in devices %}
-                  <div class="card card-width card-item" data-device-id="{{device.id}}" onclick='showDataDetail(this,"{{ device }}","{{device.id}}")'>
+                  <!-- <div class="card card-width card-item" data-device-id="{{device.id}}" onclick='showDataDetail(this,"{{ device }}","{{device.id}}")'> -->
+                    <div class="card card-width card-item" data-device-id="{{device.id}}" >
                     <div class="card-body body-height position-relative" >
                       <div class="text-margin-top">Device Name: {{device.name}}</div>
                       <div>Device Type: {{ device.type_name }}</div>
@@ -122,7 +121,7 @@
   </div>
   <div class="to-right d-none" id="show_data_detail">
     <div class="card card-show-right device">
-      <div class="card-header position-relative">
+      <div class="card-header position-relative" >
         <div class="show-title">Device Name: <span id="name_title">test device</span></div>
         <a href="javascript:void(0)" onclick="backLeft()">
           <img
@@ -246,12 +245,12 @@
             <div class="col-md-12 mt-1"></div>
               <div class="col-md-12 mt-1">
                 <label for="sensitivity" class="d-flex"
-                  ><div class="text-label">Sentibility</div>
+                  ><div class="text-label">Sensitivity</div>
                   <span class="text-danger">*</span></label
                 >
                 <div class="select2-select">
                   <select id="sensitivity" onchange="deviceTypeOther()" name="sensitivity" class="form-control">
-                    <option value="" selected disabled>Select Sentibility</option>
+                    <option value="" selected disabled>Select Sensitivity</option>
                     <option value="critical">Critical</option>
                     <option value="high">High</option>
                     <option value="medium">Medium</option>
@@ -869,6 +868,7 @@
           <button type="button" onclick="deleteUnprocessedData(this)" class="btn-close btn-close-white" aria-label="Close"></button>
         </span>
       `)
+      $('#unprocessed_data').val('');
     }
   }
   function deleteUnprocessedData(e){
@@ -915,6 +915,7 @@
     }
     var device_name = [];
     device_all = JSON.parse("{{ device_name|safe }}".replaceAll('(','[').replaceAll(')',']').replaceAll("'","\""));
+    console.log(device_all);
     if(type == 'edit'){
       for (key in device_all) {
         if(id != device_all[key][0]){
@@ -951,7 +952,7 @@
         cancelButtonColor: "#B41A1A",
         confirmButtonText: "Confirm",
         didOpen: () => {
-            if(isTour){
+            if(isTour && false){
               const driver = window.driver.js.driver;
               driverObj = driver({
                 allowClose: false,
@@ -2242,9 +2243,9 @@
     left:50%;
     transform: translate(-50%,-50%);
   }
-  .device .card-item{
+  /* .device .card-item{
     cursor:pointer;
-  }
+  } */
   .device .card-selected{
     filter: brightness(0.7);
   }
