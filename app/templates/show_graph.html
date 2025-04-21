@@ -25,7 +25,7 @@
   <!-- server -->
   <iframe
     id="show_iframe"
-    src="http://147.79.70.44:8050/"
+    src="http://147.79.70.44:8050?user={{id}}"
   ></iframe>
   <!-- docker -->
   <!-- <iframe
@@ -35,7 +35,7 @@
   <!-- local -->
   <!-- <iframe
     id="show_iframe"
-    src="http://127.0.0.1:8050/"
+    src="http://127.0.0.1:8050?user={{id}}"
   ></iframe> -->
   
   {% endblock main %} {% block js %}
@@ -50,17 +50,17 @@
           "screenWidth": windowWidth,
           "screenHeight": 800
         };
-    $.ajax({
-        // url: 'http://127.0.0.1:8050/webhook',
-        // url: 'http://0.0.0.0:8050/webhook',
-        url: 'http://147.79.70.44:8050/webhook',
+    // $.ajax({
+    //     url: 'http://127.0.0.1:8050?user=127.0.0.1',
+    //     // url: 'http://0.0.0.0:8050/webhook',
+    //     // url: 'http://147.79.70.44:8050/webhook',
 
-        method: 'POST',
-        data:JSON.stringify(data),
-        contentType: 'application/json',
-      }).then((res)=>{
-        console.log(res);
-      });
+    //     method: 'POST',
+    //     data:JSON.stringify(data),
+    //     contentType: 'application/json',
+    //   }).then((res)=>{
+    //     console.log(res);
+    //   });
     $(document).ready(function () {
       // $.ajax("/session/get").then((doc) => {
       //   isTour = doc.tour;

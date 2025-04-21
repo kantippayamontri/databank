@@ -374,6 +374,16 @@
       })
       $('#cate_service_cate').empty().append(option);
     })
+    $('#trust_level').select2({
+      width:'100%',
+      dropdownParent: $('#addModal'),
+      minimumResultsForSearch: Infinity
+    })
+    $('#party_level').select2({
+      width:'100%',
+      dropdownParent: $('#addModal'),
+      minimumResultsForSearch: Infinity
+    })
   //   $.ajax("/session/get").then((doc) => {
   //     isTour = doc.tour;
   //     if (doc.tour == 1) {
@@ -1217,7 +1227,6 @@
       service_id = id;
       var trust_level_array={'high':1,'medium':2,'low':3};
       var party_level_array={'first_party':1,'support_party':2,'third_party':3};
-      console.log(service[3]);
       $("#addModal").modal("show");
       $('#service_name').val(service[1]);
       $('#trust_level').val(trust_level_array[service[2]]).trigger('change');

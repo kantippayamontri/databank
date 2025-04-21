@@ -1,8 +1,7 @@
 import secrets
-
 import matplotlib.pyplot as plt
-from flask import Flask, jsonify, redirect, render_template, request, session, url_for
-from flask_bootstrap import Bootstrap5
+from flask import Flask, jsonify, redirect, render_template, request, session, url_for, make_response
+from flask_bootstrap import Bootstrap
 from flask_wtf import CSRFProtect, FlaskForm
 from icecream import ic
 from wtforms.validators import DataRequired, Length
@@ -14,7 +13,7 @@ from dash import Dash, html
 import socket
 
 from .forms import DeviceForm
-
+from flask import request
 from .utils import *
 from flask_sqlalchemy import SQLAlchemy
 from collections import defaultdict
@@ -25,6 +24,7 @@ def create_app():
         __name__,
     )
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://culprit_lab:-6?j2+M63h??@147.79.70.44/databank'
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root@127.0.0.1/databank'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
@@ -60,6 +60,9 @@ def create_app():
 
     from . import category
     app.register_blueprint(category.bp) # register filter blueprint
+
+    from . import help
+    app.register_blueprint(help.bp) # register filter blueprint
     # from . import category
     # app.register_blueprint(category.bp) # register filter blueprint
     # # Bootstrap-Flask requires this line
@@ -70,10 +73,10 @@ def create_app():
     @app.route("/", methods=["POST", "GET"])
     def main_page():
         if request.method == "GET":
-            cookie_value = request.cookies.get('user')
+            # cookie_value = request.cookies.get('user')
             try:
-                if cookie_value == None:
-                    return render_template("user_select.html",user="not-show-path")
+                # if cookie_value == None:
+                #     return render_template("user_select.html",user="not-show-path")
                 # if 'tour' not in session[cookie_value].keys():
                 #     session[cookie_value]['tour']=1
                 if "graph_filename" in request.args.keys():
@@ -90,6 +93,21 @@ def create_app():
 
                 result = db.session.execute(text("SELECT services.* FROM services order by id desc"))
                 services = result.fetchall()
+                ip = request.headers.get("X-Forwarded-For", request.remote_addr)
+                result = db.session.execute(text("SELECT users.* FROM users where name='"+ip+"'"))
+                user = result.fetchall()
+                response = make_response("User cookie has been set!")
+                if len(user) == 0:
+                    sql = text("""
+                        INSERT INTO users (name)
+                        VALUES (:ip)
+                    """)
+                    result = db.session.execute(sql, {'ip': ip})
+                    db.session.commit()
+                    session['user_id'] = result.lastrowid
+                else:
+                    session['user_id'] = user[0][0]
+                cookie_value = session.get('user_id')
                 return render_template(
                     "index.html",
                     name=cookie_value,

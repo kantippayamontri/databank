@@ -10,28 +10,32 @@ bp = Blueprint("service", __name__, url_prefix="/service")
 
 @bp.route("/service_page", methods=["GET"])
 def service_page():
-    cookie_value = request.cookies.get('user')
+    cookie_value = cookie_value = session.get('user_id')
+    if cookie_value==None:
+            return redirect('/')
     choose_service_name = ""
     choose_service_type = ""
     service_id = 0
     service_name_all = []
-    result = db.session.execute(text("SELECT services.* FROM services order by id desc"))
+    result = db.session.execute(text("SELECT services.* FROM services where user_id="+str(cookie_value)+" order by id desc"))
     services = result.fetchall()
-    trust_level = []
-    for service in services:
-        if service[2] not in trust_level:
-            trust_level.append(service[2])
-    priority = {"high": 1, "medium": 2, "low": 3}
-    trust_level = sorted(trust_level, key=lambda x: priority[x])
-    party_level = []
-    for service in services:
-        if service[3] not in party_level:
-            party_level.append(service[3])
-    priority = {"first party": 1, "support party": 2, "third party": 3}
-    party_level = sorted(party_level, key=lambda x: priority[x])
+    # trust_level = []
+    # for service in services:
+    #     if service[2] not in trust_level:
+    #         trust_level.append(service[2])
+    # priority = {"high": 1, "medium": 2, "low": 3}
+    # trust_level = sorted(trust_level, key=lambda x: priority[x])
+    # if len(trust_level)==0:
+    trust_level=['high','medium','low']
+    # party_level = []
+    # for service in services:
+    #     if service[3] not in party_level:
+    #         party_level.append(service[3])
+    # priority = {"first party": 1, "support party": 2, "third party": 3}
+    # party_level = sorted(party_level, key=lambda x: priority[x])
+    # if len(party_level)==0:
+    party_level=['first party','support party','third party']
     try:
-        if(cookie_value == None):
-            return render_template("user_select.html",user="not-show-path")
         # if "services" in session[cookie_value].keys():
         #     service_id_max = max(list([int(k) for k in session[cookie_value]["services"].keys()]))
         #     service_id = service_id_max + 1
@@ -134,15 +138,15 @@ def form_edit(service_id):
 
 @bp.route("/form_add", methods=["POST"])
 def form_add():
-    cookie_value = request.cookies.get('user')
+    cookie_value = session.get('user_id')
     _service_name = request.form["service_name"]
     _trust_level = request.form["trust_level"]
     _party_level = request.form["party_level"]
     # try:
     if(cookie_value == None):
-        return render_template("user_select.html",user="not-show-path")
-    sql = text("INSERT INTO services (name, trust_level, party_level) VALUES (:name, :trust_level, :party_level)")
-    params = {"name": _service_name, "trust_level": _trust_level, "party_level": _party_level}
+        return redirect('/')
+    sql = text("INSERT INTO services (name, trust_level, party_level, user_id) VALUES (:name, :trust_level, :party_level, :user_id)")
+    params = {"name": _service_name, "trust_level": _trust_level, "party_level": _party_level, "user_id":cookie_value}
     result = db.session.execute(sql, params)
     service_id = result.lastrowid
     service_category = 0

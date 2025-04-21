@@ -1,8 +1,21 @@
 {% extends "base.html" %} {% block main %}
 
 <div class="screen position-relative">
-  <div class="d-flex to-center">
-    <div class="card card-show device">
+  <div class="back-ground"></div>
+  <div class="to-center margin-top-show">
+    <div class="title">Welcome to the Databank</div>
+    <div class="text-body-1 mt-3">
+      This platform empowers users to define and manage their own privacy
+      policies, offering greater control over how their data is collected, used,
+      and shared. Integrated with a secure databank, it allows users to store,
+      update, and enforce their privacy preferences across various services. By
+      leveraging this databank, users can ensure that their personal information
+      is only accessible to trusted parties and used according to their chosen
+      guidelines.
+    </div>
+    <div class="text-body-2">Please choose one of the options above.</div>
+  </div>
+  <!-- <div class="card card-show device">
       <div
         class="card-header position-relative"
         style="height: 109.5px !important; flex-shrink: 0"
@@ -23,11 +36,6 @@
         <div class="show-list">
           <div class="width-list">
             {% for index,device in devices %}
-            <!-- <div
-              class="card card-width card-item"
-              data-device-id="{{device.id}}"
-              onclick='showDataDetail("{{device.id}}","device")'
-            > -->
             <div
               class="card card-width card-item"
               data-device-id="{{device.id}}"
@@ -65,12 +73,6 @@
         {% else %}
         <div class="data-content">
           {% for service in services %}
-          <!-- <div class="card card-width card-item" data-service-id="{{service.id}}" onclick='showDataDetail(this,"{{ service }}","{{service.id}}")'> -->
-          <!-- <div
-            class="card card-width card-item"
-            data-service-id="{{service.id}}"
-            onclick='showDataDetail("{{service.id}}","service")'
-          > -->
           <div
             class="card card-width card-item"
             data-service-id="{{service.id}}"
@@ -87,8 +89,7 @@
         </div>
         {% endif %}
       </div>
-    </div>
-  </div>
+    </div> -->
 </div>
 {% endblock main %} {% block js %}
 <script>
@@ -675,6 +676,30 @@
 </script>
 {% endblock js %} {% block css %}
 <style>
+  .back-ground {
+    background-color: rgb(238, 238, 238);
+    margin-left: 15vw;
+    width: 70vw;
+    height: 40vh;
+    text-align: justify;
+  }
+  .title {
+    color: #295f98;
+    margin-top: 50px;
+    font-size: 36px;
+    text-align: center;
+    font-weight: 800;
+  }
+  .text-body-1 {
+    text-indent: 3em;
+    font-size: 20px;
+    text-align: justify;
+  }
+  .text-body-2 {
+    margin-top: 100px;
+    font-size: 20px;
+    text-align: center;
+  }
   .image-container {
     max-width: fit-content;
     /* Adjust the maximum width as needed */
@@ -692,7 +717,7 @@
 <style>
   .screen {
     width: 100vw;
-    height: 100vh;
+    height: 90vh;
   }
   .card-show {
     width: 36.5vw;

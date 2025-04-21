@@ -81,7 +81,15 @@
       >
         Clear Session
       </button> -->
-
+      <a href="{{ url_for('help.show') }}">
+        <button
+          type="button"
+          class="btn btn-outline-light btn-analysis me-3"
+          style="margin-left: 20px"
+        >
+          Help
+        </button>
+      </a>
       <a href="javascript:void(0)" onclick="logout()">
         <img
           src="{{ url_for('static', filename='icon/backtomain.png' ) }}"

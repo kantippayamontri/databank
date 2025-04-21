@@ -9,7 +9,7 @@ from flask import (
 )
 import json
 from .utils.constants import type_device, type_device_details, unprocessed_data
-
+from flask_session import Session
 from .models import User
 
 from app.app import db
@@ -17,12 +17,16 @@ from app.app import db
 from sqlalchemy import text
 
 from collections import defaultdict
+from flask import current_app
 
 bp = Blueprint("device", __name__, url_prefix="/device")
 
 @bp.route("/device_page", methods=["GET"])
 def device_page():
-    result = db.session.execute(text("SELECT devices.*,device_types.name as type_name FROM devices left join device_types on device_types.id=devices.device_type_id order by id desc"))
+    cookie_value = cookie_value = session.get('user_id')
+    if cookie_value==None:
+            return redirect('/')
+    result = db.session.execute(text("SELECT devices.*,device_types.name as type_name FROM devices left join device_types on device_types.id=devices.device_type_id where devices.user_id= "+str(cookie_value)+" order by id desc"))
     devices = result.fetchall()
     result_type = db.session.execute(text("SELECT * FROM device_types order by id desc"))
     device_type = result_type.fetchall()
@@ -31,10 +35,9 @@ def device_page():
     grouped_data = defaultdict(list)
     for item in device_data:
         grouped_data[item[1]].append(item)
-    cookie_value = request.cookies.get('user')
     try:
-        if(cookie_value == None):
-            return render_template("user_select.html",user="not-show-path")
+        # if(cookie_value == None):
+        #     return render_template("user_select.html",user="not-show-path")
         if len(devices) ==0:
             return render_template(
                 "device_page.html",
@@ -119,23 +122,11 @@ def form_edit(device_id):
     # return jsonify({"device id": device_id,
     #                 "data_dropdown": data_in_dropdown})
 
-@bp.route("/form_new", methods=["GET"])
-def form_new():
-    return render_template(
-        "forms/device_form.html",
-        form_utils={
-            "device": {
-                "type_device": enumerate(type_device),
-                "unprocessed_data": enumerate(unprocessed_data),
-            },
-            "new_device": True,
-        },
-    )
 
 @bp.route("/update/<int:device_id>", methods=["POST"])
 def update_with_id(device_id):
     _device = request.get_json()
-    cookie_value = request.cookies.get('user')
+    cookie_value = session.get('user_id')
     device_name = _device["device_name"]
     device_type = _device["device_type"]
     device_unprocessed = _device["device_unprocessed"]
@@ -199,7 +190,7 @@ def update_with_id(device_id):
 @bp.route("/add", methods=["POST"])
 def add():
     _device = request.get_json()
-    cookie_value = request.cookies.get('user')
+    cookie_value = session.get('user_id')
     device_name = _device["device_name"]
     device_type = _device["device_type"]
     device_unprocessed = _device["device_unprocessed"]
@@ -208,8 +199,8 @@ def add():
     if device_type==-1:
         result = db.session.execute(text("INSERT INTO device_types (name) VALUES (?)", (device_name)))
         device_type = result.lastrowid
-    sql = text("INSERT INTO devices (name, device_type_id, sensitivity) VALUES (:name, :type, :sensitivity)")
-    params = {"name": device_name, "type": device_type, "sensitivity": device_sensitivity}
+    sql = text("INSERT INTO devices (name, device_type_id, sensitivity, user_id) VALUES (:name, :type, :sensitivity, :user_id)")
+    params = {"name": device_name, "type": device_type, "sensitivity": device_sensitivity,"user_id":cookie_value}
 
     result=db.session.execute(sql, params)
     device_id = result.lastrowid
@@ -287,10 +278,12 @@ def get_with_id(device_id):
 @bp.route("/delete/<int:device_id>", methods=["GET"])
 def delete(device_id):
     device_id = str(device_id)
-    cookie_value = request.cookies.get('user')
+    cookie_value = session.get('user_id')
+    if cookie_value==None:
+            return redirect('/')
     try:
-        if(cookie_value == None):
-            return render_template("user_select.html",user="not-show-path")
+        if cookie_value==None:
+            return redirect('/')
         db.session.execute(
             text("Delete FROM device_datas where device_id="+device_id)
         )
